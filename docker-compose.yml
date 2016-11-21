@@ -1,0 +1,18 @@
+version: '2'
+services:
+  db:
+    image: mysql:latest
+    env_file: .env
+  nb:
+    image: jupyter/base-notebook
+    env_file: .env
+    environment:
+      MYSQL_HOST: db
+    volumes:
+      - ./JPF/:/home/jovyan/work/
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db
+    links:
+      - db:db
