@@ -4,7 +4,9 @@ services:
     image: mysql:latest
     env_file: .env
   nb:
-    image: jupyter/base-notebook
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file: .env
     environment:
       MYSQL_HOST: db
