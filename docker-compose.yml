@@ -11,7 +11,7 @@ services:
     environment:
       MYSQL_HOST: db
     volumes:
-      - ./JPF/:/home/jovyan/work/
+      - ./JPF/:/root/work/
     ports:
       - "8888:8888"
     depends_on:
