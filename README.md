@@ -10,3 +10,11 @@ The goals are;
 as the source data to identify and predict bad landlords.
 * Provide a way to create reports suitable for sending to lawyers and activists.
 * Expose this data via a web app.
+
+
+Python Notebooks
+***************************
+
+As we are committing full Python notebooks, be sure to clear output before
+saving. (`Cell` -> `All Output` -> `Clear`). This will help us keep diffs clean
+as we work.
