@@ -18,3 +18,21 @@ Python Notebooks
 As we are committing full Python notebooks, be sure to clear output before
 saving. (`Cell` -> `All Output` -> `Clear`). This will help us keep diffs clean
 as we work.
+
+
+Getting Started
+***************************
+
+There are two options for getting started with this repo.
+
+The first is to install the Python packages and run Jupyter.
+
+TODO: Needs better documentation.
+
+The second is to use docker;
+
+* [Install Docker and docker-compose](https://docs.docker.com/engine/getstarted/)
+* Run `docker-compose up`
+* The Jupyter notebook will be running at `docker-machine ip {name}`:8888
+
+
