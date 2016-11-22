@@ -32,7 +32,14 @@ TODO: Needs better documentation.
 The second is to use docker;
 
 * [Install Docker and docker-compose](https://docs.docker.com/engine/getstarted/)
+* Run `cp .env.example .env`
 * Run `docker-compose up`
 * The Jupyter notebook will be running at `docker-machine ip {name}`:8888
+
+This method will use an .env file to configure the containers.
+
+
+
+
 
 
