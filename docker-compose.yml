@@ -1,0 +1,20 @@
+version: '2'
+services:
+  db:
+    image: mysql:latest
+    env_file: .env
+  nb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      MYSQL_HOST: db
+    volumes:
+      - ./JPF/:/root/work/
+    ports:
+      - "8888:8888"
+    depends_on:
+      - db
+    links:
+      - db:db
