@@ -2,7 +2,7 @@
 #
 # SQL - for bad buildings
 # Does not account for DATES or TIMES or AGE. 
-# Includes counts of 
+# Includes by building/address counts of 
 #	litigations
 #	hpd_violation 'classes'
 #	hpd_complaints
@@ -11,8 +11,12 @@
 # DOB Data joined by ADDRESS .. not sure if I trust BIN nor BBL
 # There are probably more optimal ways to do this.
 # !!! Needs better documentation
+# !!! Ends up with 2000 MORE BUILDINGS THAN EXIST IN hpd_buildings .. likely dirty addresses .. FIRST()??
+### This finds them (1955 rows)
+### select hbaddress, buildingid, count(buildingid) count from bad_buildings group by 1,2 having count > 1;
 
-## BELOW REQUIRES THAT NO INDEXES/KEYS EXIST ON THE TABLES
+
+## BELOW REQUIRES THAT NO INDEXES/KEYS PRE-EXIST ON THE TABLES
 ## AT THE BOTTOM OF THIS FILE IS CODE FOR REMOVING THE FOLLOWING INDEXES/KEYS
 alter table hpd_buildings add primary key(buildingid);
 alter table hpd_complaintsProb add INDEX(majorcategoryid);
