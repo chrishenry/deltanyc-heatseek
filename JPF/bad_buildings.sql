@@ -237,7 +237,10 @@ select
 	cvB.classB_cnt,
 	cvC.classC_cnt,
 	cvI.classI_cnt,
-	lc.lit_cnt
+	lc.lit_cnt,
+	landlord pa_landlord,
+	hpdv pa_hpdv,
+	dobv pa_dobv
 from 
 	`hpd_complaint_counts` cc
 left join 
@@ -246,6 +249,8 @@ left join
 	permit_counts on `hbaddress` = dobp_address
 left join 
 	violation_counts on `hbaddress` = dobv_address
+left join 
+	`pubadv_worst_landlords` on `hbaddress` = `ADDR`
 left join
 	classA_vio_cnt cvA on cc.buildingid = cvA.buildingid
 left join
@@ -257,6 +262,7 @@ left join
 left join
 	lit_count lc on cc.buildingid = lc.buildingid
 		;
+
 
 ## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 alter table hpd_buildings drop primary key;
