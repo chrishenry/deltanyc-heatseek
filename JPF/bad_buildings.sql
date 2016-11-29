@@ -97,7 +97,7 @@ select
 	hb.block as block,
 	hb.lot as lot,
 	hb.bin as bin,
-	hb.zip as zip
+	hb.zip as zip,
 	cc.count as all_complaints, 
 	hscc.count as hs_complaints
 from 
@@ -227,7 +227,7 @@ alter table classI_vio_cnt add index(buildingid);
 ################
 drop table if exists bad_buildings;
 ################
-create temporary table bad_buildings
+create table bad_buildings
 select 
 	cc.*, 
 	hs_permit_cnt, 
@@ -238,9 +238,17 @@ select
 	cvC.classC_cnt,
 	cvI.classI_cnt,
 	lc.lit_cnt,
-	landlord pa_landlord,
-	hpdv pa_hpdv,
-	dobv pa_dobv
+	pawl.officer pa_officer,
+	pawl.org pa_org,
+	pawl.a pa_hpdv_a_cnt,
+	pawl.b pa_hpdv_b_cnt,
+	pawl.c pa_hpdv_c_cnt,
+	pawl.i pa_hpdv_i_cnt,
+	pawl.dob pa_dobv_cnt,
+	pawl.units pa_units,
+	pawl.score pa_score,
+	pawl.lat pa_lat,
+	pawl.lng pa_long
 from 
 	`hpd_complaint_counts` cc
 left join 
@@ -250,7 +258,7 @@ left join
 left join 
 	violation_counts on `hbaddress` = dobv_address
 left join 
-	`pubadv_worst_landlords` on `hbaddress` = `ADDR`
+	pubadv_worst_landlords pawl on cc.bin = pawl.bin
 left join
 	classA_vio_cnt cvA on cc.buildingid = cvA.buildingid
 left join
@@ -282,3 +290,21 @@ alter table dob_violations drop index boro;
 
 select * from bad_buildings limit 100;
 
+### FIND LANDLORDS
+-- alter table hpd_buildings add index(bin);
+-- alter table `pubadv_worst_landlords` add index(bin);
+-- alter table hpd_registrations add index(buildingid);
+-- alter table hpd_registrations add index(registrationid);
+-- alter table hpd_registrationContact add index(registrationid);
+
+-- select * from hpd_buildings hb 
+-- join pubadv_worst_landlords pawl on hb.bin = pawl.bin
+-- join hpd_registrations hr on hb.buildingid = hr.buildingid
+-- join hpd_registrationContact hrc on hr.registrationid = hrc.registrationid 
+-- where hrc.type in ("HeadOfficer", "CorporateOwner");
+
+-- alter table hpd_buildings drop index bin;
+-- alter table `pubadv_worst_landlords` drop index bin;
+-- alter table hpd_registrations drop index buildingid ;
+-- alter table hpd_registrations DROP index registrationid ;
+-- alter table hpd_registrationContact drop index registrationid;
