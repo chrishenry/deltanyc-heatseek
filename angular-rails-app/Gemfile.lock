@@ -45,6 +45,8 @@ GEM
       railties (>= 4.2, < 6)
       sprockets (>= 3.0, < 5)
       tilt
+    angular_rails_csrf (2.0.0)
+      railties (>= 3, < 5.1)
     arel (6.0.3)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
@@ -94,6 +96,9 @@ GEM
     mini_portile2 (2.1.0)
     minitest (5.9.1)
     mysql2 (0.4.5)
+    ngannotate-rails (1.2.2)
+      execjs
+      rails (>= 3.1)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     rack (1.6.5)
@@ -186,6 +191,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   angular-rails-templates
+  angular_rails_csrf
   bower-rails
   byebug
   coffee-rails (~> 4.1.0)
@@ -193,6 +199,7 @@ DEPENDENCIES
   erd
   jquery-rails
   mysql2 (>= 0.3.13, < 0.5)
+  ngannotate-rails
   rails (= 4.2.6)
   rspec-rails (~> 3.5)
   sass-rails (~> 5.0)

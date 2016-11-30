@@ -23,6 +23,10 @@ gem 'angular-rails-templates'
 gem 'bower-rails'
 # Use ActiveModel::Serializer
 gem 'active_model_serializers'
+# Add rails authenticy token into headers for angular $http requests
+gem 'angular_rails_csrf'
+# add ngannotate for clear DI in minification during production
+gem 'ngannotate-rails'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
