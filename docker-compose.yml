@@ -3,6 +3,19 @@ services:
   db:
     image: mysql:latest
     env_file: .env
+  web:
+    build:
+      context: ./rails-app/
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    env_file: .env
+    environment:
+      MYSQL_HOST: db
+    volumes:
+      - ./rails-app/:/rails-app/
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
   nb:
     build:
       context: .

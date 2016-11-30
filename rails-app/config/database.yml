@@ -17,6 +17,14 @@ default: &default
   password: <%= ENV['HEATSEEK_DATABASE_PASSWORD'] %>
   socket: /tmp/mysql.sock
 
+docker-dev: &default
+  adapter: mysql2
+  database: <%= ENV['MYSQL_DATABASE'] %>
+  username: <%= ENV['MYSQL_USER'] %>
+  password: <%= ENV['MYSQL_PASSWORD'] %>
+  host: <%= ENV['MYSQL_HOST'] %>
+  port: <%= ENV['MYSQL_PORT'] %>
+
 development:
   <<: *default
   database: heatseek_development
