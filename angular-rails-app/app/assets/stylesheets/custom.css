@@ -1,0 +1,13 @@
+nav#my-nav{
+  height: 10%;
+  background-color: rgb(169,169,169);
+}
+
+nav#my-nav a{
+  color:black;
+  margin-top: 8px;
+}
+
+nav#my-nav a:hover{
+  color:white;
+}
