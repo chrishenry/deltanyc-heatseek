@@ -32,12 +32,13 @@ alter table hpd_registrations add index(registrationid);
 alter table hpd_registrationContact add index(registrationcontactid);
 alter table hpd_registrationContact add index(type);
 alter table hpd_registrationContact add index(registrationid);
+alter table `pubadv_worst_landlords` add index(bin);
 
 delete from dob_violations where boro not in ('1','2','3','4','5');
 ALTER TABLE dob_violations CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
 alter table dob_violations add index(boro);
 
-################
+################pu
 drop table if exists boro_lookup;
 ################
 create temporary table boro_lookup select boro, boroid from hpd_buildings group by 1,2;
@@ -115,6 +116,7 @@ left join
 on  
 	hb.buildingid = cc.buildingid;
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (`buildingid`);
+ALTER TABLE `hpd_complaint_counts` ADD INDEX (hbaddress(255));
 
 ################
 drop table if exists hs_permit_counts;
@@ -265,13 +267,11 @@ where
 alter table hpd_headOfficers add index(buildingid);
 	
 ################
-drop table if exists bad_buildings;
+drop table if exists bad_buildings_temp1;
 ################
-create table bad_buildings
+create temporary table bad_buildings_temp1
 select 
 	cc.*, 
-	ho.name owner,
-	hc.corporationname corp_owner,
 	hs_permit_cnt, 
 	permit_cnt,
 	dob_violation_cnt,
@@ -298,10 +298,6 @@ left join
 left join 
 	permit_counts on `hbaddress` = dobp_address
 left join 
-	hpd_corps hc on cc.buildingid = hc.buildingid
-left join 
-	hpd_headOfficers ho on cc.buildingid = ho.buildingid
-left join 
 	violation_counts on `hbaddress` = dobv_address
 left join 
 	pubadv_worst_landlords pawl on cc.bin = pawl.bin
@@ -316,7 +312,28 @@ left join
 left join
 	lit_count lc on cc.buildingid = lc.buildingid
 		;
+		
+drop temporary table if exists bad_buildings_temp2; 
+create table bad_buildings_temp2
+select 
+	bb.*, 
+	ho.name owner_name
+from 
+	bad_buildings_temp1 bb
+left join 
+	hpd_headOfficers ho on bb.buildingid = ho.buildingid
+;
 
+drop table if exists bad_buildings; 
+create table bad_buildings
+select 
+	bb.*, 
+	hc.corporationname corp_owner
+from 
+	bad_buildings_temp2 bb
+left join 
+	hpd_corps hc on bb.buildingid = hc.buildingid
+;
 
 ## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 alter table hpd_buildings drop primary key;
@@ -333,9 +350,9 @@ alter table hpd_registrations drop index registrationid;
 alter table hpd_registrationContact drop index registrationcontactid;
 alter table hpd_registrationContact drop index registrationid;
 alter table dob_violations drop index boro;
+alter table `pubadv_worst_landlords` drop index bin;
 
 select * from bad_buildings limit 100;
-
 
 
 ### FIND LANDLORDS
