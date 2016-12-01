@@ -91,3 +91,5 @@ ENV/
 
 # Data files
 *csv
+mysql-data/*
+!mysql-data/.gitkeep
