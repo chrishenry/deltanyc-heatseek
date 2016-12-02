@@ -27,13 +27,18 @@ alter table hpd_complaints add INDEX(complaintid);
 alter table hpd_complaints add INDEX(buildingid);
 alter table hpd_violations add INDEX(buildingid);
 alter table hpd_violations add index(class);
-
+alter table hpd_registrations add index(buildingid);
+alter table hpd_registrations add index(registrationid);
+alter table hpd_registrationContact add index(registrationcontactid);
+alter table hpd_registrationContact add index(type);
+alter table hpd_registrationContact add index(registrationid);
+alter table `pubadv_worst_landlords` add index(bin);
 
 delete from dob_violations where boro not in ('1','2','3','4','5');
-ALTER TABLE `dob_violations` CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
+ALTER TABLE dob_violations CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
 alter table dob_violations add index(boro);
 
-################
+################pu
 drop table if exists boro_lookup;
 ################
 create temporary table boro_lookup select boro, boroid from hpd_buildings group by 1,2;
@@ -110,6 +115,8 @@ left join
 	`complaint_count` cc 
 on  
 	hb.buildingid = cc.buildingid;
+ALTER TABLE `hpd_complaint_counts` ADD INDEX (`buildingid`);
+ALTER TABLE `hpd_complaint_counts` ADD INDEX (hbaddress(255));
 
 ################
 drop table if exists hs_permit_counts;
@@ -125,6 +132,8 @@ where
 	work_type in ("OT","BL", "DM") 
 group by 
 	1,2;
+alter table hs_permit_counts add index(hs_dobp_address(255));
+alter table hs_permit_counts add index(bin_num);
 
 ################	
 drop table if exists permit_counts;
@@ -138,6 +147,8 @@ from
 	dob_permits 
 group by 
 	1,2;
+alter table permit_counts add index(dobp_address(255));
+alter table permit_counts add index(bin_num);
 
 ################
 drop table if exists violation_counts;
@@ -153,6 +164,8 @@ left join boro_lookup bl
 on dv.boro = bl.boroid
 group by 
 	1,2;
+alter table violation_counts add index(dobv_address(255));
+alter table violation_counts add index(bin);
 
 ################
 drop table if exists classA_vio_cnt;
@@ -163,8 +176,9 @@ select
   count(class) classA_cnt
 from 
 	hpd_violations
-where class = 'A'
+where class = 'A' and currentstatus not in ("VIOLATION DISMISSED", "VIOLATION CLOSED") 
 group by 1;
+alter table classA_vio_cnt add index(buildingid);
 
 ################
 drop table if exists classB_vio_cnt;
@@ -175,8 +189,9 @@ select
   count(class) classB_cnt
 from 
 	hpd_violations
-where class = 'B'
+where class = 'B' and currentstatus not in ("VIOLATION DISMISSED", "VIOLATION CLOSED")
 group by 1;
+alter table classB_vio_cnt add index(buildingid);
 
 ################
 drop table if exists classC_vio_cnt;
@@ -187,8 +202,9 @@ select
   count(class) classC_cnt
 from 
 	hpd_violations
-where class = 'C'
+where class = 'C' and currentstatus not in ("VIOLATION DISMISSED", "VIOLATION CLOSED")
 group by 1;
+alter table classC_vio_cnt add index(buildingid);
 
 ################
 drop table if exists classI_vio_cnt;
@@ -199,8 +215,9 @@ select
   count(class) classI_cnt
 from 
 	hpd_violations
-where class = 'I'
+where class = 'I' and currentstatus not in ("VIOLATION DISMISSED", "VIOLATION CLOSED")
 group by 1;
+alter table classI_vio_cnt add index(buildingid);
 
 ################
 drop table if exists lit_count;
@@ -211,23 +228,48 @@ select
 	count(*) lit_cnt
 from hpd_litigations
 group by 1;
-alter table lit_count add index(`buildingid`)	;
-	
-################
-ALTER TABLE `hpd_complaint_counts` ADD INDEX (`hbaddress`(255)); 
-ALTER TABLE `hs_permit_counts` ADD INDEX (`hs_dobp_address`(255)); 
-ALTER TABLE `permit_counts` ADD INDEX (`dobp_address`(255)); 
-ALTER TABLE `violation_counts` ADD INDEX (`dobv_address`(255)); 
-alter table classA_vio_cnt add index(buildingid);
-alter table classB_vio_cnt add index(buildingid);
-alter table classC_vio_cnt add index(buildingid);
-alter table classI_vio_cnt add index(buildingid);
-################
+alter table lit_count add index(`buildingid`);
 
 ################
-drop table if exists bad_buildings;
+drop table if exists hpd_corps;
 ################
-create table bad_buildings
+create temporary table hpd_corps
+select 
+	hrc.registrationcontactid registrationcontactid, 
+	hrc.corporationname corporationname, 
+	hrc.type type, 
+	hr.registrationid registrationid, 
+	hr.buildingid buildingid
+from 
+	hpd_registrations hr
+left join 
+	hpd_registrationContact hrc on hr.registrationid = hrc.registrationid
+where 
+	hrc.type = "CorporateOwner";
+alter table hpd_corps add index(buildingid);
+
+################
+drop table if exists hpd_headOfficers;
+################
+create temporary table hpd_headOfficers
+select 
+	hrc.registrationcontactid registrationcontactid, 
+	CONCAT(hrc.firstname, " ",hrc.lastname) name, 
+	hrc.type type, 
+	hr.registrationid registrationid, 
+	hr.buildingid buildingid
+from 
+	hpd_registrations hr
+left join 
+	hpd_registrationContact hrc on hr.registrationid = hrc.registrationid
+where 
+	hrc.type = "HeadOfficer";
+alter table hpd_headOfficers add index(buildingid);
+	
+################
+drop table if exists bad_buildings_temp1;
+################
+create temporary table bad_buildings_temp1
 select 
 	cc.*, 
 	hs_permit_cnt, 
@@ -270,7 +312,28 @@ left join
 left join
 	lit_count lc on cc.buildingid = lc.buildingid
 		;
+		
+drop temporary table if exists bad_buildings_temp2; 
+create table bad_buildings_temp2
+select 
+	bb.*, 
+	ho.name owner_name
+from 
+	bad_buildings_temp1 bb
+left join 
+	hpd_headOfficers ho on bb.buildingid = ho.buildingid
+;
 
+drop table if exists bad_buildings; 
+create table bad_buildings
+select 
+	bb.*, 
+	hc.corporationname corp_owner
+from 
+	bad_buildings_temp2 bb
+left join 
+	hpd_corps hc on bb.buildingid = hc.buildingid
+;
 
 ## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 alter table hpd_buildings drop primary key;
@@ -282,13 +345,15 @@ alter table hpd_complaints drop INDEX complaintid;
 alter table hpd_complaints drop INDEX buildingid;
 alter table hpd_violations drop INDEX buildingid;
 alter table hpd_violations drop index class;
-
-delete from dob_violations where boro not in ('1','2','3','4','5');
-ALTER TABLE `dob_violations` CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
+alter table hpd_registrations drop index buildingid;
+alter table hpd_registrations drop index registrationid;
+alter table hpd_registrationContact drop index registrationcontactid;
+alter table hpd_registrationContact drop index registrationid;
 alter table dob_violations drop index boro;
-
+alter table `pubadv_worst_landlords` drop index bin;
 
 select * from bad_buildings limit 100;
+
 
 ### FIND LANDLORDS
 -- alter table hpd_buildings add index(bin);
