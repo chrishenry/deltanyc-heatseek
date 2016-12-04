@@ -26,22 +26,23 @@ HPD Registration import
 HPD_REGISTRATION_KEY = 'hpd_registration'
 
 reg_dtype_dict = {
-'RegistrationID':            'int64',
-'BuildingID':                'int64',
-'BoroID':                    'int64',
-'Boro':                     'object',
-'HouseNumber':              'object',
-'LowHouseNumber':           'object',
-'HighHouseNumber':          'object',
-'StreetName':               'object',
-'StreetCode':               'int64',
-'Zip':                     'float64',
-'Block':                     'int64',
-'Lot':                       'int64',
-'BIN':                     'float64',
-'CommunityBoard':            'int64',
-'LastRegistrationDate':     'object',
-'RegistrationEndDate':      'object'}
+    'RegistrationID':            'int64',
+    'BuildingID':                'int64',
+    'BoroID':                    'int64',
+    'Boro':                     'object',
+    'HouseNumber':              'object',
+    'LowHouseNumber':           'object',
+    'HighHouseNumber':          'object',
+    'StreetName':               'object',
+    'StreetCode':               'int64',
+    'Zip':                     'float64',
+    'Block':                     'int64',
+    'Lot':                       'int64',
+    'BIN':                     'float64',
+    'CommunityBoard':            'int64',
+    'LastRegistrationDate':     'object',
+    'RegistrationEndDate':      'object'
+}
 
 reg_df_keep_cols = [
     'registrationid',

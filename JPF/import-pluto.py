@@ -268,6 +268,11 @@ def main(argv):
                 PLUTO_date_format,
                )
 
+    conn = connect()
+
+    # Add some indexes
+    "create index my_idx on my_table(tstamp, user_id, type);"
+
 
 if __name__ == "__main__":
     main(sys.argv[:1])
