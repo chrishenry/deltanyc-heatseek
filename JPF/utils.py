@@ -177,12 +177,12 @@ def download_file(url, local_filename):
     r = requests.get(url, stream=True)
     total_length = r.headers.get('content-length')
 
-    if total_length is None: # no content length header
-        f.write(response.content)
-    else:
-        dl = 0
-        total_length = int(total_length)
-        with open(local_filename, 'wb') as f:
+    with open(local_filename, 'wb') as f:
+        if total_length is None: # no content length header
+            f.write(r.content)
+        else:
+            dl = 0
+            total_length = int(total_length)
             for chunk in r.iter_content(chunk_size=4096):
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
