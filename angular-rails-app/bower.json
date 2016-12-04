@@ -1,0 +1,10 @@
+{
+  "name": "heatseek-assets",
+  "vendor": {
+    "name": "heatseek-assets",
+    "dependencies": {
+      "angular" : "1.5.8",
+      "angular-ui-router" : "latest"
+    }
+  }
+}
