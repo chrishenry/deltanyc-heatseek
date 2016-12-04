@@ -45,6 +45,7 @@ group :development, :test do
   gem 'byebug'
   gem 'thor', '0.19.1'
   gem 'rspec-rails', '~> 3.5'
+  gem 'ffaker'
 end
 
 group :development do
