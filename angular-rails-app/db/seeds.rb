@@ -1,7 +1,13 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
-#
-# Examples:
-#
-#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
-#   Mayor.create(name: 'Emanuel', city: cities.first)
+50.times do
+     Property.create(
+        street_address: FFaker::AddressUS.street_address,
+        city: FFaker::AddressUS.city,
+        state: FFaker::AddressUS.state_abbr,
+        zipcode: FFaker::AddressUS.zip_code,
+        total_units: rand(5..200),
+        rent_stabilized: FFaker::Boolean.random,
+        owner_id: rand(1..10)
+      ) 
+end 
+
+
