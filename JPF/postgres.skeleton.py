@@ -1180,271 +1180,271 @@ if process_file == "PLUTO" or process_file == "ALL":
 
 	
 if process_file == '311' or process_file == 'ALL':
-## SET UP 311 DIR
+	## SET UP 311 DIR
 
-_311_dir = BASE_DIR + '311'
+	_311_dir = BASE_DIR + '311'
 
-try:
-    os.stat(_311_dir)
-except:
-    os.mkdir(_311_dir)
+	try:
+	    os.stat(_311_dir)
+	except:
+	    os.mkdir(_311_dir)
 
-call_311_dtype_dict = {'Unique Key':'int64',
-'Created Date':'object',
-'Closed Date':'object',
-'Agency':'object',
-'Agency Name':'object',
-'Complaint Type':'object',
-'Descriptor':'object',
-'Location Type':'object',
-'Incident Zip':'object',
-'Incident Address':'object',
-'Street Name':'object',
-'Cross Street 1':'object',
-'Cross Street 2':'object',
-'Intersection Street 1':'object',
-'Intersection Street 2':'object',
-'Address Type':'object',
-'City':'object',
-'Landmark':'object',
-'Facility Type':'object',
-'Status':'object',
-'Due Date':'object',
-'Resolution Description':'object',
-'Resolution Action Updated Date':'object',
-'Community Board':'object',
-'Borough':'object',
-'X Coordinate (State Plane)':'float64',
-'Y Coordinate (State Plane)':'float64',
-'Park Facility Name':'object',
-'Park Borough':'object',
-'School Name':'object',
-'School Number':'object',
-'School Region':'object',
-'School Code':'object',
-'School Phone Number':'object',
-'School Address':'object',
-'School City':'object',
-'School State':'object',
-'School Zip':'object',
-'School Not Found':'object',
-'School or Citywide Complaint':'float64',
-'Vehicle Type':'object',
-'Taxi Company Borough':'object',
-'Taxi Pick Up Location':'object',
-'Bridge Highway Name':'object',
-'Bridge Highway Direction':'object',
-'Road Ramp':'object',
-'Bridge Highway Segment':'object',
-'Garage Lot Name':'object',
-'Ferry Direction':'object',
-'Ferry Terminal Name':'object',
-'Latitude':'float64',
-'Longitude':'float64',
-'Location':'object'}
+	call_311_dtype_dict = {'Unique Key':'int64',
+	'Created Date':'object',
+	'Closed Date':'object',
+	'Agency':'object',
+	'Agency Name':'object',
+	'Complaint Type':'object',
+	'Descriptor':'object',
+	'Location Type':'object',
+	'Incident Zip':'object',
+	'Incident Address':'object',
+	'Street Name':'object',
+	'Cross Street 1':'object',
+	'Cross Street 2':'object',
+	'Intersection Street 1':'object',
+	'Intersection Street 2':'object',
+	'Address Type':'object',
+	'City':'object',
+	'Landmark':'object',
+	'Facility Type':'object',
+	'Status':'object',
+	'Due Date':'object',
+	'Resolution Description':'object',
+	'Resolution Action Updated Date':'object',
+	'Community Board':'object',
+	'Borough':'object',
+	'X Coordinate (State Plane)':'float64',
+	'Y Coordinate (State Plane)':'float64',
+	'Park Facility Name':'object',
+	'Park Borough':'object',
+	'School Name':'object',
+	'School Number':'object',
+	'School Region':'object',
+	'School Code':'object',
+	'School Phone Number':'object',
+	'School Address':'object',
+	'School City':'object',
+	'School State':'object',
+	'School Zip':'object',
+	'School Not Found':'object',
+	'School or Citywide Complaint':'float64',
+	'Vehicle Type':'object',
+	'Taxi Company Borough':'object',
+	'Taxi Pick Up Location':'object',
+	'Bridge Highway Name':'object',
+	'Bridge Highway Direction':'object',
+	'Road Ramp':'object',
+	'Bridge Highway Segment':'object',
+	'Garage Lot Name':'object',
+	'Ferry Direction':'object',
+	'Ferry Terminal Name':'object',
+	'Latitude':'float64',
+	'Longitude':'float64',
+	'Location':'object'}
 
-call_311_df_keep_cols = [
-    "unique_key",
-    "created_date",
-    "closed_date",
-    "agency",
-    "complaint_type",
-    "descriptor",
-    "incident_zip",
-    "incident_address",
-    "street_name",
-    "cross_street_1",
-    "cross_street_2",
-    "intersection_street_1",
-    "intersection_street_2",
-    "city",
-    "status",
-    "due_date",
-    "resolution_description",
-    "resolution_action_updated_date",
-    "borough",
-    "latitude",
-    "longitude",
-    "location"
-    ]
+	call_311_df_keep_cols = [
+	    "unique_key",
+	    "created_date",
+	    "closed_date",
+	    "agency",
+	    "complaint_type",
+	    "descriptor",
+	    "incident_zip",
+	    "incident_address",
+	    "street_name",
+	    "cross_street_1",
+	    "cross_street_2",
+	    "intersection_street_1",
+	    "intersection_street_2",
+	    "city",
+	    "status",
+	    "due_date",
+	    "resolution_description",
+	    "resolution_action_updated_date",
+	    "borough",
+	    "latitude",
+	    "longitude",
+	    "location"
+	    ]
 
-call_311_description = "311_xaa"
-call_311_pickle = _311_dir + '/xaa_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xaa_c'
-call_311_sep_char = ","
-call_311_table_name = "call_311"
-call_311_load_pickle = False
-call_311_db_action = 'replace' ## if not = 'replace' then 'append' 
-call_311_truncate_columns = ['resolution_description']
-call_311_date_time_columns = ['created_date','closed_date','due_date', 'resolution_action_updated_date']
-call_311_chunk_size = 2500
+	call_311_description = "311_xaa"
+	call_311_pickle = _311_dir + '/xaa_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xaa_c'
+	call_311_sep_char = ","
+	call_311_table_name = "call_311"
+	call_311_load_pickle = False
+	call_311_db_action = 'replace' ## if not = 'replace' then 'append' 
+	call_311_truncate_columns = ['resolution_description']
+	call_311_date_time_columns = ['created_date','closed_date','due_date', 'resolution_action_updated_date']
+	call_311_chunk_size = 2500
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
-call_311_description = "311_xab"
-call_311_pickle = _311_dir + '/xab_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xab_c'
-call_311_db_action = 'append' ## if not = 'replace' then 'append' 
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
+	call_311_description = "311_xab"
+	call_311_pickle = _311_dir + '/xab_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xab_c'
+	call_311_db_action = 'append' ## if not = 'replace' then 'append' 
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xac"
-call_311_pickle = _311_dir + '/xac_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xac_c'
+	call_311_description = "311_xac"
+	call_311_pickle = _311_dir + '/xac_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xac_c'
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xad"
-call_311_pickle = _311_dir + '/xad_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xad_c'
+	call_311_description = "311_xad"
+	call_311_pickle = _311_dir + '/xad_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xad_c'
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xae"
-call_311_pickle = _311_dir + '/xae_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xae_c'
+	call_311_description = "311_xae"
+	call_311_pickle = _311_dir + '/xae_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xae_c'
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xaf"
-call_311_pickle = _311_dir + '/xaf_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xaf_c'
+	call_311_description = "311_xaf"
+	call_311_pickle = _311_dir + '/xaf_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xaf_c'
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xag"
-call_311_pickle = _311_dir + '/xag_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xag_c'
-
-
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
-
-call_311_description = "311_xah"
-call_311_pickle = _311_dir + '/xah_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xah_c'
+	call_311_description = "311_xag"
+	call_311_pickle = _311_dir + '/xag_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xag_c'
 
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
 
-call_311_description = "311_xai"
-call_311_pickle = _311_dir + '/xai_c.pkl'
-call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xai_c'
+	call_311_description = "311_xah"
+	call_311_pickle = _311_dir + '/xah_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xah_c'
 
 
-hpd_csv2sql(
-            call_311_description,
-            call_311_input_csv_url, 
-            call_311_sep_char,
-            call_311_table_name, 
-            call_311_dtype_dict, 
-            call_311_load_pickle,   
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns, 
-            call_311_date_time_columns, 
-            call_311_chunk_size,
-            call_311_df_keep_cols
-            )
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
+
+	call_311_description = "311_xai"
+	call_311_pickle = _311_dir + '/xai_c.pkl'
+	call_311_input_csv_url = BASE_DIR + '311/Data Files/2016_Jan1-Nov14/xai_c'
+
+
+	hpd_csv2sql(
+	            call_311_description,
+	            call_311_input_csv_url, 
+	            call_311_sep_char,
+	            call_311_table_name, 
+	            call_311_dtype_dict, 
+	            call_311_load_pickle,   
+	            call_311_pickle,
+	            call_311_db_action,
+	            call_311_truncate_columns, 
+	            call_311_date_time_columns, 
+	            call_311_chunk_size,
+	            call_311_df_keep_cols
+	            )
