@@ -110,8 +110,6 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
         log.info("Reading CSV from {} .. This may take a while...".format(input_csv_url))
 
         df = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict, encoding='utf8')
-        # Pandas had a pretty serious problem with the types we expected.
-        # df = pd.read_csv(input_csv_url, encoding='utf8')
 
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
@@ -160,10 +158,15 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
     else:
         action = 'append'
 
+    conn = connect()
+
     log.info("We're going with db_action = {}".format(action))
     log.info("Sending our df to {}".format(table_name))
-    df.to_sql(name=table_name, con=connect(), if_exists=action,\
+    df.to_sql(name=table_name, con=conn, if_exists=action,\
               index=False, chunksize=chunk_size, dtype=outputdict)
+
+    if db_action == 'replace':
+        conn.execute("ALTER TABLE %s ADD id INT PRIMARY KEY AUTO_INCREMENT;" % table_name)
 
     log.info("Completed {} Import".format(description, datetime.datetime.now()))
     log.info("Imported: {} rows".format(df.shape[0]))
