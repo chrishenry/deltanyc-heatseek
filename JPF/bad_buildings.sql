@@ -38,7 +38,16 @@ delete from dob_violations where boro not in ('1','2','3','4','5');
 ALTER TABLE dob_violations CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
 alter table dob_violations add index(boro);
 
-################pu
+drop table if exists hpd_registrationContact_d;
+create temporary table hpd_registrationContact_d 
+	select distinct * from hpd_registrationContact;
+drop table if exists hpd_registrationContact;
+create table hpd_registrationContact select * from hpd_registrationContact_d;
+alter table hpd_registrationContact add index(registrationcontactid);
+alter table hpd_registrationContact add index(type);
+alter table hpd_registrationContact add index(registrationid);
+
+################
 drop table if exists boro_lookup;
 ################
 create temporary table boro_lookup select boro, boroid from hpd_buildings group by 1,2;
@@ -313,8 +322,8 @@ left join
 	lit_count lc on cc.buildingid = lc.buildingid
 		;
 		
-drop temporary table if exists bad_buildings_temp2; 
-create table bad_buildings_temp2
+drop table if exists bad_buildings_temp2; 
+create temporary table bad_buildings_temp2
 select 
 	bb.*, 
 	ho.name owner_name

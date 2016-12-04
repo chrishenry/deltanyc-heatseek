@@ -37,7 +37,7 @@ CREATE INDEX "hpd_registrationContact_registrationid" ON "hpd_registrationContac
 CREATE INDEX "pubadv_worst_landlords_bin" ON "pubadv_worst_landlords" (bin);
 
 delete from "dob_violations" where boro not in ('1','2','3','4','5');
-alter table dob_violations alter column boro type smallint;
+alter table dob_violations alter column boro type smallint USING boro::smallint;
 CREATE INDEX "dob_violations_boro" ON "dob_violations" (boro);
 
 --################
