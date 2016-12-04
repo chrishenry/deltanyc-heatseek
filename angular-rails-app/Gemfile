@@ -23,7 +23,7 @@ gem 'angular-rails-templates'
 # Use Bower for Angular 
 gem 'bower-rails'
 # Use ActiveModel::Serializer
-gem 'active_model_serializers'
+gem 'active_model_serializers', '~> 0.10.0'
 # Add rails authenticy token into headers for angular $http requests
 gem 'angular_rails_csrf'
 # add ngannotate for clear DI in minification during production
