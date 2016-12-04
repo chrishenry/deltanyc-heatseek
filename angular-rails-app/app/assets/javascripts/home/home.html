@@ -9,7 +9,7 @@
 
       <datalist id="addresses">
          <option ng-repeat="data in vm.data"
-          value="{{data.street_address}}">
+          value="{{data.street_address}}, {{data.city}}, {{data.state}} {{data.zipcode}}">
       </datalist>
 
       <p id="instructions">Building Lookup Tool allows you to enter a building's address, and return the following information about that building:</p><br>

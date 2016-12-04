@@ -41,5 +41,6 @@ td {
 }
 
 input {
-  width: 220px;
+  width: 40%;
+  background-color: rgb(242,241,242);
 }
