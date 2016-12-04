@@ -347,4 +347,6 @@ ActiveRecord::Schema.define(version: 20161204224504) do
     t.integer  "lot",             limit: 4
   end
 
+  add_index "properties", ["borough", "block", "lot"], name: "index_r_properties_on_borough_and_block_and_lot", unique: true, using: :btree
+
 end
