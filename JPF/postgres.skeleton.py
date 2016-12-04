@@ -963,17 +963,6 @@ if process_file == "PLUTO" or process_file == "ALL":
 	except:
 	    os.mkdir(pluto_dir)
 
-	path = pluto_dir #set a variable with the path name where the files are saved
-	allFiles = glob.glob(path + "/*.csv") #in path provided, look for anything with a '.csv' extension and save it to this variable
-	pluto_data = pd.DataFrame()
-	pluto_list_ = []
-	for file_ in allFiles: #iterate through all csv files and create a pandas df
-	    pluto_df = pd.read_csv(file_,index_col=None, header=0)
-	    pluto_list_.append(pluto_df) #append every df to a big list
-	pluto_data = pd.concat(pluto_list_) #combine the big list into one big pandas df
-	pluto_data = pluto_data.reset_index(drop=True)
-	pluto_data.to_csv(path + '/pluto_nyc.csv', index=False)
-
 	PLUTO_dtype_dict = {
 	    'Borough':       'object',
 	    'Block':       'int64',
@@ -1060,7 +1049,16 @@ if process_file == "PLUTO" or process_file == "ALL":
 	    'PLUTOMapID':       'int64'
 	}
 
-
+	path = pluto_dir #set a variable with the path name where the files are saved
+	allFiles = glob.glob(path + "/*.csv") #in path provided, look for anything with a '.csv' extension and save it to this variable
+	pluto_data = pd.DataFrame()
+	pluto_list_ = []
+	for file_ in allFiles: #iterate through all csv files and create a pandas df
+	    pluto_df = pd.read_csv(file_,index_col=None, header=0, dtype=dtype_dict)
+	    pluto_list_.append(pluto_df) #append every df to a big list
+	pluto_data = pd.concat(pluto_list_) #combine the big list into one big pandas df
+	pluto_data = pluto_data.reset_index(drop=True)
+	pluto_data.to_csv(path + '/pluto_nyc.csv', index=False)
 
 	PLUTO_df_keep_cols = [
 	    'borough',
@@ -1178,7 +1176,7 @@ if process_file == "PLUTO" or process_file == "ALL":
 	            PLUTO_date_format
 	           )
 
-	
+
 if process_file == '311' or process_file == 'ALL':
 	## SET UP 311 DIR
 
