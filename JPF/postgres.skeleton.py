@@ -231,3 +231,88 @@ hpd_csv2sql(
             TEST_date_format
            )
 
+
+## SET UP DOB DIR
+
+dob_dir = BASE_DIR + 'DOB'
+
+try:
+    os.stat(dob_dir)
+except:
+    os.mkdir(dob_dir)
+
+vio_dob_dtype_dict = {
+    'ISN_DOB_BIS_VIOL':       'int64',
+    'BORO':       'object',
+    'BIN':       'float64',
+    'BLOCK':       'object',
+    'LOT':       'object',
+    'ISSUE_DATE':       'object',
+    'VIOLATION_TYPE_CODE':       'object',
+    'VIOLATION_NUMBER':       'object',
+    'HOUSE_NUMBER':       'object',
+    'STREET':       'object',
+    'DISPOSITION_DATE':       'object',
+    'DISPOSITION_COMMENTS':       'object',
+    'DEVICE_NUMBER':       'object',
+    'DESCRIPTION':       'object',
+    'ECB_NUMBER':       'object',
+    'NUMBER':       'object',
+    'VIOLATION_CATEGORY':       'object',
+    'VIOLATION_TYPE':       'object'
+}
+
+
+vio_dob_date_time_columns = ['issue_date', 'disposition_date']
+
+vio_dob_df_keep_cols = [
+    'isn_dob_bis_viol',
+    'boro',
+    'bin',
+    'block',
+    'lot',
+    'issue_date',
+    'violation_type_code',
+    'violation_number',
+    'house_number',
+    'street',
+    'disposition_date',
+    'disposition_comments',
+    'device_number',
+    'description',
+    'ecb_number',
+    'number',
+    'violation_category',
+    'violation_type'
+]
+
+vio_dob_description = 'DOB Violations'
+vio_dob_input_csv_url = 'https://data.cityofnewyork.us/api/views/3h2n-5cm9/rows.csv?accessType=DOWNLOAD'
+vio_dob_pickle = dob_dir + '/df_dob_violations.pkl' 
+vio_dob_sep_char = ","
+vio_dob_table_name = "dob_violations"
+vio_dob_load_pickle = True
+vio_dob_db_action = "replace"
+vio_dob_truncate_columns = ['description', 'ecb_number', 'number']
+vio_dob_chunk_size = 5000
+vio_max_col_len = 255
+vio_date_format = "%Y%m%d"
+
+## DONT NEED TO DOWNLOAD FILE, READ CSV WILL TAKE URL DIRECTLY    
+    
+hpd_csv2sql(
+            vio_dob_description,
+            vio_dob_input_csv_url, 
+            vio_dob_sep_char,
+            vio_dob_table_name, 
+            vio_dob_dtype_dict, 
+            vio_dob_load_pickle,   
+            vio_dob_pickle,
+            vio_dob_db_action, 
+            vio_dob_truncate_columns, 
+            vio_dob_date_time_columns, 
+            vio_dob_chunk_size,
+            vio_dob_df_keep_cols,
+            vio_max_col_len,
+            vio_date_format
+           )    
