@@ -5,10 +5,10 @@ RUN apt-get update -qq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /rails-app
-WORKDIR /rails-app
+RUN mkdir /angular-rails-app
+WORKDIR /angular-rails-app
 
-ADD Gemfile /rails-app/Gemfile
-ADD Gemfile.lock /rails-app/Gemfile.lock
+ADD Gemfile /angular-rails-app/Gemfile
+ADD Gemfile.lock /angular-rails-app/Gemfile.lock
 RUN bundle install
-ADD . /rails-app
+ADD . /angular-rails-app
