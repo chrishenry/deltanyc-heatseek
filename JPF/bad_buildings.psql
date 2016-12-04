@@ -1,0 +1,412 @@
+--# v1.0 - JP Freeley - 11/26/2016
+--#
+--# SQL - for bad buildings
+--# Does not account for DATES or TIMES or AGE. 
+--# Includes by building/address counts of 
+--#	litigations
+--#	hpd_violation 'classes'
+--#	hpd_complaints
+--#	dob_permits
+--#	dob_violations
+--# DOB Data joined by ADDRESS .. not sure if I trust BIN nor BBL
+--# There are probably more optimal ways to do this.
+--# !!! Needs better documentation
+--# !!! Ends up with 2000 MORE BUILDINGS THAN EXIST IN hpd_buildings .. likely dirty addresses .. FIRST()??
+--### This finds them (1955 rows)
+--### select hbaddress, buildingid, count(buildingid) count from bad_buildings group by 1,2 having count > 1;
+
+
+--## BELOW REQUIRES THAT NO INDEXES/KEYS PRE-EXIST ON THE TABLES
+--## AT THE BOTTOM OF THIS FILE IS CODE FOR REMOVING THE FOLLOWING INDEXES/KEYS
+
+--# CREATE INDEX idx_name ON table_name (column_name);
+CREATE INDEX "hpd_buildings_buildingid" ON hpd_buildings (buildingid);
+CREATE INDEX "hpd_complaintsProb_majorcategoryid" ON "hpd_complaintsProb" (majorcategoryid);
+CREATE INDEX "hpd_complaintsProb_minorcategoryid" ON "hpd_complaintsProb" (minorcategoryid);
+CREATE INDEX "hpd_complaintsProb_codeid" ON "hpd_complaintsProb" (codeid);
+CREATE INDEX "hpd_complaintsProb_complaintid" ON "hpd_complaintsProb" (complaintid);
+CREATE INDEX "hpd_complaints_complaintid" ON "hpd_complaints" (complaintid);
+CREATE INDEX "hpd_complaints_buildingid" ON "hpd_complaints" (buildingid);
+CREATE INDEX "hpd_violations_buildingid" ON "hpd_violations" (buildingid);
+CREATE INDEX "hpd_violations_class" ON "hpd_violations" (class);
+CREATE INDEX "hpd_registrations_buildingid" ON "hpd_registrations" (buildingid);
+CREATE INDEX "hpd_registrations_registrationid" ON "hpd_registrations" (registrationid);
+CREATE INDEX "hpd_registrationContact_registrationcontactid" ON "hpd_registrationContact" (registrationcontactid);
+CREATE INDEX "hpd_registrationContact_type" ON "hpd_registrationContact" (type);
+CREATE INDEX "hpd_registrationContact_registrationid" ON "hpd_registrationContact" (registrationid);
+CREATE INDEX "pubadv_worst_landlords_bin" ON "pubadv_worst_landlords" (bin);
+
+delete from "dob_violations" where boro not in ('1','2','3','4','5');
+alter table dob_violations alter column boro type smallint;
+CREATE INDEX "dob_violations_boro" ON "dob_violations" (boro);
+
+--################
+--################
+
+drop table if exists boro_lookup;
+
+create temporary table boro_lookup as
+	select boro, boroid from hpd_buildings group by 1,2;
+
+CREATE INDEX "boro_lookup_boroid" on "boro_lookup" (boroid);
+
+--################
+--################
+
+drop table if exists hs_complaint_count;
+
+create temporary table hs_complaint_count as
+select	c.buildingid,
+	count(*) as count
+from 
+	"hpd_complaintsProb" as cp
+left join 
+	"hpd_complaints" c
+on
+	c.complaintid = cp.complaintid
+left join 
+	"hpd_buildings" b
+on 
+	c.buildingid = b.buildingid
+where 
+	majorcategoryid  in (12, 59, 65) or
+	minorcategoryid in (92, 196, 112, 375, 67, 323, 381, 106) or 
+	codeid in (800, 801, 802, 803, 804, 809, 1358, 1360, 2713, 2715, 2716, 
+	2833, 2490, 605, 616, 617, 629, 634, 640, 801, 1271, 2400, 2532, 2534, 
+	2661, 2724, 2764, 2767, 2769, 2794) 
+group by 
+	1;	
+
+CREATE INDEX "hs_complaint_count_buildingid" on "hs_complaint_count" (buildingid);
+
+--################
+--################
+
+drop table if exists complaint_count;
+
+create temporary table complaint_count as
+select	c.buildingid,
+	count(*) as count
+from 
+	"hpd_complaintsProb" as cp
+left join 
+	"hpd_complaints" c
+on
+	c.complaintid = cp.complaintid
+left outer join 
+    "hpd_buildings" b
+on 
+   c.buildingid = b.buildingid
+group by 
+	1;
+
+CREATE INDEX "complaint_count_buildingid" on "complaint_count" (buildingid);
+
+--################
+--################
+
+drop table if exists "hpd_complaint_counts";
+
+create temporary table "hpd_complaint_counts" as
+select 
+	trim(both hb.housenumber)||' '||trim(both hb.streetname)||' '||trim(both hb.boro) hbaddress,
+	hb.buildingid as buildingid, 
+	hb.block as block,
+	hb.lot as lot,
+	hb.bin as bin,
+	hb.zip as zip,
+	cc.count as all_complaints, 
+	hscc.count as hs_complaints
+from 
+	"hpd_buildings" as hb
+left join 
+	"hs_complaint_count" hscc
+on 
+	hb.buildingid = hscc.buildingid
+left join
+	"complaint_count" cc 
+on  
+	hb.buildingid = cc.buildingid;
+
+CREATE INDEX hpd_complaint_counts_buildingid on "hpd_complaint_counts" (buildingid);
+CREATE INDEX hpd_complaint_counts_hbaddress on "hpd_complaint_counts" (hbaddress);
+
+--################
+--################
+
+drop table if exists "hs_permit_counts";
+
+create temporary table "hs_permit_counts" as
+select 
+	bin_num,
+	trim(both house_num)||' '||trim(both street_name)||' '||trim(both borough) hs_dobp_address, 
+	count(*) hs_permit_cnt
+from 
+	"dob_permits" 
+where 
+	work_type in ('OT','BL', 'DM') 
+group by 
+	1,2;
+CREATE INDEX hs_permit_counts_hs_dobp_address on "hs_permit_counts" (hs_dobp_address);
+CREATE INDEX hs_permit_counts_bin_num on "hs_permit_counts" (bin_num);
+
+--################
+--################
+
+drop table if exists "permit_counts";
+
+create temporary table "permit_counts" as
+select 
+	bin_num,
+	trim(both house_num)||' '||trim(both street_name)||' '||trim(both borough) dobp_address, 
+	count(*) permit_cnt
+from 
+	dob_permits 
+group by 
+	1,2;
+
+CREATE INDEX permit_counts_dobp_address on "permit_counts" (dobp_address);
+CREATE INDEX permit_counts_bin_num on "permit_counts" (bin_num);
+
+--################
+--################
+
+drop table if exists "violation_counts";
+
+create temporary table "violation_counts" as
+select 
+	bin,
+	trim(both house_number)||' '||trim(both street)||' '||trim(bl.boro) dobv_address, 
+	count(*) dob_violation_cnt
+from 
+	"dob_violations" dv
+left join "boro_lookup" bl
+on dv.boro = bl.boroid
+group by 
+	1,2;
+CREATE INDEX violation_counts_dobv_address on "violation_counts" (dobv_address);
+CREATE INDEX  violation_counts_bin on "violation_counts" (bin);
+
+--################
+--################
+
+drop table if exists "classA_vio_cnt";
+
+create temporary table "classA_vio_cnt" as
+select 
+  buildingid,
+  count(class) classA_cnt
+from 
+	"hpd_violations"
+where class = 'A' and currentstatus not in ('VIOLATION DISMISSED', 'VIOLATION CLOSED') 
+group by 1;
+CREATE INDEX classA_vio_cnt_buildingid on "classA_vio_cnt" (buildingid);
+
+--################
+--################
+
+drop table if exists "classB_vio_cnt";
+
+create temporary table "classB_vio_cnt" as
+select 
+  buildingid,
+  count(class) classB_cnt
+from 
+	"hpd_violations"
+where class = 'B' and currentstatus not in ('VIOLATION DISMISSED', 'VIOLATION CLOSED') 
+group by 1;
+CREATE INDEX classB_vio_cnt_buildingid on "classB_vio_cnt" (buildingid);
+
+
+
+drop table if exists "classC_vio_cnt";
+
+create temporary table "classC_vio_cnt" as
+select 
+  buildingid,
+  count(class) classC_cnt
+from 
+	"hpd_violations"
+where class = 'C' and currentstatus not in ('VIOLATION DISMISSED', 'VIOLATION CLOSED') 
+group by 1;
+CREATE INDEX classC_vio_cnt_buildingid on "classC_vio_cnt" (buildingid);
+
+--################
+--################
+
+drop table if exists "classI_vio_cnt";
+
+create temporary table "classI_vio_cnt" as
+select 
+  buildingid,
+  count(class) classI_cnt
+from 
+	"hpd_violations"
+where class = 'I' and currentstatus not in ('VIOLATION DISMISSED', 'VIOLATION CLOSED') 
+group by 1;
+CREATE INDEX "classI_vio_cnt_buildingid" on "classI_vio_cnt" (buildingid);
+
+--################
+--################
+
+drop table if exists "lit_count";
+create temporary table "lit_count" as
+select 
+	buildingid,
+	count(*) lit_cnt
+from "hpd_litigations"
+group by 1;
+
+CREATE INDEX "lit_count_buildingid" on "lit_count" (buildingid);
+
+--################
+--################
+
+drop table if exists "hpd_corps";
+
+create temporary table "hpd_corps" as
+select 
+	hrc.registrationcontactid registrationcontactid, 
+	hrc.corporationname corporationname, 
+	hrc.type entity_type, 
+	hr.registrationid registrationid, 
+	hr.buildingid buildingid
+from 
+	"hpd_registrations" hr
+left join 
+	"hpd_registrationContact" hrc on hr.registrationid = hrc.registrationid
+where 
+	hrc.type = 'CorporateOwner';
+CREATE INDEX hpd_corps_buildingid on "hpd_corps" (buildingid);
+
+--################
+--################
+
+drop table if exists "hpd_headOfficers";
+
+create temporary table "hpd_headOfficers" as 
+select 
+	hrc.registrationcontactid registrationcontactid, 
+	hrc.firstname||' '||hrc.lastname owner_name, 
+	hrc.type entity_type, 
+	hr.registrationid registrationid, 
+	hr.buildingid buildingid
+from 
+	"hpd_registrations" hr
+left join 
+	"hpd_registrationContact" hrc on hr.registrationid = hrc.registrationid
+where 
+	hrc.type = 'HeadOfficer';
+
+CREATE INDEX hpd_headOfficers_buildingid on "hpd_headOfficers" (buildingid);
+	
+--################
+--################
+
+drop table if exists "bad_buildings_temp1";
+
+create temporary table "bad_buildings_temp1" as 
+select 
+	cc.*, 
+	hs_permit_cnt, 
+	permit_cnt,
+	dob_violation_cnt,
+	cva.classA_cnt "classA_cnt",
+	cvb.classB_cnt "classB_cnt",
+	cvc.classC_cnt "classC_cnt",
+	cvi.classI_cnt "classI_cnt",
+	lc.lit_cnt litigation_cnt,
+	pawl.officer pa_officer,
+	pawl.org pa_org,
+	pawl.a pa_hpdv_a_cnt,
+	pawl.b pa_hpdv_b_cnt,
+	pawl.c pa_hpdv_c_cnt,
+	pawl.i pa_hpdv_i_cnt,
+	pawl.dob pa_dobv_cnt,
+	pawl.units pa_units,
+	pawl.score pa_score,
+	pawl.lat pa_lat,
+	pawl.lng pa_long
+from 
+	"hpd_complaint_counts" cc
+left join 
+	"hs_permit_counts" on hbaddress = hs_dobp_address
+left join 
+	"permit_counts" on hbaddress = dobp_address
+left join 
+	"violation_counts" on hbaddress = dobv_address
+left join 
+	"pubadv_worst_landlords" pawl on cc.bin = pawl.bin
+left join
+	"classA_vio_cnt" cva on cc.buildingid = cvA.buildingid
+left join
+	"classB_vio_cnt" cvb on cc.buildingid = cvB.buildingid
+left join
+	"classC_vio_cnt" cvC on cc.buildingid = cvC.buildingid
+left join
+	"classI_vio_cnt" cvi on cc.buildingid = cvI.buildingid
+left join
+	"lit_count" lc on cc.buildingid = lc.buildingid
+;
+		
+drop table if exists "bad_buildings_temp2"; 
+create temporary table "bad_buildings_temp2" as
+select 
+	bb.*, 
+	ho.owner_name owner_name
+from 
+	"bad_buildings_temp1" bb
+left join 
+	"hpd_headOfficers" ho on bb.buildingid = ho.buildingid
+;
+
+drop table if exists "bad_buildings"; 
+create table "bad_buildings" as
+select 
+	bb.*, 
+	hc.corporationname corp_owner
+from 
+	"bad_buildings_temp2" bb
+left join 
+	"hpd_corps" hc on bb.buildingid = hc.buildingid
+;
+
+--## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
+DROP INDEX IF EXISTS "hpd_buildings_buildingid";
+DROP INDEX IF EXISTS "hpd_complaintsProb_majorcategoryid";
+DROP INDEX IF EXISTS "hpd_complaintsProb_minorcategoryid";
+DROP INDEX IF EXISTS "hpd_complaintsProb_codeid";
+DROP INDEX IF EXISTS "hpd_complaintsProb_complaintid";
+DROP INDEX IF EXISTS "hpd_complaints_complaintid";
+DROP INDEX IF EXISTS "hpd_complaints_buildingid";
+DROP INDEX IF EXISTS "hpd_violations_buildingid";
+DROP INDEX IF EXISTS "hpd_violations_class";
+DROP INDEX IF EXISTS "hpd_registrations_buildingid";
+DROP INDEX IF EXISTS "hpd_registrations_registrationid";
+DROP INDEX IF EXISTS "hpd_registrationContact_registrationcontactid";
+DROP INDEX IF EXISTS "hpd_registrationContact_type";
+DROP INDEX IF EXISTS "hpd_registrationContact_registrationid";
+DROP INDEX IF EXISTS "pubadv_worst_landlords_bin";
+DROP INDEX IF EXISTS "dob_violations_boro";
+
+select * from bad_buildings limit 100;
+
+
+--### FIND LANDLORDS
+-- alter table hpd_buildings add index(bin);
+-- alter table `pubadv_worst_landlords` add index(bin);
+-- alter table hpd_registrations add index(buildingid);
+-- alter table hpd_registrations add index(registrationid);
+-- alter table hpd_registrationContact add index(registrationid);
+
+-- select * from hpd_buildings hb 
+-- join pubadv_worst_landlords pawl on hb.bin = pawl.bin
+-- join hpd_registrations hr on hb.buildingid = hr.buildingid
+-- join hpd_registrationContact hrc on hr.registrationid = hrc.registrationid 
+-- where hrc.type in ("HeadOfficer", "CorporateOwner");
+
+-- alter table hpd_buildings drop index bin;
+-- alter table `pubadv_worst_landlords` drop index bin;
+-- alter table hpd_registrations drop index buildingid ;
+-- alter table hpd_registrations DROP index registrationid ;
+-- alter table hpd_registrationContact drop index registrationid;
