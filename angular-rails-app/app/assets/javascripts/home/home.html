@@ -1,9 +1,16 @@
 <div class="container">
-<h1>Home Page</h1>
 
-<input type="text" ng-model="something"><br><br>
+<p id="breadcrumb">Home</p>
 
-<div>{{something}}</div>
+<div id="info-panel">
+  <h4>BUILDING LOOKUP TOOL</h4>
+
+  <input type="text" ng-model="something"><br><br>
+
+  <div>{{something}}</div>
+
+  <p id="instructions">Building Lookup Tool allows you to enter a building's address, and return the following information about that building:</p>
+</div>
 
 <ui-view></ui-view>
 

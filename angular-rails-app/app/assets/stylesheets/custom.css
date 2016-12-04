@@ -1,3 +1,7 @@
+html {
+  background-color: rgb(242,241,242);
+}
+
 nav#my-nav{
   height: 10%;
   background-color: rgb(169,169,169);
@@ -11,3 +15,24 @@ nav#my-nav a{
 nav#my-nav a:hover{
   color:white;
 }
+
+#info-panel {
+  margin-top: 20px;
+  border-radius: 25px;
+  border: 2px solid #73AD21;
+  padding: 10px 20px 10px 20px;
+  width: 90%;
+  background-color: white;
+}
+
+#instructions {
+  font-size: 1.2em;
+}
+
+#breadcrumb {
+  margin: 5px;
+  color: grey;
+  font-size: 1.2em;
+}
+
+
