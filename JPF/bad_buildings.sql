@@ -33,6 +33,8 @@ alter table hpd_registrationContact add index(registrationcontactid);
 alter table hpd_registrationContact add index(type);
 alter table hpd_registrationContact add index(registrationid);
 alter table `pubadv_worst_landlords` add index(bin);
+alter table pluto_nyc add index(bbl);
+
 
 delete from dob_violations where boro not in ('1','2','3','4','5');
 ALTER TABLE dob_violations CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
@@ -107,6 +109,7 @@ create temporary table
 	hpd_complaint_counts
 select 
 	concat(trim(hb.housenumber), " ", trim(hb.streetname), " ", trim(hb.boro)) hbaddress,
+	concat(boroid,LPAD(hb.block, 5, '0'),LPAD(hb.lot, 4, '0')) bbl,
 	hb.buildingid as buildingid, 
 	hb.block as block,
 	hb.lot as lot,
@@ -125,6 +128,8 @@ left join
 on  
 	hb.buildingid = cc.buildingid;
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (`buildingid`);
+alter table hpd_complaint_counts CHANGE bbl bbl int(12) NULL DEFAULT NULL;
+ALTER TABLE `hpd_complaint_counts` ADD INDEX(bbl);
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (hbaddress(255));
 
 ################
@@ -263,32 +268,74 @@ drop table if exists hpd_headOfficers;
 create temporary table hpd_headOfficers
 select 
 	hrc.registrationcontactid registrationcontactid, 
-	CONCAT(hrc.firstname, " ",hrc.lastname) name, 
+	CONCAT(hrc.firstname, " ",hrc.lastname) owner_name, 
 	hrc.type type, 
 	hr.registrationid registrationid, 
 	hr.buildingid buildingid
 from 
-	hpd_registrations hr
+	hpd_registrationContact hrc
 left join 
-	hpd_registrationContact hrc on hr.registrationid = hrc.registrationid
+	hpd_registrations hr on hr.registrationid = hrc.registrationid
 where 
 	hrc.type = "HeadOfficer";
 alter table hpd_headOfficers add index(buildingid);
 	
+
 ################
-drop table if exists bad_buildings_temp1;
 ################
-create temporary table bad_buildings_temp1
+
+drop table if exists hpd_complaints_311;
+
+create temporary table hpd_complaints_311
+select
+	concat(trim(incident_address)," ",trim(borough)) address_311,
+	count(*) all_311_hpd_count
+from call_311 where agency in ('HPD') and complaint_type not in ('HPD Literature Request') group by 1;
+
+alter table hpd_complaints_311 add index(address_311);
+
+################
+################
+
+drop table if exists hpd_heat_complaints_311;
+
+create temporary table hpd_heat_complaints_311
+select
+	concat(trim(incident_address)," ",trim(borough)) address_311,
+	count(*) heat_311_hpd_count
+from call_311 
+where agency in ('HPD') and complaint_type in ('HEAT/HOT WATER') 
+group by 1;
+
+alter table hpd_heat_complaints_311 add index (address_311);
+
+################
+################
+
+drop table if exists bad_buildings;
+
+create table bad_buildings
 select 
 	cc.*, 
+	pnyc.council,
+	pnyc.ct2010,
+	pnyc.cb2010,
+	pnyc.numfloors,
+	pnyc.unitsres,
+	pnyc.unitstotal,
+	pnyc.histdist,
+	pnyc.xcoord,
+	pnyc.ycoord,
+	heat_311_hpd_count,
+	all_311_hpd_count,
 	hs_permit_cnt, 
 	permit_cnt,
 	dob_violation_cnt,
-	cvA.classA_cnt,
-	cvB.classB_cnt,
-	cvC.classC_cnt,
-	cvI.classI_cnt,
-	lc.lit_cnt,
+	cvA.classA_cnt classA_cnt,
+	cvB.classB_cnt classB_cnt,
+	cvC.classC_cnt classC_cnt,
+	cvI.classI_cnt classI_cnt,
+	lc.lit_cnt litigation_cnt,
 	pawl.officer pa_officer,
 	pawl.org pa_org,
 	pawl.a pa_hpdv_a_cnt,
@@ -299,15 +346,17 @@ select
 	pawl.units pa_units,
 	pawl.score pa_score,
 	pawl.lat pa_lat,
-	pawl.lng pa_long
+	pawl.lng pa_long,
+	ho.owner_name owner_name,
+	hc.corporationname corp_owner
 from 
-	`hpd_complaint_counts` cc
+	hpd_complaint_counts cc
 left join 
-	hs_permit_counts on `hbaddress` = hs_dobp_address
+	hs_permit_counts on hbaddress = hs_dobp_address
 left join 
-	permit_counts on `hbaddress` = dobp_address
+	permit_counts on hbaddress = dobp_address
 left join 
-	violation_counts on `hbaddress` = dobv_address
+	violation_counts on hbaddress = dobv_address
 left join 
 	pubadv_worst_landlords pawl on cc.bin = pawl.bin
 left join
@@ -320,29 +369,17 @@ left join
 	classI_vio_cnt cvI on cc.buildingid = cvI.buildingid
 left join
 	lit_count lc on cc.buildingid = lc.buildingid
+left join
+	hpd_heat_complaints_311 hhc3 on hbaddress = hhc3.address_311
+left join
+	hpd_complaints_311 hc3 on hbaddress = hc3.address_311
+left join
+	pluto_nyc pnyc on cc.bbl = pnyc.bbl
+left join 
+	hpd_headOfficers ho on cc.buildingid = ho.buildingid
+left join 
+	hpd_corps hc on cc.buildingid = hc.buildingid
 		;
-		
-drop table if exists bad_buildings_temp2; 
-create temporary table bad_buildings_temp2
-select 
-	bb.*, 
-	ho.name owner_name
-from 
-	bad_buildings_temp1 bb
-left join 
-	hpd_headOfficers ho on bb.buildingid = ho.buildingid
-;
-
-drop table if exists bad_buildings; 
-create table bad_buildings
-select 
-	bb.*, 
-	hc.corporationname corp_owner
-from 
-	bad_buildings_temp2 bb
-left join 
-	hpd_corps hc on bb.buildingid = hc.buildingid
-;
 
 ## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 alter table hpd_buildings drop primary key;
@@ -382,3 +419,4 @@ select * from bad_buildings limit 100;
 -- alter table hpd_registrations drop index buildingid ;
 -- alter table hpd_registrations DROP index registrationid ;
 -- alter table hpd_registrationContact drop index registrationid;
+
