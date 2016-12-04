@@ -473,7 +473,7 @@ lit_input_csv_url = 'https://data.cityofnewyork.us/api/views/59kj-x8nc/rows.csv?
 lit_pickle = hpd_dir + '/df_hpd_litigations.pkl'
 lit_sep_char = ","
 lit_table_name = "hpd_litigations"
-lit_load_pickle = True
+lit_load_pickle = False
 lit_db_action = "replace"
 lit_truncate_columns = []
 lit_chunk_size = 5000
@@ -577,7 +577,7 @@ vio_input_csv_url = 'https://data.cityofnewyork.us/api/views/wvxf-dwi5/rows.csv?
 vio_sep_char = ","
 vio_pickle = hpd_dir + '/df_violations.pkl'
 vio_table_name = 'hpd_violations'
-vio_load_pickle = True
+vio_load_pickle = False
 vio_db_action = 'replace' ## if not = 'replace' then 'append' 
 vio_truncate_columns = ['novdescription']
 vio_chunk_size = 5000
@@ -659,7 +659,7 @@ bld_input_csv_url = 'https://data.cityofnewyork.us/api/views/kj4p-ruqc/rows.csv?
 bld_sep_char = ","
 bld_pickle = hpd_dir + '/df_buildings.pkl'
 bld_table_name = 'hpd_buildings'
-bld_load_pickle = True
+bld_load_pickle = False
 bld_db_action = 'replace' ## if not = 'replace' then 'append' 
 bld_truncate_columns = ''
 bld_date_time_columns = ''
@@ -726,7 +726,7 @@ cmp_input_csv_url = 'https://data.cityofnewyork.us/api/views/uwyv-629c/rows.csv?
 cmp_sep_char = ","
 cmp_pickle = hpd_dir + '/df_complaints.pkl'
 cmp_table_name = 'hpd_complaints'
-cmp_load_pickle = True
+cmp_load_pickle = False
 cmp_db_action = 'replace' ## if not = 'replace' then 'append' 
 cmp_chunk_size = 5000
 
@@ -795,7 +795,7 @@ cpb_input_csv_url = 'https://data.cityofnewyork.us/api/views/a2nx-4u46/rows.csv?
 cpb_sep_char = ","
 cpb_pickle = hpd_dir + '/df_prob.pkl'
 cpb_table_name = 'hpd_complaintsProb'
-cpb_load_pickle = True
+cpb_load_pickle = False
 cpb_db_action = 'replace'
 cpb_chunk_size = 5000
 cpb_truncate_columns = ['statusdescription']
@@ -860,7 +860,7 @@ reg_input_csv_url = 'https://data.cityofnewyork.us/api/views/tesw-yqqr/rows.csv?
 reg_sep_char = ","
 reg_pickle = hpd_dir + '/df_reg.pkl'
 reg_table_name = 'hpd_registrations'
-reg_load_pickle = True
+reg_load_pickle = False
 reg_db_action = 'replace' ## if not = 'replace' then 'append' 
 reg_chunk_size = 5000
 
@@ -924,7 +924,7 @@ rcn_input_csv_url = 'https://data.cityofnewyork.us/api/views/feu5-w2e2/rows.csv?
 rcn_sep_char = ","
 rcn_pickle = hpd_dir + '/df_regCon.pkl'
 rcn_table_name = 'hpd_registrationContact'
-rcn_load_pickle = True
+rcn_load_pickle = False
 rcn_db_action = 'replace' ## if not = 'replace' then 'append' 
 rcn_chunk_size = 5000
 
@@ -1143,7 +1143,7 @@ PLUTO_input_csv_url = pluto_dir + '/pluto_nyc.csv'
 PLUTO_pickle = pluto_dir + '/df_PLUTO_NYC.pkl' 
 PLUTO_sep_char = ","
 PLUTO_table_name = "pluto_nyc"
-PLUTO_load_pickle = True
+PLUTO_load_pickle = False
 PLUTO_db_action = "replace"
 PLUTO_truncate_columns = []
 PLUTO_chunk_size = 5000
