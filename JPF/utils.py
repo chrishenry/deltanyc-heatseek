@@ -17,30 +17,31 @@ BASE_DIR = os.path.join(os.path.expanduser('~'), "heatseek")
 
 def add_common_arguments(parser):
 
-    parser.add_argument("--save-pickle",
-                action='store_const',
-                dest='SAVE_PICKLE',
-                const=True,
+    parser.add_argument("--load-pickle",
+                action='store_true',
+                dest='LOAD_PICKLE',
+                default=False,
                 help='Save a pickled version of the data during processing.')
 
+    parser.add_argument("--save-pickle",
+                action='store_true',
+                dest='SAVE_PICKLE',
+                default=False,
+                help='Save a pickled version of the data during processing.')
 
     parser.add_argument('--bust-disk-cache',
-                action='store_const',
+                action='store_true',
                 dest='BUST_DISK_CACHE',
-                const=False,
+                default=False,
                 help='Whether to re-download data files.')
-
-    parser.add_argument('--bust-picke-cache',
-                action='store_const',
-                dest='BUST_DISK_CACHE',
-                const=False,
-                help='Whether to re-pickle data files.')
 
     parser.add_argument('--update-or-replace-db',
                 action='store_const',
                 dest='BUST_DISK_CACHE',
                 const='replace',
                 help='Whether to update or outright replace data.')
+
+    return parser
 
 
 def mkdir_p(my_path):

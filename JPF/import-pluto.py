@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+import argparse
 import os
 import os.path
 import sys
 import logging
+
 
 from sqlalchemy import create_engine
 
@@ -202,29 +204,37 @@ PLUTO_df_keep_cols = [
 
 def main(argv):
 
-    # Connect to our database instance (config is in environment)
-    engine = connect()
+    parser = argparse.ArgumentParser(description='Import Pluto dataset.')
+    parser = add_common_arguments(parser)
+    args = parser.parse_args()
+
+    print args
 
     pluto_dir = os.path.join(BASE_DIR, PLUTO_KEY)
     mkdir_p(pluto_dir)
 
-    local_pluto_file = os.path.join(pluto_dir, 'pluto.csv')
-    log.info("DL-ing Pluto")
-    download_file("http://www1.nyc.gov/assets/planning/download/zip/data-maps/open-data/nyc_pluto_16v2%20.zip", local_pluto_file)
-
-
-    sys.stdout.write("\rUnzipping Pluto archive....")
-    unzip(local_pluto_file, pluto_dir)
-    sys.stdout.flush()
-    sys.stdout.write("\rUnzipping Pluto archive....done.\n")
-
-
-    sys.stdout.write("\rConcatenating Pluto boro csvs....")
-    pluto_csv_files_dir = os.path.join(pluto_dir, "BORO_zip_files_csv")
+    local_pluto_file = os.path.join(pluto_dir, 'pluto.zip')
     pluto_csv = os.path.join(pluto_dir, "pluto.csv")
-    pandas_concat_csv(pluto_csv_files_dir, pluto_csv)
-    sys.stdout.flush()
-    sys.stdout.write("\rConcatenating Pluto boro csvs....done.\n")
+
+    if not os.path.isfile(local_pluto_file) or args.BUST_DISK_CACHE:
+        log.info("DL-ing Pluto")
+        download_file("http://www1.nyc.gov/assets/planning/download/zip/data-maps/open-data/nyc_pluto_16v2%20.zip", local_pluto_file)
+    else:
+        log.info("Pluto exists, moving on...")
+
+    if not os.path.isfile(pluto_csv) or args.BUST_DISK_CACHE:
+        sys.stdout.write("\rUnzipping Pluto archive....")
+        unzip(local_pluto_file, pluto_dir)
+        sys.stdout.flush()
+        sys.stdout.write("\rUnzipping Pluto archive....done.\n")
+
+        sys.stdout.write("\rConcatenating Pluto boro csvs....")
+        pluto_csv_files_dir = os.path.join(pluto_dir, "BORO_zip_files_csv")
+        pandas_concat_csv(pluto_csv_files_dir, pluto_csv)
+        sys.stdout.flush()
+        sys.stdout.write("\rConcatenating Pluto boro csvs....done.\n")
+    else:
+        sys.stdout.write("\rUsing previously concat'ed files....\n")
 
     PLUTO_date_time_columns = ['appdate']
     PLUTO_description = 'PLUTO'
@@ -232,8 +242,8 @@ def main(argv):
     PLUTO_pickle = os.path.join(pluto_dir, 'df_PLUTO_NYC.pkl')
     PLUTO_sep_char = ","
     PLUTO_table_name = "pluto_nyc"
-    PLUTO_load_pickle = False
-    PLUTO_save_pickle = False
+    PLUTO_load_pickle = args.LOAD_PICKLE
+    PLUTO_save_pickle = args.SAVE_PICKLE
     PLUTO_db_action = "replace"
     PLUTO_truncate_columns = []
     PLUTO_chunk_size = 5000
@@ -260,5 +270,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(sys.argv[:1])
 
