@@ -5,9 +5,12 @@
   <div id="info-panel">
       <h4>BUILDING LOOKUP TOOL</h4>
 
-      <input type="text" ng-model="vm.search"><br><br>
+      <input type="text" list="addresses"><br><br>
 
-      <div>{{something}}</div>
+      <datalist id="addresses">
+         <option ng-repeat="data in vm.data"
+          value="{{data.street_address}}">
+      </datalist>
 
       <p id="instructions">Building Lookup Tool allows you to enter a building's address, and return the following information about that building:</p><br>
 

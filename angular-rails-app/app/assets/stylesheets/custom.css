@@ -39,3 +39,7 @@ nav#my-nav a:hover{
 td {
   text-align: center;
 }
+
+input {
+  width: 220px;
+}

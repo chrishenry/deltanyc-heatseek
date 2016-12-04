@@ -5,8 +5,6 @@ angular
 function HomeController(HomeService) {
   var vm = this;
 
-  vm.search = ''
-
   vm.getProperties = function(){
     HomeService.getProperties()
     .then(function(properties){
