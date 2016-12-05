@@ -8,4 +8,8 @@ class Property < ActiveRecord::Base
   has_many :hdp_complaints
   has_many :hdp_violations
   has_many :litigations
+
+  def full_address
+    "#{self.street_address}, #{self.city}, #{self.state} #{self.zipcode}"
+  end
 end
