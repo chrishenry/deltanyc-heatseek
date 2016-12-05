@@ -3,7 +3,7 @@ class PropertiesController < ApplicationController
   before_action :set_property, only: [:show]
 
   def index
-    @properties = Property.all
+    @properties = Property.paginate(:page => params[:page])
     render json: @properties, status: 200
   end
 
