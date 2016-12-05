@@ -9,7 +9,7 @@ angular
           controller: 'HomeController as vm'
         })
         .state('property', {
-          url: '/property/:id', 
+          url: '/properties/:id', 
           templateUrl: 'property/property.html', 
           controller: 'PropertyController as vm'
         });
