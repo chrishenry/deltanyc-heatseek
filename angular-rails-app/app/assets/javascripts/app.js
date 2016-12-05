@@ -7,6 +7,11 @@ angular
           url: '/', 
           templateUrl: 'home/home.html', 
           controller: 'HomeController as vm'
+        })
+        .state('property', {
+          url: '/property/:id', 
+          templateUrl: 'property/property.html', 
+          controller: 'PropertyController as vm'
         });
         
 
