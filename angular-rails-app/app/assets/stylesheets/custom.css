@@ -44,3 +44,18 @@ input#propertiesSearch {
   width: 40%;
   background-color: rgb(242,241,242);
 }
+
+#header {
+  margin-top: 5px;
+  color: grey;
+  font-size: 1.5em;
+}
+
+hr.featurette-divider {
+  border: 1px solid grey;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  margin-left: 0;
+  width: 90%;
+
+}
