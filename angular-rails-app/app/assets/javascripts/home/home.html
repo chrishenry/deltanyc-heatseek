@@ -5,12 +5,15 @@
   <div id="info-panel">
       <h4>BUILDING LOOKUP TOOL</h4>
 
-      
-          <input type="text" ng-model="vm.customSelected" 
-          uib-typeahead="p as p.full_address for p in vm.data | filter:{full_address:$viewValue}" 
-          class="form-control"><br>
 
-          <h4>{{vm.customSelected.id}}</h4>
+      <form class="form">
+                <input id="propertiesSearch" class="form-control" g-places-autocomplete force-selection="true" ng-model="place"/>
+            </form>
+
+            <h5>Result:</h5>
+            <div>{{place.formatted_address}}</div>
+
+      <br><br>
      
         
       <p id="instructions">Building Lookup Tool allows you to enter a building's address, and return the following information about that building:</p><br>
@@ -35,4 +38,5 @@
   </div>
 
 </div>
+
 

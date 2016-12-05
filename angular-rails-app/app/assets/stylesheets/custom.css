@@ -40,7 +40,7 @@ td {
   text-align: center;
 }
 
-input {
+input#propertiesSearch {
   width: 40%;
   background-color: rgb(242,241,242);
 }
