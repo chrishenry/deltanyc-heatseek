@@ -5,6 +5,8 @@ angular
 function HomeController(HomeService) {
   var vm = this;
 
+  vm.customSelected =''
+
   vm.getProperties = function(){
     HomeService.getProperties()
     .then(function(properties){
