@@ -6,8 +6,8 @@ import logging
 import mysql.connector
 import pandas as pd
 import pickle
-import requests
 import sqlalchemy
+import wget
 import zipfile
 
 from slugify import slugify
@@ -248,26 +248,7 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
 
 def download_file(url, local_filename):
     # NOTE the stream=True parameter
-    r = requests.get(url, stream=True)
-    total_length = r.headers.get('content-length')
-
-    with open(local_filename, 'wb') as f:
-        if total_length is None: # no content length header
-            f.write(r.content)
-        else:
-            dl = 0
-            total_length = int(total_length)
-            for chunk in r.iter_content(chunk_size=4096):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
-
-                    dl += len(chunk)
-                    done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                    sys.stdout.flush()
-
-    sys.stdout.write("\n")
-
+    wget.download(url, out=local_filename)
     return local_filename
 
 
