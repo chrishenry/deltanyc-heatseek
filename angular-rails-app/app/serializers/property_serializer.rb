@@ -4,8 +4,9 @@ class PropertySerializer < ActiveModel::Serializer
 
   has_many :dob_permits
   has_many :dob_violations
-  has_many :hdp_violations
-  has_many :hdp_complaints
+  has_many :hpd_violations
+  has_many :hpd_complaints
   has_many :litigations
+  has_many :complaint311s
 
 end
