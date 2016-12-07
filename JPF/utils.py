@@ -35,6 +35,7 @@ def add_common_arguments(parser):
                 default=False,
                 help='Whether to re-download data files.')
 
+    # TODO: Implement this for real.
     parser.add_argument('--update-or-replace-db',
                 action='store_const',
                 dest='BUST_DISK_CACHE',
