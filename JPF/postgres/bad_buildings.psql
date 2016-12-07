@@ -31,14 +31,22 @@ CREATE INDEX "hpd_violations_buildingid" ON "hpd_violations" (buildingid);
 CREATE INDEX "hpd_violations_class" ON "hpd_violations" (class);
 CREATE INDEX "hpd_registrations_buildingid" ON "hpd_registrations" (buildingid);
 CREATE INDEX "hpd_registrations_registrationid" ON "hpd_registrations" (registrationid);
-CREATE INDEX "hpd_registrationContact_registrationcontactid" ON "hpd_registrationContact" (registrationcontactid);
-CREATE INDEX "hpd_registrationContact_type" ON "hpd_registrationContact" (type);
-CREATE INDEX "hpd_registrationContact_registrationid" ON "hpd_registrationContact" (registrationid);
 CREATE INDEX "pubadv_worst_landlords_bin" ON "pubadv_worst_landlords" (bin);
+CREATE INDEX "pluto_nyc_bbl" ON "pluto_nyc" (bbl);
 
 delete from "dob_violations" where boro not in ('1','2','3','4','5');
 alter table dob_violations alter column boro type smallint USING boro::smallint;
 CREATE INDEX "dob_violations_boro" ON "dob_violations" (boro);
+
+drop table if exists "hpd_registrationContact_d";
+create temporary table "hpd_registrationContact_d" as
+	select distinct * from "hpd_registrationContact";
+drop table if exists "hpd_registrationContact";
+ALTER TABLE IF EXISTS "hpd_registrationContact_d"
+    RENAME TO "hpd_registrationContact";
+CREATE INDEX "hpd_registrationContact_registrationcontactid" ON "hpd_registrationContact" (registrationcontactid);
+CREATE INDEX "hpd_registrationContact_type" ON "hpd_registrationContact" (type);
+CREATE INDEX "hpd_registrationContact_registrationid" ON "hpd_registrationContact" (registrationid);
 
 --################
 --################
@@ -110,9 +118,11 @@ drop table if exists "hpd_complaint_counts";
 create temporary table "hpd_complaint_counts" as
 select 
 	trim(both hb.housenumber)||' '||trim(both hb.streetname)||' '||trim(both hb.boro) hbaddress,
+	hb.boroid,
 	hb.buildingid as buildingid, 
 	hb.block as block,
 	hb.lot as lot,
+	boroid||LPAD(hb.block::text, 5, '0')||LPAD(hb.lot::text, 4, '0') bbl,
 	hb.bin as bin,
 	hb.zip as zip,
 	cc.count as all_complaints, 
@@ -120,17 +130,15 @@ select
 from 
 	"hpd_buildings" as hb
 left join 
-	"hs_complaint_count" hscc
-on 
-	hb.buildingid = hscc.buildingid
+	"hs_complaint_count" hscc on hb.buildingid = hscc.buildingid
 left join
-	"complaint_count" cc 
-on  
-	hb.buildingid = cc.buildingid;
+	"complaint_count" cc on hb.buildingid = cc.buildingid
+;
 
 CREATE INDEX hpd_complaint_counts_buildingid on "hpd_complaint_counts" (buildingid);
+alter table hpd_complaint_counts alter column bbl type bigint USING bbl::bigint;
+CREATE INDEX hpd_complaint_counts_bbl on "hpd_complaint_counts" (bbl);
 CREATE INDEX hpd_complaint_counts_hbaddress on "hpd_complaint_counts" (hbaddress);
-
 --################
 --################
 
@@ -288,26 +296,65 @@ create temporary table "hpd_headOfficers" as
 select 
 	hrc.registrationcontactid registrationcontactid, 
 	hrc.firstname||' '||hrc.lastname owner_name, 
-	hrc.type entity_type, 
+	hrc.type entity_type,
 	hr.registrationid registrationid, 
 	hr.buildingid buildingid
 from 
-	"hpd_registrations" hr
+	"hpd_registrationContact" hrc
 left join 
-	"hpd_registrationContact" hrc on hr.registrationid = hrc.registrationid
+    "hpd_registrations" hr on hr.registrationid = hrc.registrationid
 where 
-	hrc.type = 'HeadOfficer';
-
+	hrc.type = 'HeadOfficer'
+;
 CREATE INDEX hpd_headOfficers_buildingid on "hpd_headOfficers" (buildingid);
 	
 --################
 --################
 
-drop table if exists "bad_buildings_temp1";
+drop table if exists hpd_complaints_311;
 
-create temporary table "bad_buildings_temp1" as 
+create temporary table hpd_complaints_311 as
+select
+	trim(both incident_address)||' '||trim(both borough) address_311,
+	count(*) all_311_hpd_count
+from call_311 where agency in ('HPD') and complaint_type not in ('HPD Literature Request') group by 1;
+
+create index "hpd_complaints_311_address_311" on "hpd_complaints_311" (address_311);
+
+--################
+--################
+
+drop table if exists hpd_heat_complaints_311;
+
+create temporary table hpd_heat_complaints_311 as
+select
+	trim(both incident_address)||' '||trim(both borough) address_311,	
+	count(*) heat_311_hpd_count
+from call_311 
+where agency in ('HPD') and complaint_type in ('HEAT/HOT WATER') 
+group by 1;
+
+create index "hpd_heat_complaints_311_address_311" on "hpd_heat_complaints_311" (address_311);
+
+--################
+--################
+
+drop table if exists "bad_buildings";
+
+create table "bad_buildings" as 
 select 
 	cc.*, 
+	pnyc.council,
+	pnyc.ct2010,
+	pnyc.cb2010,
+	pnyc.numfloors,
+	pnyc.unitsres,
+	pnyc.unitstotal,
+	pnyc.histdist,
+	pnyc.xcoord,
+	pnyc.ycoord,
+	heat_311_hpd_count,
+	all_311_hpd_count,
 	hs_permit_cnt, 
 	permit_cnt,
 	dob_violation_cnt,
@@ -326,7 +373,9 @@ select
 	pawl.units pa_units,
 	pawl.score pa_score,
 	pawl.lat pa_lat,
-	pawl.lng pa_long
+	pawl.lng pa_long,
+	ho.owner_name owner_name,
+	hc.corporationname corp_owner
 from 
 	"hpd_complaint_counts" cc
 left join 
@@ -347,30 +396,18 @@ left join
 	"classI_vio_cnt" cvi on cc.buildingid = cvI.buildingid
 left join
 	"lit_count" lc on cc.buildingid = lc.buildingid
-;
+left join
+	"hpd_heat_complaints_311" hhc3 on hbaddress = hhc3.address_311
+left join
+	"hpd_complaints_311" hc3 on hbaddress = hc3.address_311
+left join
+	"pluto_nyc" pnyc on cc.bbl::bigint = pnyc.bbl
+left join 
+	"hpd_headOfficers" ho on cc.buildingid = ho.buildingid
+left join 
+	"hpd_corps" hc on cc.buildingid = hc.buildingid
+		;
 		
-drop table if exists "bad_buildings_temp2"; 
-create temporary table "bad_buildings_temp2" as
-select 
-	bb.*, 
-	ho.owner_name owner_name
-from 
-	"bad_buildings_temp1" bb
-left join 
-	"hpd_headOfficers" ho on bb.buildingid = ho.buildingid
-;
-
-drop table if exists "bad_buildings"; 
-create table "bad_buildings" as
-select 
-	bb.*, 
-	hc.corporationname corp_owner
-from 
-	"bad_buildings_temp2" bb
-left join 
-	"hpd_corps" hc on bb.buildingid = hc.buildingid
-;
-
 --## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 DROP INDEX IF EXISTS "hpd_buildings_buildingid";
 DROP INDEX IF EXISTS "hpd_complaintsProb_majorcategoryid";
@@ -388,6 +425,8 @@ DROP INDEX IF EXISTS "hpd_registrationContact_type";
 DROP INDEX IF EXISTS "hpd_registrationContact_registrationid";
 DROP INDEX IF EXISTS "pubadv_worst_landlords_bin";
 DROP INDEX IF EXISTS "dob_violations_boro";
+DROP INDEX IF EXISTS "pluto_nyc_bbl" ;
+
 
 select * from bad_buildings limit 100;
 
@@ -410,3 +449,4 @@ select * from bad_buildings limit 100;
 -- alter table hpd_registrations drop index buildingid ;
 -- alter table hpd_registrations DROP index registrationid ;
 -- alter table hpd_registrationContact drop index registrationid;
+
