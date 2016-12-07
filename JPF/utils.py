@@ -134,10 +134,11 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
             return
 
         # stream csv into chunked dataframes
-        log.info("Streaming CSV from {} ...".format(input_csv_url))
+        log.info("Streaming {} CSV fields from {} ...".format(
+            len(keep_cols), input_csv_url))
 
         csv_chunks = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict,\
-                encoding='utf8', chunksize=csv_chunk_size)
+                encoding='utf8', chunksize=csv_chunk_size, usecols=keep_cols)
 
         # set up folder to save chunks to if pickling
         if save_pickle:
@@ -170,9 +171,11 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
             df = pickle.load(picklefile)
 
     else:
-        log.info("Reading CSV from {} ... This may take a while...".format(input_csv_url))
+        log.info("Reading {} CSV fields from {} ... This may take a while...".format(
+            len(keep_cols), input_csv_url))
 
-        df = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict, encoding='utf8')
+        df = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict, encoding='utf8',
+                usecols=keep_cols)
 
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
@@ -191,10 +194,6 @@ def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
     df.columns = cols
 
     log.debug("We've slugified, let's have another look: {}".format(df.columns))
-
-    ## KEEP ONLY THE COLUMNS OF INTEREST
-    log.info("Let's just keep the important {} columns".format(len(keep_cols)))
-    df = df[keep_cols]
 
     ## TRIM COLUMN DATA TO MAX_LENGTH
     log.info("... and truncate the {} known to be long".format(len(truncate_columns)))

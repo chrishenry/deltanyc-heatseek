@@ -45,22 +45,22 @@ reg_dtype_dict = {
 }
 
 reg_df_keep_cols = [
-    'registrationid',
-    'buildingid',
-    'boroid',
-    'boro',
-    'housenumber',
-    'lowhousenumber',
-    'highhousenumber',
-    'streetname',
-    'streetcode',
-    'zip',
-    'block',
-    'lot',
-    'bin',
-    'communityboard',
-    'lastregistrationdate',
-    'registrationenddate'
+    'RegistrationID',
+    'BuildingID',
+    'BoroID',
+    'Boro',
+    'HouseNumber',
+    'LowHouseNumber',
+    'HigHhouseNumber',
+    'StreetName',
+    'StreetCode',
+    'Zip',
+    'Block',
+    'Lot',
+    'BIN',
+    'CommunityBoard',
+    'LastRegistrationDate',
+    'RegistrationEndDate'
 ]
 
 def main(argv):

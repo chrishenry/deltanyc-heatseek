@@ -44,21 +44,21 @@ rcn_dtype_dict = {
 }
 
 rcn_df_keep_cols = [
-    'registrationcontactid',
-    'registrationid',
-    'type',
-    'corporationname',
-    'contactdescription',
-    'title',
-    'firstname',
-    'middleinitial',
-    'lastname',
-    'businesshousenumber',
-    'businessstreetname',
-    'businessapartment',
-    'businesscity',
-    'businessstate',
-    'businesszip'
+    'Registrationcontactid',
+    'Registrationid',
+    'Type',
+    'ContactDescription',
+    'CorporationName',
+    'Title',
+    'FirstName',
+    'MiddleInitial',
+    'LastName',
+    'BusinessHouseNumber',
+    'BusinessStreetName',
+    'BusinessApartment',
+    'BusinessCity',
+    'BusinessState',
+    'BusinessZip'
 ]
 
 def main(argv):
