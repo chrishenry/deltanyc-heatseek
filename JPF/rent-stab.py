@@ -27,7 +27,7 @@ TAXBILLS_KEY = 'taxbills_joined'
 
 taxbills_dtype_dict = {
     "borough": "object",
-    "ucbbl": "int64",
+    "ucbbl": "int32",
     "2007uc": "float64", "2007est": "object", "2007dhcr": "object", "2007abat": "object",
     "2008uc": "float64", "2008est": "object", "2008dhcr": "object", "2008abat": "object",
     "2009uc": "float64", "2009est": "object", "2009dhcr": "object", "2009abat": "object",
@@ -94,6 +94,8 @@ taxbills_keep_cols = [
     "2015abat"
 ]
 
+taxbills_primary_key = "ucbbl"
+
 
 def main(argv):
 
@@ -117,7 +119,7 @@ def main(argv):
     taxbills_description = "Taxbills Rent Stabilization"
     taxbills_pickle = taxbills_joined_dir + '/taxbills.pkl'
     taxbills_sep_char = ","
-    taxbills_table_name = "rent-stabilization"
+    taxbills_table_name = "rent_stabilization"
     taxbills_load_pickle = args.LOAD_PICKLE
     taxbills_save_pickle = args.SAVE_PICKLE
     taxbills_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -139,7 +141,7 @@ def main(argv):
                 taxbills_date_time_columns,
                 taxbills_chunk_size,
                 taxbills_keep_cols,
-                set_default_primary_key=False
+                primary_key=taxbills_primary_key
                 )
 
 
