@@ -98,13 +98,19 @@ taxbills_primary_key = "ucbbl"
 
 
 def main(argv):
-
     parser = argparse.ArgumentParser(description='Import joined Rent Stabilization data.')
     parser = add_common_arguments(parser)
     args = parser.parse_args()
 
     print args
 
+    if not args.SKIP_IMPORT:
+        csv_import(args)
+
+    sql_cleanup(args):
+
+
+def csv_import(args):
     taxbills_joined_dir = os.path.join(BASE_DIR, TAXBILLS_KEY)
     mkdir_p(taxbills_joined_dir)
 
@@ -143,6 +149,12 @@ def main(argv):
                 taxbills_keep_cols,
                 primary_key=taxbills_primary_key
                 )
+
+
+def sql_cleanup(args):
+    conn = connect()
+    conn.execute("ALTER TABLE {} MODIFY {} INT PRIMARY KEY".format(
+        table_name, taxbills_primary_key))
 
 
 if __name__ == "__main__":

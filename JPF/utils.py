@@ -111,7 +111,6 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
         max_col_len - length to truncate cells in truncate_columns to
         date_format - expected format of dates in the table
         csv_chunk_size - if defined, the number of rows to process from the CSV at a time.
-        primary_key - The column to use as primary index, defaulted to create a new column 'id'.
     """
     logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
         datefmt='%H:%M:%S',
@@ -163,7 +162,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
                 db_action = "append"
 
             send_df_to_sql(df, log, description, table_name, db_action,
-                    sql_chunk_size, max_col_len, primary_key)
+                    sql_chunk_size, max_col_len)
 
             chunk_num += 1
 
@@ -190,7 +189,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
                 date_time_columns, keep_cols, date_format, max_col_len)
 
     send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size,
-            max_col_len, primary_key)
+            max_col_len)
 
 
 def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
@@ -249,13 +248,6 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
     log.info("Sending our df to {}".format(table_name))
     df.to_sql(name=table_name, con=conn, if_exists=action,
             index=False, chunksize=sql_chunk_size, dtype=outputdict)
-
-    if db_action == 'replace':
-        if primary_key != DEFAULT_PRIMARY_KEY:
-            conn.execute("ALTER TABLE {} MODIFY {} INT PRIMARY KEY".format(
-                table_name, primary_key))
-        else:
-            conn.execute("ALTER TABLE {} ADD {} INT PRIMARY KEY AUTO_INCREMENT;".format(table_name, primary_key))
 
     log.info("Completed {} Import".format(description))
     log.info("Imported: {} rows".format(df.shape[0]))
