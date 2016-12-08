@@ -42,7 +42,7 @@ def add_common_arguments(parser):
             help='"replace" or "append" to the database if the table already exists.')
 
     parser.add_argument('--skip-import',
-            action='skip_import',
+            action='store_true',
             dest='SKIP_IMPORT',
             default=False,
             help='Skips the CSV->SQL import.')
