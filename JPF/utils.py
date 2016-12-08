@@ -18,28 +18,34 @@ BASE_DIR = os.path.join(os.path.expanduser('~'), "heatseek")
 def add_common_arguments(parser):
 
     parser.add_argument("--load-pickle",
-                action='store_true',
-                dest='LOAD_PICKLE',
-                default=False,
-                help='Save a pickled version of the data during processing.')
+            action='store_true',
+            dest='LOAD_PICKLE',
+            default=False,
+            help='Save a pickled version of the data during processing.')
 
     parser.add_argument("--save-pickle",
-                action='store_true',
-                dest='SAVE_PICKLE',
-                default=False,
-                help='Save a pickled version of the data during processing.')
+            action='store_true',
+            dest='SAVE_PICKLE',
+            default=False,
+            help='Save a pickled version of the data during processing.')
 
     parser.add_argument('--bust-disk-cache',
-                action='store_true',
-                dest='BUST_DISK_CACHE',
-                default=False,
-                help='Whether to re-download data files.')
+            action='store_true',
+            dest='BUST_DISK_CACHE',
+            default=False,
+            help='Forces re-download of data files.')
 
     parser.add_argument('--update-or-replace-db',
-                action='store_const',
-                dest='BUST_DISK_CACHE',
-                const='replace',
-                help='Whether to update or outright replace data.')
+            action='store_const',
+            dest='DB_ACTION',
+            const='replace',
+            help='"replace" or "append" to the database if the table already exists.')
+
+    parser.add_argument('--skip-import',
+            action='skip_import',
+            dest='SKIP_IMPORT',
+            default=False,
+            help='Skips the CSV->SQL import.')
 
     return parser
 
@@ -52,7 +58,8 @@ def mkdir_p(my_path):
 
 
 def connect():
-
+    """ Returns a connection to the configured database.
+    """
     user = os.environ['MYSQL_USER']
     host = os.environ['MYSQL_HOST']
     pw = os.environ['MYSQL_PASSWORD']
@@ -63,7 +70,8 @@ def connect():
 
 
 def guess_sqlcol(dfparam, max_col_len):
-
+    """ Returns a map from columns of |dfparam| to SQL types.
+    """
     ## GUESS AT SQL COLUMN TYPES FROM DataFrame dtypes.
 
     dtypedict = {}
@@ -81,7 +89,6 @@ def guess_sqlcol(dfparam, max_col_len):
             dtypedict.update({i: sqlalchemy.types.BigInteger()})
 
     return dtypedict
-
 
 
 def hpd_csv2sql(description, input_csv_url, sep_char,\
@@ -105,7 +112,6 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
         date_format - expected format of dates in the table
         csv_chunk_size - if defined, the number of rows to process from the CSV at a time.
     """
-
     logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
         datefmt='%H:%M:%S',
         stream=sys.stdout,
@@ -150,7 +156,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
 
             chunk_pickle_file = pickle_file.format(chunk_num)
             df = process_df(df, log, description, save_pickle, chunk_pickle_file,\
-                    truncate_columns, date_time_columns, keep_cols, date_format, max_col_len)
+                    truncate_columns, date_time_columns, date_format, max_col_len)
 
             if chunk_num > 0:
                 db_action = "append"
@@ -180,13 +186,15 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
         df = process_df(df, log, description, save_pickle, pickle_file, truncate_columns,\
-                date_time_columns, keep_cols, date_format, max_col_len)
+                date_time_columns, keep_cols, max_col_len)
 
     send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, max_col_len)
 
 
-def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,\
-            date_time_columns, keep_cols, date_format, max_col_len):
+def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
+            date_time_columns, date_format, max_col_len):
+    """ Cleans up a DataFrame: truncates strings, converts dates, saves pickle.
+    """
     ## LET'S SEE IF THERE ARE COLUMNS TO TRUNCATE
     ## CLEAN COLUMN NAMES
     cols = [slugify(unicode(i.strip().replace(" ","_").replace("#","num"))) for i in df.columns]
@@ -220,6 +228,8 @@ def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
 
 
 def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, max_col_len):
+    """ Imports a DataFrame into a SQL database.
+    """
     log.info("Let's now try to send it to the DB")
     outputdict = guess_sqlcol(df, max_col_len)  #Guess at SQL columns based on DF dtypes
     log.debug("Show us the DB column guesses\n {}".format(outputdict))
@@ -246,33 +256,38 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
 
 
 def download_file(url, local_filename):
-    # NOTE the stream=True parameter
+    """ Downloads a file from |url| to the file with path |local_filename|.
+    """
     wget.download(url, out=local_filename)
     return local_filename
 
 
 def unzip(filename, directory_to_extract_to):
-
+    """ Unzips |filename| to |directory_to_extract_to|.
+    """
     zip_ref = zipfile.ZipFile(filename, 'r')
     zip_ref.extractall(directory_to_extract_to)
     zip_ref.close()
 
 
 def pandas_concat_csv(directory, dest_file):
-
-    allFiles = glob.glob(directory + "/*.csv") #in path provided, look for anything with a '.csv' extension and save it to this variable
+    """ Concats a set of CSV files to a single DataFrame.
+    """
+    # in path provided, look for anything with a '.csv' extension and save it to this variable
+    allFiles = glob.glob(directory + "/*.csv")
     pluto_data = pd.DataFrame()
     pluto_list_ = []
-    for file_ in allFiles: #iterate through all csv files and create a pandas df
+    for file_ in allFiles: # iterate through all csv files and create a pandas df
         pluto_df = pd.read_csv(file_,index_col=None, header=0)
-        pluto_list_.append(pluto_df) #append every df to a big list
-    pluto_data = pd.concat(pluto_list_) #combine the big list into one big pandas df
+        pluto_list_.append(pluto_df) # append every df to a big list
+    pluto_data = pd.concat(pluto_list_) # combine the big list into one big pandas df
     pluto_data = pluto_data.reset_index(drop=True)
     pluto_data.to_csv(dest_file, index=False)
 
 
 def simple_concat_csv(directory, dest_file):
-
+    """ Concats a set of CSV files to a single CSV file.
+    """
     #in path provided, look for anything with a '.csv' extension and save it to this variable
     allFiles = glob.glob(directory + "/*.csv")
     with open(dest_file, 'w') as outfile:
@@ -280,5 +295,4 @@ def simple_concat_csv(directory, dest_file):
             with open(fname) as infile:
                 for line in infile:
                     outfile.write(line)
-
 
