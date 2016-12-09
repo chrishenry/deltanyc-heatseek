@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161207230855) do
+ActiveRecord::Schema.define(version: 20161209024622) do
 
   create_table "complaint311s", force: :cascade do |t|
     t.integer  "property_id",            limit: 4
@@ -109,7 +109,6 @@ ActiveRecord::Schema.define(version: 20161207230855) do
     t.string   "bbl",             limit: 255
     t.string   "bin",             limit: 255
     t.boolean  "rent_stabilized"
-    t.integer  "owner_id",        limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
   end
