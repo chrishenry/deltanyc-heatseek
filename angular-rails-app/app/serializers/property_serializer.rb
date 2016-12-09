@@ -8,5 +8,6 @@ class PropertySerializer < ActiveModel::Serializer
   has_many :hpd_complaints
   has_many :litigations
   has_many :complaint311s
+  has_many :owners
 
 end
