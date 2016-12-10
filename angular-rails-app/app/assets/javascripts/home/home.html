@@ -6,12 +6,12 @@
       <h4>BUILDING LOOKUP TOOL</h4>
 
 
-      <form class="form">
-                <input id="propertiesSearch" class="form-control" g-places-autocomplete force-selection="true" ng-model="place"/>
+      <form class="form" ng-submit="vm.setDetails()">
+                <input id="propertiesSearch" class="form-control" g-places-autocomplete force-selection="true" ng-model="vm.place"/>
             </form>
 
             <h5>Result:</h5>
-            <div>{{place.formatted_address}}</div>
+            <div>{{vm.details}}</div>
 
       <br><br>
      
