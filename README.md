@@ -39,7 +39,14 @@ The second is to use docker;
 This method will use an .env file to configure the containers.
 
 
+To get into the web container, and run rake tasks, etc;
 
+```bash
+docker-compose exec web /bin/bash
+```
 
+To examine MySQL directly;
 
-
+```bash
+docker-compose exec db mysql -u deltanyc -ppassword deltanyc
+```
