@@ -28,3 +28,13 @@ end
   end
 
 
+  Property.create(
+    street_address: '10 West 109th St.',
+    city: 'New York',
+    state: 'NY',
+    zipcode: '10025',
+    total_units: rand(5..200),
+    rent_stabilized: FFaker::Boolean.random,
+    )
+
+

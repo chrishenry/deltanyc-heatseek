@@ -9,7 +9,7 @@ function HomeController($scope, HomeService) {
 
   vm.componentForm = {
     street_number: 'short_name',
-    route: 'long_name',
+    route: 'short_name',
     locality: 'long_name',
     administrative_area_level_1: 'short_name',
     country: 'long_name',
