@@ -8,6 +8,14 @@ angular
           templateUrl: 'home/home.html', 
           controller: 'HomeController as vm'
         })
+        .state('resources', {
+          url: '/resources', 
+          templateUrl: 'home/resources.html', 
+        })
+        .state('contact', {
+          url: '/contact', 
+          templateUrl: 'home/contact.html', 
+        })
         .state('property', {
           url: '/properties/:id', 
           templateUrl: 'property/property.html', 
