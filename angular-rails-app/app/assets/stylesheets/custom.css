@@ -3,17 +3,19 @@ html {
 }
 
 nav#my-nav{
-  min-height: 10%;
-  background-color: rgb(169,169,169);
+  min-height: 12%;
+  background-color: white;
+  color:black;
 }
 
 nav#my-nav a{
   color:black;
-  margin-top: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 nav#my-nav a:hover{
-  color:white;
+  color:orange;
 }
 
 #info-panel {
@@ -40,7 +42,31 @@ td {
   text-align: center;
 }
 
-input {
-  width: 40%;
+form {
+  width: 45%;
+}
+
+input#propertiesSearch {
   background-color: rgb(242,241,242);
+}
+
+button.btn.btn-secondary {
+  height: 34px;
+  background-color: black;
+  color:white;
+}
+
+#header {
+  margin-top: 5px;
+  color: grey;
+  font-size: 1.5em;
+}
+
+hr.featurette-divider {
+  border: 1px solid grey;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  margin-left: 0;
+  width: 90%;
+
 }

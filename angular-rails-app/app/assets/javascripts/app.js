@@ -1,5 +1,5 @@
 angular
-    .module('app', ['ui.router', 'templates'])
+    .module('app', ['ui.router', 'templates', 'google.places'])
     .config(function ($stateProvider, $urlRouterProvider) {
 
       $stateProvider
@@ -7,6 +7,11 @@ angular
           url: '/', 
           templateUrl: 'home/home.html', 
           controller: 'HomeController as vm'
+        })
+        .state('property', {
+          url: '/properties/:id', 
+          templateUrl: 'property/property.html', 
+          controller: 'PropertyController as vm'
         });
         
 

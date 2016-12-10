@@ -3,35 +3,27 @@
   <p id="breadcrumb">Home</p>
 
   <div id="info-panel">
-      <h4>BUILDING LOOKUP TOOL</h4>
+      <h4>BUILDING LOOKUP TOOL</h4> 
 
-      <input type="text" list="addresses"><br><br>
 
-      <datalist id="addresses">
-         <option ng-repeat="data in vm.data"
-          value="{{data.street_address}}, {{data.city}}, {{data.state}} {{data.zipcode}}">
-      </datalist>
+      <form class="form input-group" ng-submit="vm.setDetails()">
+                <input id="propertiesSearch" class="form-control" g-places-autocomplete force-selection="true" ng-model="vm.place"/>
 
-      <p id="instructions">Building Lookup Tool allows you to enter a building's address, and return the following information about that building:</p><br>
+                 <span class="input-group-btn">
+                  <button class="btn btn-secondary" 
+                  type="button"
+                  ng-click="vm.getProperty()">Go</button>
+                </span>
+            </form>
 
-     <table id="instructions" style="width: 100%">
-      <tr>
-        <td>BBL</td>
-        <td>311 Complaints</td> 
-        <td>DOB Complaints</td>
-        <td># of Units in Building</td>
-        <td>Registered Owner & Owner's Mailing Address</td>
-      </tr>
-      <tr>
-        <td>BIN</td>
-        <td>HPD Violations</td> 
-        <td>DOB Violations</td>
-        <td>Litigation History</td>
-        <td>Environmental Control Board Violations</td>
-      </tr>
-    </table><br>
+            <h5>Result:</h5>
+            <div>{{vm.details}}</div>
+
+      <br><br>
+     
 
   </div>
 
 </div>
+
 

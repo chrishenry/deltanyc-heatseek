@@ -6,8 +6,15 @@ angular
 
   function HomeService($http) {
   
-  this.getProperties = function () {
-    return $http.get(API_URL + '/properties')
+  this.getProperty = function (details) {
+    return $http.post(API_URL + '/query', {
+        street_address: details.number + ' ' + details.street,
+        city: details.city,
+        state: details.state,
+        zipcode: details.zip
+    });
   };
  
+
+
 };

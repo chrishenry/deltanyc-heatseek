@@ -7,6 +7,13 @@ class PropertiesController < ApplicationController
     render json: @properties, status: 200
   end
 
+  def query
+    @property = Property.where("zipcode = ?",
+    params[:zipcode])
+    puts @property.inspect
+    render json: @property, status: 200
+  end
+
   def show
     render json: @property, status: 200
   end
