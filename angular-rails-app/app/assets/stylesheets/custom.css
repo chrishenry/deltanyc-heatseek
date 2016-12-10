@@ -3,17 +3,19 @@ html {
 }
 
 nav#my-nav{
-  min-height: 10%;
-  background-color: rgb(169,169,169);
+  min-height: 12%;
+  background-color: white;
+  color:black;
 }
 
 nav#my-nav a{
   color:black;
-  margin-top: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 nav#my-nav a:hover{
-  color:white;
+  color:orange;
 }
 
 #info-panel {
