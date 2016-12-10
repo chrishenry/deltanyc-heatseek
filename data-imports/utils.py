@@ -293,4 +293,3 @@ def simple_concat_csv(directory, dest_file):
             with open(fname) as infile:
                 for line in infile:
                     outfile.write(line)
-
