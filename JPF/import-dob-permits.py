@@ -150,7 +150,7 @@ def import_csv(args):
     perm_dob_table_name = "dob_permits"
     perm_dob_load_pickle = args.LOAD_PICKLE
     perm_dob_save_pickle = args.SAVE_PICKLE
-    perm_dob_db_action = "replace"
+    perm_dob_db_action = args.DB_ACTION
     perm_dob_chunk_size = 2500
 
     hpd_csv2sql(

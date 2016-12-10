@@ -104,7 +104,7 @@ def import_csv(args):
     vio_dob_table_name = "dob_violations"
     vio_dob_load_pickle = args.LOAD_PICKLE
     vio_dob_save_pickle = args.SAVE_PICKLE
-    vio_dob_db_action = "replace"
+    vio_dob_db_action = args.DB_ACTION
     vio_dob_chunk_size = 5000
     vio_max_col_len = 255
     vio_date_format = "%Y%m%d"
