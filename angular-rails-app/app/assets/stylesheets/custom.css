@@ -40,9 +40,18 @@ td {
   text-align: center;
 }
 
+form {
+  width: 45%;
+}
+
 input#propertiesSearch {
-  width: 40%;
   background-color: rgb(242,241,242);
+}
+
+button.btn.btn-secondary {
+  height: 34px;
+  background-color: black;
+  color:white;
 }
 
 #header {
