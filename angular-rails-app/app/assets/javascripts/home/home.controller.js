@@ -1,8 +1,8 @@
 angular 
   .module('app')
-  .controller('HomeController', ['$scope',HomeController])
+  .controller('HomeController', ['$scope', 'HomeService', HomeController])
 
-function HomeController($scope,HomeService) {
+function HomeController($scope, HomeService) {
   var vm = this;
 
   vm.place ='';
@@ -41,10 +41,18 @@ function HomeController($scope,HomeService) {
   };
     
   $scope.$watch('vm.place',vm.setDetails);
-  
 
   
+ vm.getProperty = function(){
+    HomeService.getProperty(vm.details)
+    .then(function(propertyData){
+      console.log(propertyData);
+    }, function(error){
+      alert('Unable to get property' + error.statusText);
+    });
+ }
+
+ 
+
+
 }
-
-
-HomeController.$inject = ['HomeService'];
