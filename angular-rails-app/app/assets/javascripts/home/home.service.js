@@ -5,16 +5,16 @@ angular
   .service('HomeService', HomeService);
 
   function HomeService($http) {
-  
+
   this.getProperty = function (details) {
-    return $http.post(API_URL + '/query', {
-        street_address: details.number + ' ' + details.street,
-        city: details.city,
-        state: details.state,
-        zipcode: details.zip
-    });
+    return $http.get(API_URL + '/query?' + $.param({
+            street_address: details.number + ' ' + details.street,
+            city: details.city,
+            state: details.state,
+            zipcode: details.zip
+        }));
   };
- 
+
 
 
 };

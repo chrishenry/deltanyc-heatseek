@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161209024622) do
+ActiveRecord::Schema.define(version: 20161211052725) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -374,7 +374,6 @@ ActiveRecord::Schema.define(version: 20161209024622) do
     t.integer  "total_units",         limit: 4
     t.string   "bin",                 limit: 255
     t.boolean  "rent_stabilized"
-    t.integer  "owner_id",            limit: 4
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.string   "borough",             limit: 255

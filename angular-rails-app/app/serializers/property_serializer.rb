@@ -1,6 +1,6 @@
 class PropertySerializer < ActiveModel::Serializer
-  attributes :id, :street_address, :city, :state, :zipcode, 
-  :total_units, :bbl, :bin, :rent_stabilized, :full_address
+  attributes :id, :street_address, :city, :state, :zipcode,
+  :total_units, :borough, :block, :lot, :bin, :rent_stabilized, :full_address
 
   has_many :dob_permits
   has_many :dob_violations
