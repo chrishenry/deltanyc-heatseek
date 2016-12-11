@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161211052000) do
+ActiveRecord::Schema.define(version: 20161211052725) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -365,7 +365,6 @@ ActiveRecord::Schema.define(version: 20161211052000) do
   end
 
   add_index "owners", ["hpd_registration_contact_id"], name: "index_r_owners_on_hpd_registration_contact_id", unique: true, using: :btree
-  add_index "owners", ["hpd_registration_id"], name: "index_r_owners_on_hpd_registration_id", unique: true, using: :btree
 
   create_table "properties", force: :cascade do |t|
     t.string   "street_address",      limit: 255
