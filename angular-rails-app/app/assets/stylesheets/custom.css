@@ -1,21 +1,39 @@
 html {
   background-color: rgb(242,241,242);
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 nav#my-nav{
   min-height: 12%;
   background-color: white;
   color:black;
+  border-bottom: 4px solid orange;
 }
 
 nav#my-nav a{
   color:black;
-  margin-top: 12px;
-  margin-bottom: 12px;
+}
+
+nav li#links{
+  margin-top: 18px;
+  margin-bottom: 18px;
+  font-size: 1.2em;
+}
+
+nav a.navbar-brand {
+  padding-top: 35px;
+  font-weight: 600;
 }
 
 nav#my-nav a:hover{
-  color:orange;
+  color:#ff9a33
+}
+
+a img{
+  height: 65px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-right: 7px;
 }
 
 #info-panel {
