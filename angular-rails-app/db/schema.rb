@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161211052725) do
+ActiveRecord::Schema.define(version: 20161209024622) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -273,7 +273,7 @@ ActiveRecord::Schema.define(version: 20161211052725) do
     t.integer  "plutomapid",    limit: 8
   end
 
-  create_table "complaint_311s", force: :cascade do |t|
+  create_table "complaint311s", force: :cascade do |t|
     t.integer  "property_id",            limit: 4
     t.datetime "created_date"
     t.datetime "closed_date"
@@ -307,7 +307,7 @@ ActiveRecord::Schema.define(version: 20161211052725) do
     t.datetime "updated_at",                 null: false
   end
 
-  create_table "hdp_complaints", force: :cascade do |t|
+  create_table "hpd_complaints", force: :cascade do |t|
     t.string   "complaint_type",    limit: 255
     t.integer  "major_category_id", limit: 4
     t.integer  "minor_category_id", limit: 4
@@ -320,7 +320,7 @@ ActiveRecord::Schema.define(version: 20161211052725) do
     t.integer  "status_id",         limit: 4
   end
 
-  create_table "hdp_violations", force: :cascade do |t|
+  create_table "hpd_violations", force: :cascade do |t|
     t.integer  "property_id",         limit: 4
     t.string   "violation_class",     limit: 255
     t.datetime "inspection_date"

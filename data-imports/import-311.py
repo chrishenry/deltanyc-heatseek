@@ -149,6 +149,45 @@ def main(argv):
             call_311_df_keep_cols,
             csv_chunk_size=call_311_csv_chunk_size
             )
+    
+def sql_cleanup(args):
+    conn = connect()
+    cursor = conn.cursor()
+
+    SQL = '''  
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' AVE$|-AVE$| -AVE$', ' AVENUE');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '\.', '', 'g');
+    UPDATE call_311 SET incident_address = array_to_string(regexp_matches(incident_address, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE incident_address ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LA$', ' LANE', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LN$', ' LANE', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PL$', ' PLACE', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' ST$| STR$', ' STREET', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' RD$', ' ROAD', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY$', 'PARKWAY', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY ', ' PARKWAY ', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD$', ' BOULEVARD', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD ', ' BOULEVARD ', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD', ' BOULEVARD ', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^BCH ', 'BEACH ', 'g');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^E ', 'EAST ');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^W ', 'WEST ');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^N ', 'NORTH ');
+    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^S ', 'SOUTH '); 
+    UPDATE call_311 SET borough = regexp_replace(borough, 'MANHATTAN', 'MN', 'g');
+    UPDATE call_311 SET borough = regexp_replace(borough, 'BROOKLYN', 'BK', 'g');
+    UPDATE call_311 SET borough = regexp_replace(borough, 'STATEN ISLAND', 'SI', 'g');
+    UPDATE call_311 SET borough = regexp_replace(borough, 'QUEENS', 'QN', 'g');
+    UPDATE call_311 SET borough = regexp_replace(borough, 'BRONX', 'BR', 'g');
+    UPDATE call_311 SET borough = regexp_replace(borough, 'Unspecified', '', 'g');
+
+    '''
+
+    for result in cursor.execute(SQL,multi = True):
+        pass
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 if __name__ == "__main__":

@@ -109,7 +109,42 @@ def main(argv):
                 rcn_df_keep_cols
             )
 
+def sql_cleanup(args):
+    conn = connect()
+    cursor = conn.cursor()
+
+    SQL = '''  
+
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' AVE$|-AVE$| -AVE$', ' AVENUE');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '\.', '', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = array_to_string(regexp_matches(businessstreetname, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE businessstreetname ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' LA$', ' LANE', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' LN$', ' LANE', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PL$', ' PLACE', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' ST$| STR$', ' STREET', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, 'ST$', ' STREET', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' RD$', ' ROAD', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PKWY$', 'PARKWAY', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PKWY ', ' PARKWAY ', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD$', ' BOULEVARD', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD ', ' BOULEVARD ', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD', ' BOULEVARD ', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^BCH ', 'BEACH ', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' DR$', 'DRIVE ', 'g');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^E ', 'EAST ');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^W ', 'WEST ');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^N ', 'NORTH ');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' $N ', 'NORTH ');
+    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^S ', 'SOUTH '); 
+
+    '''
+
+    for result in cursor.execute(SQL,multi = True):
+        pass
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 if __name__ == "__main__":
     main(sys.argv[:1])
-
-
