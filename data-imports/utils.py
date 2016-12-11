@@ -91,11 +91,11 @@ def guess_sqlcol(dfparam, max_col_len):
     return dtypedict
 
 
-def hpd_csv2sql(description, input_csv_url, sep_char,\
-            table_name, dtype_dict, load_pickle, save_pickle, \
-                pickle_file, db_action, truncate_columns, date_time_columns,\
-               sql_chunk_size, keep_cols, max_col_len=255, date_format=None, \
-               csv_chunk_size=None):
+def hpd_csv2sql(description, input_csv_url, sep_char,
+        table_name, dtype_dict, load_pickle, save_pickle,
+        pickle_file, db_action, truncate_columns, date_time_columns,
+        sql_chunk_size, keep_cols, max_col_len=255, date_format=None,
+        csv_chunk_size=None):
     """ Clean up housing data and import into a sql database.
 
         description - tag used for logging
@@ -133,7 +133,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
                 with open(os.path.join(pickle_dir, filename), 'r') as picklefile:
                     log.info("Begin OPEN {} Pickle: {}".format(filename, datetime.datetime.now()))
                     df = pickle.load(picklefile)
-                    send_df_to_sql(df, log, description, table_name, db_action,\
+                    send_df_to_sql(df, log, description, table_name, db_action,
                             sql_chunk_size, max_col_len)
                     db_action = "append"  # only first sql import should replace!
 
@@ -143,7 +143,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
         log.info("Streaming {} CSV fields from {} ...".format(
             len(keep_cols), input_csv_url))
 
-        csv_chunks = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict,\
+        csv_chunks = pd.read_csv(input_csv_url, sep=sep_char, dtype=dtype_dict,
                 encoding='utf8', chunksize=csv_chunk_size, usecols=keep_cols)
 
         # set up folder to save chunks to if pickling
@@ -155,13 +155,13 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
             log.info("Processing chunk {}".format(chunk_num))
 
             chunk_pickle_file = pickle_file.format(chunk_num)
-            df = process_df(df, log, description, save_pickle, chunk_pickle_file,\
+            df = process_df(df, log, description, save_pickle, chunk_pickle_file,
                     truncate_columns, date_time_columns, date_format, max_col_len)
 
             if chunk_num > 0:
                 db_action = "append"
 
-            send_df_to_sql(df, log, description, table_name, db_action,\
+            send_df_to_sql(df, log, description, table_name, db_action,
                     sql_chunk_size, max_col_len)
 
             chunk_num += 1
@@ -185,10 +185,11 @@ def hpd_csv2sql(description, input_csv_url, sep_char,\
 
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
-        df = process_df(df, log, description, save_pickle, pickle_file, truncate_columns,\
-                date_time_columns, keep_cols, max_col_len)
+        df = process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
+                date_time_columns, keep_cols, date_format, max_col_len)
 
-    send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, max_col_len)
+    send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size,
+            max_col_len)
 
 
 def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
@@ -245,13 +246,10 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
 
     log.info("We're going with db_action = {}".format(action))
     log.info("Sending our df to {}".format(table_name))
-    df.to_sql(name=table_name, con=conn, if_exists=action,\
-              index=False, chunksize=sql_chunk_size, dtype=outputdict)
+    df.to_sql(name=table_name, con=conn, if_exists=action,
+            index=False, chunksize=sql_chunk_size, dtype=outputdict)
 
-    if db_action == 'replace':
-        conn.execute("ALTER TABLE %s ADD id INT PRIMARY KEY AUTO_INCREMENT;" % table_name)
-
-    log.info("Completed {} Import".format(description, datetime.datetime.now()))
+    log.info("Completed {} Import".format(description))
     log.info("Imported: {} rows".format(df.shape[0]))
 
 
@@ -295,4 +293,3 @@ def simple_concat_csv(directory, dest_file):
             with open(fname) as infile:
                 for line in infile:
                     outfile.write(line)
-

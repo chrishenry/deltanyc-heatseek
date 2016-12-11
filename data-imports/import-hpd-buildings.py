@@ -6,9 +6,6 @@ import os.path
 import sys
 import logging
 
-
-from sqlalchemy import create_engine
-
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -77,6 +74,11 @@ bld_df_keep_cols = [
     'RecordStatus'
 ]
 
+bld_truncate_columns = ''
+
+bld_date_time_columns = ''
+
+
 def main(argv):
 
     parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
@@ -96,9 +98,6 @@ def main(argv):
     else:
         log.info("HPD Buildings exists, moving on...")
 
-    rcn_truncate_columns = ''
-    rcn_date_time_columns = ''
-
     bld_description = "HPD Buildings"
     bld_input_csv_url = hpd_buildings_csv
     bld_sep_char = ","
@@ -107,10 +106,7 @@ def main(argv):
     bld_load_pickle = args.LOAD_PICKLE
     bld_save_pickle = args.SAVE_PICKLE
     bld_db_action = 'replace' ## if not = 'replace' then 'append'
-    bld_truncate_columns = ''
-    bld_date_time_columns = ''
     bld_chunk_size = 5000
-
 
     hpd_csv2sql(
                 bld_description,
@@ -128,7 +124,6 @@ def main(argv):
                 bld_df_keep_cols
                )
 
+
 if __name__ == "__main__":
     main(sys.argv[:1])
-
-
