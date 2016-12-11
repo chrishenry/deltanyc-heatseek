@@ -30,7 +30,8 @@ services:
     environment:
       MYSQL_HOST: db
     volumes:
-      - ./JPF/:/root/work/
+      - ./JPF/:/root/JPF/
+      - ./data-imports/:/root/data-imports/
     ports:
       - "8888:8888"
     depends_on:
