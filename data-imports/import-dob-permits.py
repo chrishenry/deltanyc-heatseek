@@ -194,14 +194,11 @@ def sql_cleanup(args):
     UPDATE dob_permits SET street_name = regexp_replace( street_name, '^W ', 'WEST ');
     UPDATE dob_permits SET street_name = regexp_replace( street_name, '^N ', 'NORTH ');
     UPDATE dob_permits SET street_name = regexp_replace( street_name, '^S ', 'SOUTH ');
-    UPDATE dob_permits SET boro = regexp_replace(boro, '1', 'MN', 'g'); 
-    UPDATE dob_permits SET boro = regexp_replace(boro, '3', 'BK', 'g');
-    UPDATE dob_permits SET boro = regexp_replace(boro, '5', 'SI', 'g');
-    UPDATE dob_permits SET boro = regexp_replace(boro, '4', 'QN', 'g');
-    UPDATE dob_permits SET boro = regexp_replace(boro, '2', 'BR', 'g'); 
-    SElECT concat(trim(dob_permits.boroid),dob_permits.block,dob_permits.lot as bbl from dob_permits;
-    ALTER TABLE dob_permits CHANGE bbl bigint(13) NULL DEFAULT NULL;
-    ALTER TABLE `dob_permits` ADD INDEX(bbl);
+    UPDATE dob_permits SET boro = regexp_replace(boro, 'MANHATTAN', 'MN', 'g'); 
+    UPDATE dob_permits SET boro = regexp_replace(boro, 'BROOKLYN', 'BK', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, 'STATEN ISLAND', 'SI', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, 'QUEENS', 'QN', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, 'BRONX', 'BR', 'g'); 
 
     '''
     for result in cursor.execute(SQL,multi = True):
