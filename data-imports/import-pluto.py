@@ -268,10 +268,41 @@ def main(argv):
                 PLUTO_date_format,
                )
 
+def sql_cleanup(args):
     conn = connect()
+    cursor = conn.cursor()
+
+    SQL = '''  
+    create index my_idx on my_table(tstamp, user_id, type);
+    UPDATE pluto SET address = regexp_replace( address, ' AVE$|-AVE$| -AVE$', ' AVENUE');
+    UPDATE pluto SET address = regexp_replace( address, '\.', '', 'g');
+    UPDATE pluto SET address = array_to_string(regexp_matches(address, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE address ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
+    UPDATE pluto SET address = regexp_replace( address, ' LA$', ' LANE', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' LN$', ' LANE', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' PL$', ' PLACE', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' ST$| STR$', ' STREET', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' RD$', ' ROAD', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' PKWY$', 'PARKWAY', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' PKWY ', ' PARKWAY ', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' BLVD$', ' BOULEVARD', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' BLVD ', ' BOULEVARD ', 'g');
+    UPDATE pluto SET address = regexp_replace( address, ' BLVD', ' BOULEVARD ', 'g');
+    UPDATE pluto SET address = regexp_replace( address, '^BCH ', 'BEACH ', 'g');
+    UPDATE pluto SET address = regexp_replace( address, '^E ', 'EAST ');
+    UPDATE pluto SET address = regexp_replace( address, '^W ', 'WEST ');
+    UPDATE pluto SET address = regexp_replace( address, '^N ', 'NORTH ');
+    UPDATE pluto SET address = regexp_replace( address, '^S ', 'SOUTH '); 
+
+    '''
+
+    for result in cursor.execute(SQL,multi = True):
+        pass
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
 
     # Add some indexes
-    "create index my_idx on my_table(tstamp, user_id, type);"
 
 
 if __name__ == "__main__":
