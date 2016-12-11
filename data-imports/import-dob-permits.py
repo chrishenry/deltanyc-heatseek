@@ -171,6 +171,46 @@ def import_csv(args):
 
 
 def sql_cleanup(args):
+    conn = connect()
+    cursor = conn.cursor()
+
+    SQL = '''  
+
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' AVE$|-AVE$| -AVE$', ' AVENUE');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '\.', '', 'g');
+    UPDATE dob_permits SET street_name = array_to_string(regexp_matches(street_name, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE street_name ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' LA$', ' LANE', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' LN$', ' LANE', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' PL$', ' PLACE', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' ST$| STR$', ' street_name', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' RD$', ' ROAD', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' PKWY$', 'PARKWAY', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' PKWY ', ' PARKWAY ', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' BLVD$', ' BOULEVARD', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' BLVD ', ' BOULEVARD ', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, ' BLVD', ' BOULEVARD ', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '^BCH ', 'BEACH ', 'g');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '^E ', 'EAST ');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '^W ', 'WEST ');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '^N ', 'NORTH ');
+    UPDATE dob_permits SET street_name = regexp_replace( street_name, '^S ', 'SOUTH ');
+    UPDATE dob_permits SET boro = regexp_replace(boro, '1', 'MN', 'g'); 
+    UPDATE dob_permits SET boro = regexp_replace(boro, '3', 'BK', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, '5', 'SI', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, '4', 'QN', 'g');
+    UPDATE dob_permits SET boro = regexp_replace(boro, '2', 'BR', 'g'); 
+    SElECT concat(trim(dob_permits.boroid),dob_permits.block,dob_permits.lot as bbl from dob_permits;
+    ALTER TABLE dob_permits CHANGE bbl bigint(13) NULL DEFAULT NULL;
+    ALTER TABLE `dob_permits` ADD INDEX(bbl);
+
+    '''
+    for result in cursor.execute(SQL,multi = True):
+        pass
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
     # TODO(ryan, alex): actual sql cleanup.
     log.info('SQL cleanup...')
 
