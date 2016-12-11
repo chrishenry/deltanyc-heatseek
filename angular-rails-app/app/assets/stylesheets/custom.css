@@ -8,6 +8,8 @@ nav#my-nav{
   background-color: white;
   color:black;
   border-bottom: 4px solid orange;
+  margin: 0;
+  padding: 0;
 }
 
 nav#my-nav a{
@@ -86,5 +88,38 @@ hr.featurette-divider {
   margin-bottom: 30px;
   margin-left: 0;
   width: 90%;
+}
+
+hr.featurette-divider.resource {
+  border: 1px solid orange;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: 30%;
+  margin-right: 30%;
+  width: 40%;
 
 }
+
+#resource_text {
+  color:white;
+  text-align: center;
+  text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+  text-decoration: none;
+}
+
+h3#resource_text {
+  text-align: center;
+}
+
+#resource_text a {
+  color:white;
+  font-size: 1.3em;
+  text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+  text-decoration: none;
+  line-height: 1.8em;
+}
+
+#resource_text a:hover {
+  color:orange;
+}
+
