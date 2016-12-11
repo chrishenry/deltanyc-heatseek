@@ -103,7 +103,7 @@ hr.featurette-divider.resource {
 #resource_text {
   color:white;
   text-align: center;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
   text-decoration: none;
 }
 
@@ -114,7 +114,7 @@ h3#resource_text {
 #resource_text a {
   color:white;
   font-size: 1.3em;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
   text-decoration: none;
   line-height: 1.8em;
 }
