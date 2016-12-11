@@ -47,8 +47,24 @@ a img{
   background-color: white;
 }
 
-#instructions {
-  font-size: 1.2em;
+div#instructions {
+  padding-top: 18px;
+  font-size: 1.1em;
+  display: inline-block;
+  width: 85%;
+}
+
+div#instructions_building {
+  font-size: 1.1em;
+  display: inline-block;
+  width: 85%;
+  margin-top: 140px;
+}
+
+@media (max-width: 765px) {
+  div#instructions_building {
+    margin-top: 20px;
+  }
 }
 
 #breadcrumb {
@@ -63,15 +79,16 @@ td {
 }
 
 form {
-  width: 45%;
+  display: inline-block;
+  width: 90%;
 }
 
 input#propertiesSearch {
-  background-color: rgb(242,241,242);
+  height:40px;
 }
 
 button.btn.btn-secondary {
-  height: 34px;
+  height: 40px;
   background-color: black;
   color:white;
 }
@@ -97,13 +114,28 @@ hr.featurette-divider.resource {
   margin-left: 30%;
   margin-right: 30%;
   width: 40%;
+}
 
+hr.featurette-divider.footer {
+  border: 1px solid orange;
+  margin-top: 5px;
+  margin-bottom: 25px;
+  width:100%;
+}
+
+hr.featurette-divider.home {
+  border: 1px solid rgb(183,183,184);
+  margin-top: 40px;
+  margin-bottom: 30px;
+  margin-left: 0;
+  width: 100%;
+  left:0;
 }
 
 #resource_text {
   color:white;
   text-align: center;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
   text-decoration: none;
 }
 
@@ -121,5 +153,27 @@ h3#resource_text {
 
 #resource_text a:hover {
   color:orange;
+}
+
+footer {
+  background: rgb(127,128,129);
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right:0;
+  padding: 1rem;
+  padding-bottom: 10rem;
+}
+
+footer p{
+  margin-bottom: 50px;
+  font-size: 1.1em;
+  width: 90%;
+  text-align: left;
+}
+
+img.logo {
+  margin-top: 8px;
+  height: 80px;
 }
 
