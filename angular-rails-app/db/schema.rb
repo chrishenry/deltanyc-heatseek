@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161206044135) do
+ActiveRecord::Schema.define(version: 20161211045751) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -32,6 +32,31 @@ ActiveRecord::Schema.define(version: 20161206044135) do
     t.string   "number",               limit: 255
     t.string   "violation_category",   limit: 255
     t.string   "violation_type",       limit: 255
+  end
+
+  create_table "call_311", force: :cascade do |t|
+    t.integer  "unique_key",                     limit: 8
+    t.datetime "created_date"
+    t.datetime "closed_date"
+    t.string   "agency",                         limit: 255
+    t.string   "complaint_type",                 limit: 255
+    t.string   "descriptor",                     limit: 255
+    t.string   "incident_zip",                   limit: 255
+    t.string   "incident_address",               limit: 255
+    t.string   "street_name",                    limit: 255
+    t.string   "cross_street_1",                 limit: 255
+    t.string   "cross_street_2",                 limit: 255
+    t.string   "intersection_street_1",          limit: 255
+    t.string   "intersection_street_2",          limit: 255
+    t.string   "city",                           limit: 255
+    t.string   "status",                         limit: 255
+    t.datetime "due_date"
+    t.string   "resolution_description",         limit: 255
+    t.datetime "resolution_action_updated_date"
+    t.string   "borough",                        limit: 255
+    t.float    "latitude",                       limit: 24
+    t.float    "longitude",                      limit: 24
+    t.string   "location",                       limit: 255
   end
 
   create_table "dob_permits", id: false, force: :cascade do |t|
@@ -139,6 +164,8 @@ ActiveRecord::Schema.define(version: 20161206044135) do
     t.string  "businesszip",           limit: 255
   end
 
+  add_index "hpd_registration_contact", ["registrationid"], name: "index_hpd_registration_contact_on_registrationid", using: :btree
+
   create_table "hpd_registrations", force: :cascade do |t|
     t.integer  "registrationid",       limit: 8
     t.integer  "buildingid",           limit: 8
@@ -157,6 +184,8 @@ ActiveRecord::Schema.define(version: 20161206044135) do
     t.datetime "lastregistrationdate"
     t.datetime "registrationenddate"
   end
+
+  add_index "hpd_registrations", ["registrationid"], name: "index_hpd_registrations_on_registrationid", using: :btree
 
   create_table "pluto_nyc", force: :cascade do |t|
     t.string   "borough",       limit: 255
@@ -321,15 +350,22 @@ ActiveRecord::Schema.define(version: 20161206044135) do
   end
 
   create_table "owners", force: :cascade do |t|
-    t.string   "name",             limit: 255
-    t.string   "address_line_one", limit: 255
-    t.string   "address_line_two", limit: 255
-    t.string   "city",             limit: 255
-    t.string   "state",            limit: 255
-    t.string   "zipcode",          limit: 255
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.string   "name",                        limit: 255
+    t.string   "address_line_one",            limit: 255
+    t.string   "address_line_two",            limit: 255
+    t.string   "city",                        limit: 255
+    t.string   "state",                       limit: 255
+    t.string   "zipcode",                     limit: 255
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "corpotation_name",            limit: 4
+    t.integer  "hpd_registration_id",         limit: 4
+    t.integer  "hpd_registration_contact_id", limit: 4
+    t.string   "hpd_type",                    limit: 255
   end
+
+  add_index "owners", ["hpd_registration_contact_id"], name: "index_r_owners_on_hpd_registration_contact_id", unique: true, using: :btree
+  add_index "owners", ["hpd_registration_id"], name: "index_r_owners_on_hpd_registration_id", unique: true, using: :btree
 
   create_table "properties", force: :cascade do |t|
     t.string   "street_address",      limit: 255
