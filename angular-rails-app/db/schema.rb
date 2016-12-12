@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161211052725) do
+ActiveRecord::Schema.define(version: 20161212022640) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -58,6 +58,8 @@ ActiveRecord::Schema.define(version: 20161211052725) do
     t.float    "longitude",                      limit: 24
     t.string   "location",                       limit: 255
   end
+
+  add_index "call_311", ["complaint_type"], name: "index_call_311_on_complaint_type", using: :btree
 
   create_table "dob_permits", id: false, force: :cascade do |t|
     t.string   "borough",         limit: 255
@@ -284,7 +286,10 @@ ActiveRecord::Schema.define(version: 20161211052725) do
     t.string   "resolution_description", limit: 255
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
+    t.integer  "unique_key",             limit: 4
   end
+
+  add_index "complaint311s", ["unique_key"], name: "index_r_complaint311s_on_unique_key", unique: true, using: :btree
 
   create_table "dob_permits", force: :cascade do |t|
     t.integer  "property_id",     limit: 4

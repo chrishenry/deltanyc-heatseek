@@ -1,3 +1,5 @@
+require 'json'
+
 namespace :db_connector do
 
   # Create a consistent boro value
@@ -9,12 +11,40 @@ namespace :db_connector do
     'QN' => 'QUEENS',
   }
 
-  def get_short_boro(long_name)
-    @boros.select{|key, value| value == long_name }
+  @boros_int = {
+    1 => 'MN',
+    2 => 'BX',
+    3 => 'BK',
+    4 => 'QN',
+    5 => 'SI',
+  }
+
+  def nyc_geocode(house_number, street, boro)
+
+    app_key = ENV['NY_GEOCLIENT_APP_KEY']
+    app_secret = ENV['NY_GEOCLIENT_APP_SECRET']
+
+    url = "https://api.cityofnewyork.us/geoclient/v1/address.json?houseNumber=#{house_number}&street=#{street}&borough=#{boro}&app_id=#{app_key}&app_key=#{app_secret}"
+    response = HTTParty.get(url)
+    JSON.parse(response.body)
+  end
+
+  def add_indexes(indexes)
+
+    conn = ActiveRecord::Base.connection
+
+    indexes.each do |table, index_|
+      if not conn.index_exists?(table, index_) then
+        conn.add_index(table, index_)
+      end
+    end
+
   end
 
   desc "Pull in properties from pluto and hpd_buildings"
   task properties: :environment do
+
+    conn = ActiveRecord::Base.connection
 
     # Load addresses from Pluto
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
@@ -54,12 +84,7 @@ namespace :db_connector do
       "hpd_registration_contact" => "registrationid"
     ]
 
-    indexes.each do |table, index_|
-      if not conn.index_exists?(table, index_) then
-        conn.add_index(table, index_)
-      end
-    end
-
+    add_indexes(indexes)
 
     # sql = "SELECT COUNT(*) AS cnt FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
     # count_result = conn.exec_query(sql).to_hash[0]['cnt']
@@ -112,4 +137,86 @@ namespace :db_connector do
 
   end
 
+  desc "Pull in 311 complaints"
+  task three11: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    indexes = Hash[
+      "call_311" => "complaint_type",
+    ]
+
+    add_indexes(indexes)
+
+    # There are ~240 categories. We def don't care about all of them
+    # This is just a guess as to what we *do* care about.
+    three11_categories = [
+      "Maintenance or Facility",
+      "HEATING",
+      "Building/Use",
+      "APPLIANCE",
+      "BEST/Site Safety",
+      "Indoor Air Quality",
+      "Air Quality",
+      "Weatherization",
+      "Water Quality",
+      "Indoor Sewage",
+      "Boilers",
+      "Mold",
+      "UNSANITARY CONDITION",
+      "WATER LEAK",
+      "HEAT/HOT WATER",
+      "Standing Water",
+    ]
+
+    in_list =  "\"" + three11_categories.join("\", \"") + "\""
+
+    sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type IN (" + in_list + ");"
+    three11_results = conn.exec_query(sql).to_hash
+
+    three11_results.each do |result|
+
+      puts "**************"
+
+      # Decently working regex to get ONLY street_number
+      street_number = result['incident_address'].scan(/^[^\s]+/).join('')
+      street = result['street_name']
+      boro_id = @boros_int.key(@boros.key(result['borough']))
+
+      puts result['borough']
+      puts boro_id
+
+      geo_data = nyc_geocode(street_number, street, boro_id)
+
+      boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
+      block = geo_data['address']['bblTaxBlock'].to_i
+      lot = geo_data['address']['bblTaxLot'].to_i
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop and not Complaint311.find_by(unique_key: result['unique_key'])
+
+        complaint = Complaint311.new do |c|
+          c.property_id = prop.id
+          c.unique_key = result['unique_key']
+          c.created_date = result['created_date']
+          c.closed_date = result['closed_date']
+          c.agency = result['agency']
+          c.complaint_type = result['complaint_type']
+          c.status = result['status']
+          c.due_date = result['due_date']
+          c.resolution_description = result['resolution_description']
+        end
+
+        complaint.save
+
+      end
+
+
+    end
+
+
+  end
+
 end
+
