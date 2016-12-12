@@ -207,3 +207,30 @@ td.L {
   font-size: 1.1em;
 }
 
+a.owner {
+  font-size: 1.1em;
+  margin-left: 30px;
+  color: orange;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a.owner:hover{
+  color: rgb(255,33,1);
+  text-decoration: none;
+}
+
+a.breadcrumb {
+  color: orange;
+  text-decoration: none;
+  background: none;
+}
+
+a.breadcrumb:hover{
+  color: rgb(255,33,1);
+  text-decoration: none;
+  background: none;
+}
+
+
+
