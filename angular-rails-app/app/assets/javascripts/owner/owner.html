@@ -1,0 +1,5 @@
+<h3 style="margin-top: 150px">{{vm.data.name}}</h3>
+
+<div ng-repeat="property in vm.data.properties | orderBy: 'zipcode'">
+  <a class="owner" ui-sref="property({ id: property.id })">{{property.street_address}}</a>
+</div>

@@ -68,7 +68,7 @@
         </div>
         <div class="col-sm-4" style="padding-top: 10px;">
             <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
-              <a class="owner" ui-sref="">{{owner.name}}</a>
+              <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
               <br><br><br>
           </div>

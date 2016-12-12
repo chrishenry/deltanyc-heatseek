@@ -16,6 +16,11 @@ angular
           url: '/contact', 
           templateUrl: 'home/contact.html', 
         })
+        .state('owner', {
+          url: '/owners/:id', 
+          templateUrl: 'owner/owner.html', 
+          controller: 'OwnerController as vm'
+        })
         .state('property', {
           url: '/properties/:id', 
           templateUrl: 'property/property.html', 
