@@ -1,5 +1,80 @@
-<h3 style="margin-top: 150px">{{vm.data.name}}</h3>
+<section style="min-height: 65px;margin-top:105px;">
+  <div class="container">
+    <p id="breadcrumb">
+      <a class="breadcrumb_top" ui-sref="home">Home /</a> Owner /
+      {{vm.data.name}}
+    </p>
+  </div>
+</section>
 
-<div ng-repeat="property in vm.data.properties | orderBy: 'zipcode'">
-  <a class="owner" ui-sref="property({ id: property.id })">{{property.street_address}}</a>
-</div>
+
+<section style="background: white;">
+    <div class="container">      
+      <h2 style="color:grey">OWNER</h2>
+        <hr class="featurette-divider">
+        <h2>{{vm.data.name}}</h2>
+        <br>
+    </div>
+</section>
+
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">GENERAL</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-8">
+
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Name</td>
+                <td class="L">{{vm.data.name}}</td> 
+                <td class="R"></td>
+                <td class="L"></td> 
+
+              </tr>
+              <tr>
+                <td class="R">Mailing Address</td>
+                <td class="L">{{vm.data.address_line_one}} {{vm.data.address_line_two}}, {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td> 
+                <td class="R"></td>
+                <td class="L"></td> 
+              </tr>
+  
+            </table>
+          </div>
+
+        </div>
+      </div> 
+    </div>        
+  </div>
+</section><!-- End of General Info Section -->
+
+
+<section style="background: white; margin-top: 10px; margin-bottom: 60px;">
+    <div class="container">      
+      <h4 id="info_heading">ASSOCIATED PROPERTIES</h4>
+      <hr class="featurette-divider property">
+
+        <div class="col-sm-4" style="padding-top: 10px;">
+            <div ng-repeat="property in vm.data.properties | orderBy: 'zipcode'">
+               <a class="owner" ui-sref="property({ id: property.id })">{{property.street_address}}</a>
+            </div>
+              <br><br><br>
+          </div>
+
+        </div>
+      </div> 
+    </div>        
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+

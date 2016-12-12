@@ -210,9 +210,10 @@ td.L {
 a.owner {
   font-size: 1.1em;
   margin-left: 30px;
-  color: orange;
+  color: rgb(255,165,0);
   font-weight: 500;
   text-decoration: none;
+  line-height: 1.8em;
 }
 
 a.owner:hover{
@@ -220,13 +221,13 @@ a.owner:hover{
   text-decoration: none;
 }
 
-a.breadcrumb {
-  color: orange;
+a.breadcrumb_top {
+  color: rgb(255,165,0);
   text-decoration: none;
   background: none;
 }
 
-a.breadcrumb:hover{
+a.breadcrumb_top:hover{
   color: rgb(255,33,1);
   text-decoration: none;
   background: none;
