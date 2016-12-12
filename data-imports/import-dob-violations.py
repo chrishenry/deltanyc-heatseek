@@ -129,6 +129,46 @@ def import_csv(args):
 
 
 def sql_cleanup(args):
+    conn = connect()
+    cursor = conn.cursor()
+
+    SQL = '''  
+
+    UPDATE dob_violations SET street = regexp_replace( street, ' AVE$|-AVE$| -AVE$', ' AVENUE');
+    UPDATE dob_violations SET street = regexp_replace( street, '\.', '', 'g');
+    UPDATE dob_violations SET street = array_to_string(regexp_matches(street, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE street ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
+    UPDATE dob_violations SET street = regexp_replace( street, ' LA$', ' LANE', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' LN$', ' LANE', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' PL$', ' PLACE', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' ST$| STR$', ' STREET', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' RD$', ' ROAD', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' PKWY$', 'PARKWAY', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' PKWY ', ' PARKWAY ', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD$', ' BOULEVARD', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD ', ' BOULEVARD ', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD', ' BOULEVARD ', 'g');
+    UPDATE dob_violations SET street = regexp_replace( street, '^E ', 'EAST ');
+    UPDATE dob_violations SET street = regexp_replace( street, '^W ', 'WEST ');
+    UPDATE dob_violations SET street = regexp_replace( street, '^N ', 'NORTH ');
+    UPDATE dob_violations SET street = regexp_replace( street, '^S ', 'SOUTH ');
+    UPDATE dob_violations SET street = regexp_replace( street, '^BCH ', 'BEACH ', 'g');
+    UPDATE dob_violations SET boro = regexp_replace(boro, '1', 'MN', 'g');
+    UPDATE dob_violations SET boro = regexp_replace(boro, '3', 'BK', 'g');
+    UPDATE dob_violations SET boro = regexp_replace(boro, '5', 'SI', 'g');
+    UPDATE dob_violations SET boro = regexp_replace(boro, '4', 'QN', 'g');
+    UPDATE dob_violations SET boro = regexp_replace(boro, '2', 'BR', 'g'); 
+    SELECT concat(trim(dob_violations.boroid),dob_violations.block,dob_violations.lot as bbl from dob_violations;
+    ALTER TABLE dob_violations CHANGE bbl bigint(13) NULL DEFAULT NULL;
+    ALTER TABLE `dob_violations` ADD INDEX(bbl);
+
+    '''
+
+    for result in cursor.execute(SQL,multi = True):
+        pass
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
     # TODO(ryan, alex): actual cleanup
     log.info('SQL cleanup...')
 
