@@ -20,31 +20,28 @@ def add_common_arguments(parser):
     parser.add_argument("--load-pickle",
             action='store_true',
             dest='LOAD_PICKLE',
-            default=False,
             help='Save a pickled version of the data during processing.')
 
     parser.add_argument("--save-pickle",
             action='store_true',
             dest='SAVE_PICKLE',
-            default=False,
             help='Save a pickled version of the data during processing.')
 
     parser.add_argument('--bust-disk-cache',
             action='store_true',
             dest='BUST_DISK_CACHE',
-            default=False,
             help='Forces re-download of data files.')
 
-    parser.add_argument('--update-or-replace-db',
+    parser.add_argument('--update-db',
             action='store_const',
             dest='DB_ACTION',
-            const='replace',
-            help='"replace" or "append" to the database if the table already exists.')
+            default='replace',
+            const='append',
+            help='"append" to the database if the table already exists instead of "replace".')
 
     parser.add_argument('--skip-import',
             action='store_true',
             dest='SKIP_IMPORT',
-            default=False,
             help='Skips the CSV->SQL import.')
 
     return parser
