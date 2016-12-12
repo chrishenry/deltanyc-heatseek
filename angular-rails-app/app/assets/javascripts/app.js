@@ -6,7 +6,10 @@ angular
         .state('home', {
           url: '/', 
           templateUrl: 'home/home.html', 
-          controller: 'HomeController as vm'
+          controller: 'HomeController as vm',
+          onEnter: function(){
+            initialize();
+          }
         })
         .state('resources', {
           url: '/resources', 
