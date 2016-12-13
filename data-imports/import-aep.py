@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 table_name = 'aep_list'
 
 def main(argv):
-    parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
+    parser = argparse.ArgumentParser(description='Import Alternative Enforcement Program dataset.')
     parser = add_common_arguments(parser)
     args = parser.parse_args()
 
