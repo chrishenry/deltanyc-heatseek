@@ -14,3 +14,6 @@
 /tmp
 .env
 NOTES
+
+# To override the parent .gitignore
+!lib/

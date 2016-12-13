@@ -1,4 +1,4 @@
-angular 
+angular
   .module('app')
   .controller('HomeController', ['$scope', 'HomeService', HomeController])
 
@@ -9,12 +9,12 @@ function HomeController($scope, HomeService) {
 
   vm.componentForm = {
     street_number: 'short_name',
-    route: 'short_name',
+    route: 'long_name',
     locality: 'long_name',
     administrative_area_level_1: 'short_name',
     country: 'long_name',
     postal_code: 'short_name'
-      };
+  };
 
   vm.mapping = {
     street_number: 'number',
@@ -35,14 +35,14 @@ function HomeController($scope, HomeService) {
             var val = vm.place.address_components[i][vm.componentForm[addressType]];
             vm.details[vm.mapping[addressType]] = val;
         }
-      }        
+      }
     }
 
   };
-    
+
   $scope.$watch('vm.place',vm.setDetails);
 
-  
+
  vm.getProperty = function(){
     HomeService.getProperty(vm.details)
     .then(function(propertyData){
@@ -52,7 +52,7 @@ function HomeController($scope, HomeService) {
     });
  }
 
- 
+
 
 
 }

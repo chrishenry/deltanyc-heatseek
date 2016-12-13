@@ -3,13 +3,13 @@ class PropertiesController < ApplicationController
   before_action :set_property, only: [:show]
 
   def index
-    @properties = Property.all
+    @properties = Property.paginate(:page => params[:page])
     render json: @properties, status: 200
   end
 
   def query
-    @property = Property.where("zipcode = ?",
-    params[:zipcode])
+    #TODO: probably need to filter these params better
+    @property = Property.where("zipcode = #{params[:zipcode]} AND street_address = '#{params[:street_address]}'")
     puts @property.inspect
     render json: @property, status: 200
   end
