@@ -152,7 +152,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
             log.info("Processing chunk {}".format(chunk_num))
 
             chunk_pickle_file = pickle_file.format(chunk_num)
-            df = process_df(df, log, description, save_pickle, chunk_pickle_file,
+            df = process_df(df, log, description, save_pickle, pickle_file,
                     truncate_columns, date_time_columns, date_format, max_col_len)
 
             if chunk_num > 0:
@@ -183,7 +183,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
         df = process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
-                date_time_columns, keep_cols, date_format, max_col_len)
+                date_time_columns, date_format, max_col_len)
 
     send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size,
             max_col_len)
