@@ -45,7 +45,8 @@ COPY requirements.txt /root/requirements.txt
 RUN pip --no-cache-dir install -r /root/requirements.txt
 
 EXPOSE 8888
-WORKDIR /root/work
+RUN mkdir /root/JPF
+WORKDIR /root/JPF
 
 # Configure container startup
 ENTRYPOINT ["tini", "--"]
