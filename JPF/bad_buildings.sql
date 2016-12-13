@@ -1,4 +1,4 @@
-# v1.0 - JP Freeley - 11/26/2016
+# v2.0 - JP Freeley - 12/13/2016
 #
 # SQL - for bad buildings
 # Does not account for DATES or TIMES or AGE. 
@@ -8,11 +8,10 @@
 #	hpd_complaints
 #	dob_permits
 #	dob_violations
-# DOB Data joined by ADDRESS .. not sure if I trust BIN nor BBL
 # There are probably more optimal ways to do this.
 # !!! Needs better documentation
-# !!! Ends up with 2000 MORE BUILDINGS THAN EXIST IN hpd_buildings .. likely dirty addresses .. FIRST()??
-### This finds them (1955 rows)
+# !!! Ends up with 26 MORE BUILDINGS THAN EXIST IN hpd_buildings .. likely dirty addresses .. FIRST()??
+### This finds them (26 rows)
 ### select hbaddress, buildingid, count(buildingid) count from bad_buildings group by 1,2 having count > 1;
 
 
@@ -167,7 +166,7 @@ on
 ;
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (`buildingid`);
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (bin);
-alter table hpd_complaint_counts CHANGE bbl bbl bigint(13) NULL DEFAULT NULL;
+alter table `hpd_complaint_counts` CHANGE bbl bbl bigint(13) NULL DEFAULT NULL;
 ALTER TABLE `hpd_complaint_counts` ADD INDEX(bbl);
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (hbaddress(255));
 
@@ -501,6 +500,9 @@ select
 	pawl.score pa_score,
 	pawl.lat pa_lat,
 	pawl.lng pa_long,
+	pawl.full_address pa_full_address, 
+	pawl.bin pa_bin,
+	pawl.buildingid pa_buildingid,
 	ho.owner_name owner_name,
 	hc.corporationname corp_owner,
 	hb.managementprogram
@@ -582,9 +584,47 @@ update bad_buildings set bb_target = 1 where bb_score >= 2 and unitsres >= 35 ;
 update bad_buildings set bb_target = 1 where bb_score >= 3 and unitsres < 35 ;
 alter table bad_buildings add index(bb_target);
 
+create temporary table 
+	pa_compare_temp
+select 
+	bbl,
+	hbaddress,
+	pa_full_address,
+	bin, 
+	pa_bin, 
+	buildingid, 
+	pa_buildingid, 
+	unitsres, 
+	pa_units, 
+	(unitsres - pa_units) as units_diff,  
+	classB_cnt, 
+	pa_hpdv_b_cnt, 
+	(classB_cnt - pa_hpdv_b_cnt) b_cnt_diff, 
+	classC_cnt, 
+	pa_hpdv_c_cnt, 
+	(classC_cnt - pa_hpdv_c_cnt) c_cnt_diff, 
+	dob_violation_cnt, 
+	pa_dobv_cnt,
+	(dob_violation_cnt-pa_dobv_cnt) dobv_diff, 
+	pa_score, 
+	bb_score, 
+	round(pa_score-bb_score,3) score_diff, 
+	unitstotal
+from 
+	bad_buildings 
+where 
+	pa_score is not null; 
+
+
+
+
+
+
 
 ## DROP ALL KEYS AND CHANGES TO ORIGINAL TABLES RUN FAR ABOVE
 alter table hpd_buildings drop primary key;
+alter table hpd_buildings drop index lifecycle;
+alter table hpd_buildings drop index bin;
 alter table hpd_complaintsProb DROP INDEX majorcategoryid;
 alter table hpd_complaintsProb drop INDEX minorcategoryid;
 alter table hpd_complaintsProb drop INDEX codeid;
@@ -603,26 +643,8 @@ alter table pluto_nyc drop index bbl;
 alter table tb_changes_summary drop index ucbbl;
 alter table hpd_aep_list drop index full_addr;
 
-select * from bad_buildings limit 100;
+#   select * from bad_buildings limit 100;
 
-select * from bad_buildings where target = 1;
+#   select * from bad_buildings where target = 1;
 
 
-### FIND LANDLORDS
--- alter table hpd_buildings add index(bin);
--- alter table `pubadv_worst_landlords` add index(bin);
--- alter table hpd_registrations add index(buildingid);
--- alter table hpd_registrations add index(registrationid);
--- alter table hpd_registrationContact add index(registrationid);
-
--- select * from hpd_buildings hb 
--- join pubadv_worst_landlords pawl on hb.bin = pawl.bin
--- join hpd_registrations hr on hb.buildingid = hr.buildingid
--- join hpd_registrationContact hrc on hr.registrationid = hrc.registrationid 
--- where hrc.type in ("HeadOfficer", "CorporateOwner");
-
--- alter table hpd_buildings drop index bin;
--- alter table `pubadv_worst_landlords` drop index bin;
--- alter table hpd_registrations drop index buildingid ;
--- alter table hpd_registrations DROP index registrationid ;
--- alter table hpd_registrationContact drop index registrationid;
