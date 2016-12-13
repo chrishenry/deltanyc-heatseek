@@ -18,10 +18,9 @@
 
 ## BELOW REQUIRES THAT NO INDEXES/KEYS PRE-EXIST ON THE TABLES
 ## AT THE BOTTOM OF THIS FILE IS CODE FOR REMOVING THE FOLLOWING INDEXES/KEYS
-
-delete from hpd_buildings where buildingid = 814731; #FICTICIOUS?? OVERSIZED BBL .. DELETE
 alter table hpd_buildings add primary key(buildingid);
-
+alter table hpd_buildings add index(lifecycle);
+alter table hpd_buildings add index(bin);
 alter table hpd_complaintsProb add INDEX(majorcategoryid);
 alter table hpd_complaintsProb add INDEX(minorcategoryid);
 alter table hpd_complaintsProb add INDEX(codeid);
@@ -40,11 +39,33 @@ alter table pluto_nyc add index(bbl);
 alter table tb_changes_summary add index(ucbbl);
 alter table hpd_aep_list add index(full_addr);
 
+delete from hpd_buildings where buildingid = 814731; #FICTICIOUS?? OVERSIZED BBL .. DELETE
 
 delete from dob_violations where boro not in ('1','2','3','4','5');
 ALTER TABLE dob_violations CHANGE `boro` `boro` INT(5)  NULL  DEFAULT NULL;
 alter table dob_violations add index(boro);
-alter table `dob_permits`add index (borough);
+alter table dob_violations add index(bin);
+alter table dob_permits add index (borough);
+
+delete from dob_violations 
+where 
+	bin < 1000000 or 
+	bin > 5999999 or 
+	bin = 1000000 or 
+	bin = 2000000 or 
+	bin = 3000000 or 
+	bin = 4000000 or 
+	bin = 5000000;
+	
+delete from hpd_buildings 
+where 
+	bin < 1000000 or 
+	bin > 5999999 or 
+	bin = 1000000 or 
+	bin = 2000000 or 
+	bin = 3000000 or 
+	bin = 4000000 or 
+	bin = 5000000;
 
 drop table if exists hpd_registrationContact_d;
 create temporary table hpd_registrationContact_d 
@@ -63,6 +84,15 @@ alter table boro_lookup add index(boroid);
 alter table boro_lookup add index(boro);
 
 ################
+drop table if exists hpd_buildings_temp;
+################
+
+create temporary table
+	hpd_buildings_temp
+select * from hpd_buildings where lifecycle = 'Building';
+alter table hpd_buildings_temp add primary key(buildingid);
+
+################
 drop table if exists hs_complaint_count;
 ################
 create temporary table 
@@ -76,7 +106,7 @@ left join
 on
 	c.complaintid = cp.complaintid
 left join 
-	hpd_buildings b
+	hpd_buildings_temp b
 on 
 	c.buildingid = b.buildingid
 where 
@@ -102,7 +132,7 @@ left join
 on
 	c.complaintid = cp.complaintid
 left outer join 
-    hpd_buildings b
+    hpd_buildings_temp b
 on 
    c.buildingid = b.buildingid
 group by 
@@ -125,7 +155,7 @@ select
 	cc.count as all_hpd_complaints, 
 	hscc.count as hs_hpd_complaints
 from 
-	`hpd_buildings` as hb
+	hpd_buildings_temp as hb
 left join 
 	`hs_complaint_count` hscc
 on 
@@ -133,7 +163,8 @@ on
 left join
 	`complaint_count` cc 
 on  
-	hb.buildingid = cc.buildingid;
+	hb.buildingid = cc.buildingid
+;
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (`buildingid`);
 ALTER TABLE `hpd_complaint_counts` ADD INDEX (bin);
 alter table hpd_complaint_counts CHANGE bbl bbl bigint(13) NULL DEFAULT NULL;
@@ -524,7 +555,7 @@ left join
 left join
 	aep_2016 a16 on (a16.full_addr) = (hbaddress)
 left join
-	hpd_buildings hb on hb.buildingid = cc.buildingid
+	hpd_buildings_temp hb on hb.buildingid = cc.buildingid
 ;
 
 ## CREATE AND SET THE TARGET COLUMN
@@ -595,43 +626,3 @@ select * from bad_buildings where target = 1;
 -- alter table hpd_registrations drop index buildingid ;
 -- alter table hpd_registrations DROP index registrationid ;
 -- alter table hpd_registrationContact drop index registrationid;
-
-select * from bad_buildings where buildingid = 927849; select max(bbl) from hpd_complaint_counts;
-select * from hpd_complaint_counts where bbl = 5500005000;
-select * from hpd_buildings where buildingid = 927849;
-select hbaddress, buildingid, count(buildingid) count from bad_buildings group by 1,2 having count > 1;
-select * from dob_violations where bin = 4220680;
-select * from pluto_nyc where buildingid = 582406;
-
-select bin, dob_violation_cnt, `pa_dobv_cnt` from bad_buildings where pa_dobv_cnt is not null;
-
-select  distinct(`violation_category`), count(*) from dob_violations group by 1; 
-
-select * from `dob_violations` where bin  = 2017700 and
-	`violation_category` not like ("%dismissed%") and	`violation_category` not like ("%resolved%"); 
-	
-select * from violation_counts ;
-
-update dob_violations set bin = trim(bin);
-
-select * from dob_violations where left(`block`,1) = '\\' ;
-update dob_violations set block = '00459' where bin = 1082670;
-
-select * from dob_violations where block like "%0246%"; #22 0246 02
-delete from violation_counts where bbl regexp '[A-Za-z]';
-
-
-select bb_score from bad_buildings order by bb_score desc;
-
-select count(*) from bad_buildings where bb_target = 0; 
-
-
-select bb_score from bad_buildings where bb_target = 1 order by bb_score desc;
-
-select count(distinct(corp_owner)) from bad_buildings;
-
-select count(*) from bad_buildings where unitsres is not null or unitsres > 0;
-
-select count(*) from bad_buildings where bb_target = 0 and target = 1;
-
-select unitsres, unitstotal, pa_units from bad_buildings where pa_units is not null limit 1000;
