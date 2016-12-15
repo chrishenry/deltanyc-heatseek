@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161212022640) do
+ActiveRecord::Schema.define(version: 20161215034902) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -130,6 +130,24 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.string  "lifecycle",          limit: 255
     t.integer "recordstatusid",     limit: 8
     t.string  "recordstatus",       limit: 255
+  end
+
+  create_table "hpd_complaints", id: false, force: :cascade do |t|
+    t.integer  "complaintid",    limit: 8
+    t.integer  "buildingid",     limit: 8
+    t.integer  "boroughid",      limit: 8
+    t.string   "borough",        limit: 255
+    t.string   "housenumber",    limit: 255
+    t.string   "streetname",     limit: 255
+    t.float    "zip",            limit: 24
+    t.integer  "block",          limit: 8
+    t.integer  "lot",            limit: 8
+    t.string   "apartment",      limit: 255
+    t.integer  "communityboard", limit: 8
+    t.datetime "receiveddate"
+    t.integer  "statusid",       limit: 8
+    t.string   "status",         limit: 255
+    t.datetime "statusdate"
   end
 
   create_table "hpd_litigations", id: false, force: :cascade do |t|
@@ -323,6 +341,9 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.string   "status",            limit: 255
     t.datetime "status_date"
     t.integer  "status_id",         limit: 4
+    t.datetime "received_date"
+    t.integer  "complaint_id",      limit: 4
+    t.string   "apartment",         limit: 255
   end
 
   create_table "hpd_violations", force: :cascade do |t|
