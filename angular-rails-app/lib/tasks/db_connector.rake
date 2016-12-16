@@ -137,6 +137,54 @@ namespace :db_connector do
 
   end
 
+  desc "Pull in hpd complaints"
+  task hpd_complaints: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    sql = "SELECT * FROM hpd_complaints"
+    complaints = conn.exec_query(sql).to_hash
+
+    puts "Found #{complaints.length} complaints"
+
+    complaints.each do |complaint|
+
+      if not HpdComplaint.find_by(complaint_id: complaint['complaintid']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[complaint['boroughid']]
+      block = complaint['block']
+      lot = complaint['lot']
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      hpd_complaint = HpdComplaint.new do |hc|
+        #   hc.complaint_type =
+        #   hc.major_category_id =
+        #   hc.minor_category_id =
+        #   hc.code_id =
+        hc.property_id = prop.id
+        hc.received_date = complaint['receiveddate']
+        hc.complaint_id = complaint['complaintid']
+        hc.apartment = complaint['apartment']
+        hc.status = complaint['status']
+        hc.status_date = complaint['statusdate']
+        hc.status_id = complaint['statusid']
+      end
+
+      hpd_complaint.save
+      puts "Saved complaint"
+
+    end
+
+  end
+
   desc "Pull in 311 complaints"
   task three11: :environment do
 
@@ -211,54 +259,6 @@ namespace :db_connector do
         complaint.save
 
       end
-
-    end
-
-  end
-
-  desc "Pull in hpd complaints"
-  task hpd_complaints: :environment do
-
-    conn = ActiveRecord::Base.connection
-
-    sql = "SELECT * FROM hpd_complaints"
-    complaints = conn.exec_query(sql).to_hash
-
-    puts "Found #{complaints.length} complaints"
-
-    complaints.each do |complaint|
-
-      if not HpdComplaint.find_by(complaint_id: complaint['complaintid']).nil?
-        puts "Exists, skipping"
-        next
-      end
-
-      boro = @boros_int[complaint['boroughid']]
-      block = complaint['block']
-      lot = complaint['lot']
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        next
-      end
-
-      hpd_complaint = HpdComplaint.new do |hc|
-        #   hc.complaint_type =
-        #   hc.major_category_id =
-        #   hc.minor_category_id =
-        #   hc.code_id =
-        hc.property_id = prop.id
-        hc.received_date = complaint['receiveddate']
-        hc.complaint_id = complaint['complaintid']
-        hc.apartment = complaint['apartment']
-        hc.status = complaint['status']
-        hc.status_date = complaint['statusdate']
-        hc.status_id = complaint['statusid']
-      end
-
-      hpd_complaint.save
-      puts "Saved complaint"
 
     end
 
