@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161215034902) do
+ActiveRecord::Schema.define(version: 20161216154221) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -345,6 +345,8 @@ ActiveRecord::Schema.define(version: 20161215034902) do
     t.integer  "complaint_id",      limit: 4
     t.string   "apartment",         limit: 255
   end
+
+  add_index "hpd_complaints", ["complaint_id"], name: "index_r_hpd_complaints_on_complaint_id", unique: true, using: :btree
 
   create_table "hpd_violations", force: :cascade do |t|
     t.integer  "property_id",         limit: 4
