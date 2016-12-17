@@ -185,6 +185,49 @@ namespace :db_connector do
 
   end
 
+  desc "Pull in hpd litigations"
+  task hpd_litigations: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    sql = "SELECT * FROM hpd_litigations"
+    litigations = conn.exec_query(sql).to_hash
+
+    puts "Found #{litigations.length} complaints"
+
+    litigations.each do |litigation|
+
+      if not Litigation.find_by(litigation_id: litigation['litigationid']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[litigation['boroid']]
+      block = litigation['block']
+      lot = litigation['lot']
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      lit = Litigation.new do |l|
+        l.property_id = prop.id
+        l.case_type = litigation['casetype']
+        l.case_judgement = litigation['casejudgement']
+        l.litigation_id = litigation['litigationid']
+        l.case_open_date = litigation['caseopendate']
+        l.case_status = litigation['casestatus']
+      end
+
+      lit.save
+      puts "Saved case"
+
+    end
+
+  end
+
   desc "Pull in 311 complaints"
   task three11: :environment do
 

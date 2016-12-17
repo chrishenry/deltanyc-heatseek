@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161216154221) do
+ActiveRecord::Schema.define(version: 20161216230958) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -368,7 +368,12 @@ ActiveRecord::Schema.define(version: 20161216154221) do
     t.integer  "property_id",    limit: 4
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "litigation_id",  limit: 4
+    t.datetime "case_open_date"
+    t.string   "case_status",    limit: 255
   end
+
+  add_index "litigations", ["litigation_id"], name: "index_r_litigations_on_litigation_id", unique: true, using: :btree
 
   create_table "owner_properties", force: :cascade do |t|
     t.integer  "property_id", limit: 4
