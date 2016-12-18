@@ -58,5 +58,5 @@ have it installed. See [this article](http://stackoverflow.com/a/32361238/103315
 on why you need to use `127.0.0.1`.
 
 ```bash
-mysql -h 127.0.0.1 -P 3306 -u deltanyc -ppassword
+mysql -h 127.0.0.1 -P 3306 -u deltanyc -ppassword deltanyc
 ```

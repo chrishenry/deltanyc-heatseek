@@ -193,7 +193,7 @@ namespace :db_connector do
     sql = "SELECT * FROM hpd_litigations"
     litigations = conn.exec_query(sql).to_hash
 
-    puts "Found #{litigations.length} complaints"
+    puts "Found #{litigations.length} cases"
 
     litigations.each do |litigation|
 
@@ -223,6 +223,60 @@ namespace :db_connector do
 
       lit.save
       puts "Saved case"
+
+    end
+
+  end
+
+  desc "Pull in dob permits"
+  task dob_permits: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    # This table doesn't have any sort of unique identifier,
+    #   so there really isn't any way to ensure uniqueness,
+    #   except for nuking the whole table every import.
+    puts "Truncating #{DobPermit.table_name}"
+
+    sql = "TRUNCATE #{DobPermit.table_name}"
+    conn.execute(sql)
+
+    sql = "SELECT * FROM dob_permits"
+    permits = conn.exec_query(sql).to_hash
+
+
+    puts "Found #{permits.length} permits"
+
+    permits.each do |permit|
+
+      boro = @boros.key(permit['borough'])
+      block = permit['block'].to_i
+      lot = permit['lot'].to_i
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      permit = DobPermit.new do |d|
+        d.property_id = prop.id
+        d.permit_status = permit['permit_status']
+        d.filing_date = permit['filling_date']
+        d.expiration_date = permit['expiration_date']
+        d.work_type = permit['work_type']
+        d.job_start_date = permit['job_start_date']
+        d.job_type = permit['job_type']
+        d.job_num = permit['job_num']
+        d.job_type = permit['job_type']
+        d.filling_status = permit['filling_status']
+        d.permit_status = permit['permit_status']
+        d.permit_type = permit['permit_type']
+        d.bldg_type = permit['bldg_type']
+      end
+
+      permit.save
+      puts "Saved permit"
 
     end
 

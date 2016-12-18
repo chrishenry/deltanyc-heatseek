@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161216230958) do
+ActiveRecord::Schema.define(version: 20161217230548) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -320,6 +320,12 @@ ActiveRecord::Schema.define(version: 20161216230958) do
     t.datetime "expiration_date"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.datetime "job_start_date"
+    t.string   "job_type",        limit: 255
+    t.string   "job_num",         limit: 255
+    t.string   "filling_status",  limit: 255
+    t.string   "permit_type",     limit: 255
+    t.string   "bldg_type",       limit: 255
     t.string   "work_type",       limit: 255
   end
 
