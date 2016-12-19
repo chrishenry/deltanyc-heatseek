@@ -282,6 +282,13 @@ namespace :db_connector do
 
   end
 
+  desc "Pull in dob violations"
+  task dob_violations: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+  end
+
   desc "Pull in 311 complaints"
   task three11: :environment do
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161217230548) do
+ActiveRecord::Schema.define(version: 20161219022823) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -330,10 +330,15 @@ ActiveRecord::Schema.define(version: 20161217230548) do
   end
 
   create_table "dob_violations", force: :cascade do |t|
-    t.integer  "property_id",    limit: 4
-    t.string   "violation_type", limit: 255
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "property_id",          limit: 4
+    t.string   "violation_type",       limit: 255
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "isn_dob_bis_viol",     limit: 255
+    t.string   "violation_category",   limit: 255
+    t.datetime "issue_date"
+    t.datetime "disposition_date"
+    t.string   "disposition_comments", limit: 255
   end
 
   create_table "hpd_complaints", force: :cascade do |t|
