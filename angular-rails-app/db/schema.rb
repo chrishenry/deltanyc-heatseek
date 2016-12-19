@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161219022823) do
+ActiveRecord::Schema.define(version: 20161219171930) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -340,6 +340,8 @@ ActiveRecord::Schema.define(version: 20161219022823) do
     t.datetime "disposition_date"
     t.string   "disposition_comments", limit: 255
   end
+
+  add_index "dob_violations", ["isn_dob_bis_viol"], name: "index_r_dob_violations_on_isn_dob_bis_viol", unique: true, using: :btree
 
   create_table "hpd_complaints", force: :cascade do |t|
     t.string   "complaint_type",    limit: 255

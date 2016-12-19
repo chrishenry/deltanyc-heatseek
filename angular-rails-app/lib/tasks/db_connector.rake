@@ -287,6 +287,61 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
+    v_types = [
+      "IMD-IMMEDIATE EMERGENCY",
+      "COMPBLD-STRUCTURALLY COMPROMISED BUILDING",
+      "HBLVIO-HIGH PRESSURE BOILER",
+      "LL1080-LOCAL LAW 10/80 - FACADE",
+      "P-PLUMBING",
+      "EGNCY-EMERGENCY",
+      "UB-UNSAFE BUILDINGS",
+      "IMEGNCY-IMMEDIATE EMERGENCY",
+      "LBLVIO-LOW PRESSURE BOILER",
+      "LL1081-LOCAL LAW 10/81 - ELEVATOR",
+      "LL6291-LOCAL LAW 62/91 - BOILERS",
+    ]
+
+    in_list =  "\"" + v_types.join("\", \"") + "\""
+
+    sql = "SELECT * FROM dob_violations WHERE violation_type IN (#{in_list})"
+    violation_results = conn.exec_query(sql).to_hash
+
+    violation_results.each do |violation|
+
+      puts violation
+
+      if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[violation['boro'].to_i]
+      block = violation['block'].to_i
+      lot = violation['lot'].to_i
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      violation = DobViolation.new do |d|
+        d.property_id = prop.id
+        d.isn_dob_bis_viol = violation['isn_dob_bis_viol']
+        d.violation_type = violation['violation_type']
+        d.violation_category = violation['violation_category']
+        d.issue_date = violation['issue_date']
+        d.disposition_date = violation['disposition_date']
+        d.disposition_comments = violation['disposition_comments']
+      end
+
+      puts "Saved violation"
+      violation.save
+
+    end
+
+
+
   end
 
   desc "Pull in 311 complaints"
