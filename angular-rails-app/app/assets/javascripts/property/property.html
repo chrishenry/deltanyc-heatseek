@@ -2,23 +2,23 @@
   <div class="container">
     <p id="breadcrumb">
       <a class="breadcrumb_top" ui-sref="home">Home /</a> Building /
-      {{vm.data.street_address}}, {{vm.data.city}} {{vm.data.state}}
+      {{vm.data.street_address | titleCase}}, {{vm.data.city}} {{vm.data.state}}
     </p>
   </div>
 </section>
 
 
 <section style="background: white;">
-    <div class="container">      
+    <div class="container">
       <h2 style="color:grey">BUILDING</h2>
         <hr class="featurette-divider">
-        <h2>{{vm.data.street_address}}</h2>
+        <h2>{{vm.data.street_address | titleCase}}</h2>
         <br>
     </div>
 </section>
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">GENERAL</h4>
       <hr class="featurette-divider property">
 
@@ -29,36 +29,36 @@
             <table class="table">
               <tr>
                 <td class="R">Address</td>
-                <td class="L">{{vm.data.street_address}}, 
-                {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td> 
+                <td class="L">{{vm.data.street_address | titleCase}},
+                {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td>
                 <td class="R">BBL</td>
-                <td class="L">{{vm.data.bbl}}</td> 
+                <td class="L">{{vm.data.expand_borough | titleCase}}, {{vm.data.block}}, {{vm.data.lot}}</td>
 
               </tr>
               <tr>
                 <td class="R">Rent Stabilized</td>
-                <td class="L">{{vm.data.rent_stabilized}}</td> 
+                <td class="L">{{vm.data.rent_stabilized}}</td>
                 <td class="R">BIN</td>
-                <td class="L">{{vm.data.bin}}</td> 
+                <td class="L">{{vm.data.bin}}</td>
               </tr>
               <tr>
                 <td class="R">Total Units in Building</td>
-                <td class="L">{{vm.data.total_units}}</td> 
+                <td class="L">{{vm.data.total_units}}</td>
                 <td class="R"></td>
-                <td class="L"></td> 
+                <td class="L"></td>
               </tr>
             </table>
           </div>
 
         </div>
-      </div> 
-    </div>        
+      </div>
+    </div>
   </div>
 </section><!-- End of General Info Section -->
 
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">PROPERTY OWNER(S)</h4>
       <hr class="featurette-divider property">
 
@@ -74,13 +74,13 @@
           </div>
 
         </div>
-      </div> 
-    </div>        
+      </div>
+    </div>
   </div>
 </section>
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">HPD</h4>
       <hr class="featurette-divider property">
 
@@ -94,7 +94,7 @@
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td> 
+                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
               </tr>
             </table>
           </div>
@@ -104,7 +104,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#hpd_violations"
-          data-ng-init="hpd_violations=false" 
+          data-ng-init="hpd_violations=false"
           data-ng-click="hpd_violations=!hpd_violations">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -115,7 +115,7 @@
               <tr id="blue">
                 <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -123,15 +123,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -149,7 +149,7 @@
               </tr>
               <tr>
                 <td class="R">HPD Complaints</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td> 
+                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
               </tr>
             </table>
           </div>
@@ -159,7 +159,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#hpd_complaints"
-          data-ng-init="hpd_complaints=false" 
+          data-ng-init="hpd_complaints=false"
           data-ng-click="hpd_complaints=!hpd_complaints">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -169,7 +169,7 @@
             <table class="table table-striped">
               <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -177,15 +177,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -194,11 +194,11 @@
       </div>
 
     </div>
-            
+
 </section>
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">DOB</h4>
       <hr class="featurette-divider property">
 
@@ -222,7 +222,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#dob_permits"
-          data-ng-init="dob_permits=false" 
+          data-ng-init="dob_permits=false"
           data-ng-click="dob_permits=!dob_permits">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -233,7 +233,7 @@
               <tr id="blue">
                 <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -241,15 +241,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -267,7 +267,7 @@
               </tr>
               <tr>
                 <td class="R">DOB Violations</td>
-                <td class="L"></td> 
+                <td class="L"></td>
               </tr>
             </table>
           </div>
@@ -277,7 +277,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#dob_violations"
-          data-ng-init="dob_violations=false" 
+          data-ng-init="dob_violations=false"
           data-ng-click="dob_violations=!dob_violations">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -287,7 +287,7 @@
             <table class="table table-striped">
               <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -295,15 +295,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -312,12 +312,12 @@
       </div>
 
     </div>
-            
+
 </section>
 
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">LITIGATIONS</h4>
       <hr class="featurette-divider property">
 
@@ -341,7 +341,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#litigations"
-          data-ng-init="litigations=false" 
+          data-ng-init="litigations=false"
           data-ng-click="litigations=!litigations">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -352,7 +352,7 @@
               <tr id="blue">
                 <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -360,15 +360,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -376,11 +376,11 @@
         </div>
       </div>
 <br><br>
-            
+
 </section>
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">311</h4>
       <hr class="featurette-divider property">
 
@@ -404,7 +404,7 @@
       <div class="row">
         <div class="col-sm-10 chart">
         <h4 id="show_hide" slide-toggle="#complaints311"
-        data-ng-init="complaints311=false" 
+        data-ng-init="complaints311=false"
           data-ng-click="complaints311=!complaints311">Details</h4>
 
         <i class="fa fa-caret-down" aria-hidden="true"
@@ -415,7 +415,7 @@
               <tr id="blue">
                 <tr id="blue">
                 <th>Lorem</th>
-                <th>Lorem ipsum dolor </th> 
+                <th>Lorem ipsum dolor </th>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
@@ -423,15 +423,15 @@
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
               <tr>
                 <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td> 
+                <td>Lorem ipsum dolor</td>
               </tr>
             </table>
           </div>
@@ -439,7 +439,7 @@
         </div>
       </div>
 <br><br>
-            
+
 </section>
 
 <br><br><br><br>
