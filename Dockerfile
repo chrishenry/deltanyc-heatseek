@@ -25,12 +25,18 @@ RUN wget --quiet https://github.com/krallin/tini/releases/download/v0.10.0/tini 
     mv tini /usr/local/bin/tini && \
     chmod +x /usr/local/bin/tini
 
+# Install Mysql regex UDFs
+RUN wget --quiet https://github.com/mysqludf/lib_mysqludf_preg/archive/testing.zip && \
+    mkdir lib_mysqludf_preg && \
+    unzip testing.zip -d lib_mysqludf_preg && \
+    cd lib_mysqludf_preg && \
+    ./configure && make install && make installdb && make test;
+
 ENV SHELL /bin/bash
 ENV NB_USER root
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
-
 
 # Upgrade pip
 RUN pip install --upgrade pip
