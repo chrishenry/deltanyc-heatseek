@@ -1,8 +1,8 @@
 angular
   .module('app')
-  .controller('HomeController', ['$scope', 'HomeService', HomeController])
+  .controller('HomeController', ['$scope', 'HomeService', '$state', HomeController])
 
-function HomeController($scope, HomeService) {
+function HomeController($scope, HomeService, $state) {
   var vm = this;
 
   vm.place ='';
@@ -47,6 +47,7 @@ function HomeController($scope, HomeService) {
     HomeService.getProperty(vm.details)
     .then(function(propertyData){
       console.log(propertyData);
+      return $state.go('property', {id: propertyData.data[0].id});
     }, function(error){
       alert('Unable to get property' + error.statusText);
     });

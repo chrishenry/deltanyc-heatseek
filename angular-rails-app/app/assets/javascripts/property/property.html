@@ -1,35 +1,455 @@
-<div class="container">
-
-  <p id="header">BUILDING</p>
-  <hr class="featurette-divider">
-
-  <h3>Building Address Here</h3>
-
-  <div id="info-panel">
-    <h4>GENERAL</h4>  
-
+<section style="min-height: 65px;margin-top:105px;">
+  <div class="container">
+    <p id="breadcrumb">
+      <a class="breadcrumb_top" ui-sref="home">Home /</a> Building /
+      {{vm.data.street_address}}, {{vm.data.city}} {{vm.data.state}}
+    </p>
   </div>
+</section>
 
-   <div id="info-panel">
-    <h4>311 INFO</h4>  
 
+<section style="background: white;">
+    <div class="container">      
+      <h2 style="color:grey">BUILDING</h2>
+        <hr class="featurette-divider">
+        <h2>{{vm.data.street_address}}</h2>
+        <br>
+    </div>
+</section>
+
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">GENERAL</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-8">
+
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Address</td>
+                <td class="L">{{vm.data.street_address}}, 
+                {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td> 
+                <td class="R">BBL</td>
+                <td class="L">{{vm.data.bbl}}</td> 
+
+              </tr>
+              <tr>
+                <td class="R">Rent Stabilized</td>
+                <td class="L">{{vm.data.rent_stabilized}}</td> 
+                <td class="R">BIN</td>
+                <td class="L">{{vm.data.bin}}</td> 
+              </tr>
+              <tr>
+                <td class="R">Total Units in Building</td>
+                <td class="L">{{vm.data.total_units}}</td> 
+                <td class="R"></td>
+                <td class="L"></td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div> 
+    </div>        
   </div>
+</section><!-- End of General Info Section -->
 
-  <div id="info-panel">
-    <h4>GENERAL</h4>
 
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">PROPERTY OWNER(S)</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-1" style="margin-left: 30px;">
+            <h4>Owners</h4>
+        </div>
+        <div class="col-sm-4" style="padding-top: 10px;">
+            <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
+              <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
+          </div>
+              <br><br><br>
+          </div>
+
+        </div>
+      </div> 
+    </div>        
   </div>
+</section>
 
-  <div id="info-panel">
-    <h4>HPD INFO</h4>   
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">HPD</h4>
+      <hr class="featurette-divider property">
 
-  </div>
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Total Open</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R">HPD Violations</td>
+                <td class="L">Class A: 0, Class B: 3, Class C: 2</td> 
+              </tr>
+            </table>
+          </div>
 
-  <div id="info-panel">
-    <h4>DOB INFO</h4>  
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#hpd_violations"
+          data-ng-init="hpd_violations=false" 
+          data-ng-click="hpd_violations=!hpd_violations">Details</h4>
 
-  </div>
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': hpd_violations, 'fa fa-caret-down' : !hpd_violations}"></i>
+          <div class="table-responsive slideable" id="hpd_violations">
+          <h4 style="text-align: center;">Open HPD Violations</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
 
-</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-8">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Total Open</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R">HPD Complaints</td>
+                <td class="L">Class A: 0, Class B: 3, Class C: 2</td> 
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#hpd_complaints"
+          data-ng-init="hpd_complaints=false" 
+          data-ng-click="hpd_complaints=!hpd_complaints">Details</h4>
+
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': hpd_complaints, 'fa fa-caret-down' : !hpd_complaints}"></i>
+          <div class="table-responsive slideable" id="hpd_complaints">
+          <h4 style="text-align: center;">HPD Complaints</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+            
+</section>
+
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">DOB</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Total DOB Permits</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R"></td>
+                <td class="L"></td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#dob_permits"
+          data-ng-init="dob_permits=false" 
+          data-ng-click="dob_permits=!dob_permits">Details</h4>
+
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': dob_permits, 'fa fa-caret-down' : !dob_permits}"></i>
+          <div class="table-responsive slideable" id="dob_permits">
+          <h4 style="text-align: center;">DOB Permits</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Total DOB Violations</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R">DOB Violations</td>
+                <td class="L"></td> 
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#dob_violations"
+          data-ng-init="dob_violations=false" 
+          data-ng-click="dob_violations=!dob_violations">Details</h4>
+
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': dob_violations, 'fa fa-caret-down' : !dob_violations}"></i>
+          <div class="table-responsive slideable" id="dob_violations">
+          <h4 style="text-align: center;">DOB Violations</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+            
+</section>
+
+
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">LITIGATIONS</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Cases</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R"></td>
+                <td class="L"></td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#litigations"
+          data-ng-init="litigations=false" 
+          data-ng-click="litigations=!litigations">Details</h4>
+
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': litigations, 'fa fa-caret-down' : !litigations}"></i>
+          <div class="table-responsive slideable" id="litigations">
+          <h4 style="text-align: center;">Litigations</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+<br><br>
+            
+</section>
+
+<section style="background: white; margin-top: 10px;">
+    <div class="container">      
+      <h4 id="info_heading">311</h4>
+      <hr class="featurette-divider property">
+
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <td class="R">Complaints</td>
+                <td class="L">5</td>
+              </tr>
+              <tr>
+                <td class="R"></td>
+                <td class="L"></td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-10 chart">
+        <h4 id="show_hide" slide-toggle="#complaints311"
+        data-ng-init="complaints311=false" 
+          data-ng-click="complaints311=!complaints311">Details</h4>
+
+        <i class="fa fa-caret-down" aria-hidden="true"
+          data-ng-class="{'fa fa-caret-right': complaints311, 'fa fa-caret-down' : !complaints311}"></i>
+          <div class="table-responsive slideable" id="complaints311">
+        <h4 style="text-align: center;">311 Complaints</h4>
+            <table class="table table-striped">
+              <tr id="blue">
+                <tr id="blue">
+                <th>Lorem</th>
+                <th>Lorem ipsum dolor </th> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td>
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+              <tr>
+                <td>Lorem ipsum</td>
+                <td>Lorem ipsum dolor</td> 
+              </tr>
+            </table>
+          </div>
+
+        </div>
+      </div>
+<br><br>
+            
+</section>
+
+<br><br><br><br>
+
+
+
+
+
+
+
+
 
 
