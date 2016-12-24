@@ -137,6 +137,211 @@ namespace :db_connector do
 
   end
 
+  desc "Pull in hpd complaints"
+  task hpd_complaints: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    sql = "SELECT * FROM hpd_complaints"
+    complaints = conn.exec_query(sql).to_hash
+
+    puts "Found #{complaints.length} complaints"
+
+    complaints.each do |complaint|
+
+      if not HpdComplaint.find_by(complaint_id: complaint['complaintid']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[complaint['boroughid']]
+      block = complaint['block']
+      lot = complaint['lot']
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      hpd_complaint = HpdComplaint.new do |hc|
+        #   hc.complaint_type =
+        #   hc.major_category_id =
+        #   hc.minor_category_id =
+        #   hc.code_id =
+        hc.property_id = prop.id
+        hc.received_date = complaint['receiveddate']
+        hc.complaint_id = complaint['complaintid']
+        hc.apartment = complaint['apartment']
+        hc.status = complaint['status']
+        hc.status_date = complaint['statusdate']
+        hc.status_id = complaint['statusid']
+      end
+
+      hpd_complaint.save
+      puts "Saved complaint"
+
+    end
+
+  end
+
+  desc "Pull in hpd litigations"
+  task hpd_litigations: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    sql = "SELECT * FROM hpd_litigations"
+    litigations = conn.exec_query(sql).to_hash
+
+    puts "Found #{litigations.length} cases"
+
+    litigations.each do |litigation|
+
+      if not Litigation.find_by(litigation_id: litigation['litigationid']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[litigation['boroid']]
+      block = litigation['block']
+      lot = litigation['lot']
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      lit = Litigation.new do |l|
+        l.property_id = prop.id
+        l.case_type = litigation['casetype']
+        l.case_judgement = litigation['casejudgement']
+        l.litigation_id = litigation['litigationid']
+        l.case_open_date = litigation['caseopendate']
+        l.case_status = litigation['casestatus']
+      end
+
+      lit.save
+      puts "Saved case"
+
+    end
+
+  end
+
+  desc "Pull in dob permits"
+  task dob_permits: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    # This table doesn't have any sort of unique identifier,
+    #   so there really isn't any way to ensure uniqueness,
+    #   except for nuking the whole table every import.
+    puts "Truncating #{DobPermit.table_name}"
+
+    sql = "TRUNCATE #{DobPermit.table_name}"
+    conn.execute(sql)
+
+    sql = "SELECT * FROM dob_permits"
+    permits = conn.exec_query(sql).to_hash
+
+
+    puts "Found #{permits.length} permits"
+
+    permits.each do |permit|
+
+      boro = @boros.key(permit['borough'])
+      block = permit['block'].to_i
+      lot = permit['lot'].to_i
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      permit = DobPermit.new do |d|
+        d.property_id = prop.id
+        d.permit_status = permit['permit_status']
+        d.filing_date = permit['filling_date']
+        d.expiration_date = permit['expiration_date']
+        d.work_type = permit['work_type']
+        d.job_start_date = permit['job_start_date']
+        d.job_type = permit['job_type']
+        d.job_num = permit['job_num']
+        d.job_type = permit['job_type']
+        d.filling_status = permit['filling_status']
+        d.permit_status = permit['permit_status']
+        d.permit_type = permit['permit_type']
+        d.bldg_type = permit['bldg_type']
+      end
+
+      permit.save
+      puts "Saved permit"
+
+    end
+
+  end
+
+  desc "Pull in dob violations"
+  task dob_violations: :environment do
+
+    conn = ActiveRecord::Base.connection
+
+    v_types = [
+      "IMD-IMMEDIATE EMERGENCY",
+      "COMPBLD-STRUCTURALLY COMPROMISED BUILDING",
+      "HBLVIO-HIGH PRESSURE BOILER",
+      "LL1080-LOCAL LAW 10/80 - FACADE",
+      "P-PLUMBING",
+      "EGNCY-EMERGENCY",
+      "UB-UNSAFE BUILDINGS",
+      "IMEGNCY-IMMEDIATE EMERGENCY",
+      "LBLVIO-LOW PRESSURE BOILER",
+      "LL1081-LOCAL LAW 10/81 - ELEVATOR",
+      "LL6291-LOCAL LAW 62/91 - BOILERS",
+    ]
+
+    in_list =  "\"" + v_types.join("\", \"") + "\""
+
+    sql = "SELECT * FROM dob_violations WHERE violation_type IN (#{in_list})"
+    violation_results = conn.exec_query(sql).to_hash
+
+    violation_results.each do |violation|
+
+      if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
+        puts "Exists, skipping"
+        next
+      end
+
+      boro = @boros_int[violation['boro'].to_i]
+      block = violation['block'].to_i
+      lot = violation['lot'].to_i
+
+      prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+      if prop.nil?
+        next
+      end
+
+      violation = DobViolation.new do |d|
+        d.property_id = prop.id
+        d.isn_dob_bis_viol = violation['isn_dob_bis_viol']
+        d.violation_type = violation['violation_type']
+        d.violation_category = violation['violation_category']
+        d.issue_date = violation['issue_date']
+        d.disposition_date = violation['disposition_date']
+        d.disposition_comments = violation['disposition_comments']
+      end
+
+      puts "Saved violation"
+      violation.save
+
+    end
+
+
+
+  end
+
   desc "Pull in 311 complaints"
   task three11: :environment do
 
@@ -212,9 +417,7 @@ namespace :db_connector do
 
       end
 
-
     end
-
 
   end
 

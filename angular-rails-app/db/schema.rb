@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161212022640) do
+ActiveRecord::Schema.define(version: 20161219171930) do
 
   create_table "TEST_violations", id: false, force: :cascade do |t|
     t.integer  "isn_dob_bis_viol",     limit: 4
@@ -130,6 +130,24 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.string  "lifecycle",          limit: 255
     t.integer "recordstatusid",     limit: 8
     t.string  "recordstatus",       limit: 255
+  end
+
+  create_table "hpd_complaints", id: false, force: :cascade do |t|
+    t.integer  "complaintid",    limit: 8
+    t.integer  "buildingid",     limit: 8
+    t.integer  "boroughid",      limit: 8
+    t.string   "borough",        limit: 255
+    t.string   "housenumber",    limit: 255
+    t.string   "streetname",     limit: 255
+    t.float    "zip",            limit: 24
+    t.integer  "block",          limit: 8
+    t.integer  "lot",            limit: 8
+    t.string   "apartment",      limit: 255
+    t.integer  "communityboard", limit: 8
+    t.datetime "receiveddate"
+    t.integer  "statusid",       limit: 8
+    t.string   "status",         limit: 255
+    t.datetime "statusdate"
   end
 
   create_table "hpd_litigations", id: false, force: :cascade do |t|
@@ -302,15 +320,28 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.datetime "expiration_date"
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.datetime "job_start_date"
+    t.string   "job_type",        limit: 255
+    t.string   "job_num",         limit: 255
+    t.string   "filling_status",  limit: 255
+    t.string   "permit_type",     limit: 255
+    t.string   "bldg_type",       limit: 255
     t.string   "work_type",       limit: 255
   end
 
   create_table "dob_violations", force: :cascade do |t|
-    t.integer  "property_id",    limit: 4
-    t.string   "violation_type", limit: 255
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.integer  "property_id",          limit: 4
+    t.string   "violation_type",       limit: 255
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "isn_dob_bis_viol",     limit: 255
+    t.string   "violation_category",   limit: 255
+    t.datetime "issue_date"
+    t.datetime "disposition_date"
+    t.string   "disposition_comments", limit: 255
   end
+
+  add_index "dob_violations", ["isn_dob_bis_viol"], name: "index_r_dob_violations_on_isn_dob_bis_viol", unique: true, using: :btree
 
   create_table "hpd_complaints", force: :cascade do |t|
     t.string   "complaint_type",    limit: 255
@@ -323,7 +354,12 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.string   "status",            limit: 255
     t.datetime "status_date"
     t.integer  "status_id",         limit: 4
+    t.datetime "received_date"
+    t.integer  "complaint_id",      limit: 4
+    t.string   "apartment",         limit: 255
   end
+
+  add_index "hpd_complaints", ["complaint_id"], name: "index_r_hpd_complaints_on_complaint_id", unique: true, using: :btree
 
   create_table "hpd_violations", force: :cascade do |t|
     t.integer  "property_id",         limit: 4
@@ -345,7 +381,12 @@ ActiveRecord::Schema.define(version: 20161212022640) do
     t.integer  "property_id",    limit: 4
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "litigation_id",  limit: 4
+    t.datetime "case_open_date"
+    t.string   "case_status",    limit: 255
   end
+
+  add_index "litigations", ["litigation_id"], name: "index_r_litigations_on_litigation_id", unique: true, using: :btree
 
   create_table "owner_properties", force: :cascade do |t|
     t.integer  "property_id", limit: 4
