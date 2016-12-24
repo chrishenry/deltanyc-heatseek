@@ -308,8 +308,6 @@ namespace :db_connector do
 
     violation_results.each do |violation|
 
-      puts violation
-
       if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
         puts "Exists, skipping"
         next
