@@ -102,6 +102,9 @@ call_311_df_keep_cols = [
 ]
 
 
+table_name = "call_311"
+
+
 def main(argv):
 
     parser = argparse.ArgumentParser(description='Import 311 complaints dataset.')
@@ -124,7 +127,6 @@ def main(argv):
     call_311_description = "311_complaints"
     call_311_pickle = os.path.join(call_311_dir, 'split', '311-chunk-{}.pkl')
     call_311_sep_char = ","
-    call_311_table_name = "call_311"
     call_311_load_pickle = args.LOAD_PICKLE
     call_311_save_pickle = args.SAVE_PICKLE
     call_311_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -149,45 +151,16 @@ def main(argv):
             call_311_df_keep_cols,
             csv_chunk_size=call_311_csv_chunk_size
             )
-    
+
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
+    log.info('SQL cleanup...')
 
-    SQL = '''  
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '\.', '', 'g');
-    UPDATE call_311 SET incident_address = array_to_string(regexp_matches(incident_address, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE incident_address ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LA$', ' LANE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LN$', ' LANE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PL$', ' PLACE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' ST$| STR$', ' STREET', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' RD$', ' ROAD', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^BCH ', 'BEACH ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^E ', 'EAST ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^W ', 'WEST ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^N ', 'NORTH ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^S ', 'SOUTH '); 
-    UPDATE call_311 SET borough = regexp_replace(borough, 'MANHATTAN', 'MN', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'BROOKLYN', 'BK', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'STATEN ISLAND', 'SI', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'QUEENS', 'QN', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'BRONX', 'BR', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'Unspecified', '', 'g');
+    boro_mapping = {"mn": "MANHATTAN", "bk": "BROOKLYN", "si": "STATEN ISLAND",
+            "qn": "QUEENS", "br": "BRONX"}
+    sql = clean_addresses(table_name, "incident_address") + \
+        clean_boro(table_name, "borough", boro_mapping)
 
-    '''
-
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
+    run_sql(sql)
 
 
 if __name__ == "__main__":
