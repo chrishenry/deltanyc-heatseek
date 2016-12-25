@@ -3,7 +3,6 @@ import glob
 import os
 import sys
 import logging
-import mysql.connector
 import pandas as pd
 import pickle
 import sqlalchemy
