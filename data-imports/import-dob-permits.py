@@ -176,10 +176,6 @@ def import_csv(args):
 def sql_cleanup(args):
     log.info('SQL cleanup...')
 
-    engine = connect()
-    connection = engine.raw_connection()
-    cursor = connection.cursor()
-
     boro_mapping = {"mn": "MANHATTAN", "bk": "BROOKLYN", "si": "STATEN ISLAND",
             "qn": "QUEENS", "br": "BRONX"}
     sql = clean_addresses(table_name, "street_name") + \
