@@ -177,19 +177,15 @@ def sql_cleanup(args):
     log.info('SQL cleanup...')
 
     engine = connect()
-    connection = engine.connect()
-    cursor = connection.connection.cursor()
+    connection = engine.raw_connection()
+    cursor = connection.cursor()
 
     boro_mapping = {"mn": "MANHATTAN", "bk": "BROOKLYN", "si": "STATEN ISLAND",
             "qn": "QUEENS", "br": "BRONX"}
-    SQL = clean_addresses(table_name, "street_name") + \
+    sql = clean_addresses(table_name, "street_name") + \
         clean_boro(table_name, "borough", boro_mapping)
 
-    for result in cursor.execute(SQL, multi = True):
-        pass
-
-    cursor.close()
-    connection.close()
+    run_sql(SQL)
 
 
 if __name__ == "__main__":

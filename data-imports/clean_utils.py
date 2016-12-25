@@ -38,3 +38,15 @@ def clean_boro(table, column, replacements):
     UPDATE {table} SET {column} = preg_replace('/{br}/i', 'BR', {column});
     '''.format(table=table, column=column, mn=replacements["mn"], bk=replacements["bk"],
             si=replacements["si"], qn=replacements["qn"], br=replacements["br"])
+
+def run_sql(sql):
+    engine = connect()
+    connection = engine.raw_connection()
+    cursor = connection.cursor()
+
+    for result in cursor.execute(sql, multi=True):
+        pass
+
+    cursor.close()
+    connection.connection.commit()
+    connection.close()
