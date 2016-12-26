@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
-from sqlalchemy import create_engine
-
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -113,6 +111,13 @@ def main(argv):
 
     print args
 
+    if not args.SKIP_IMPORT:
+        import_csv(args)
+
+    sql_cleanup(args)
+
+
+def import_csv(args):
     call_311_dir = os.path.join(BASE_DIR, CALL_311_KEY)
     mkdir_p(call_311_dir)
 
@@ -151,6 +156,7 @@ def main(argv):
             call_311_df_keep_cols,
             csv_chunk_size=call_311_csv_chunk_size
             )
+
 
 def sql_cleanup(args):
     log.info('SQL cleanup...')

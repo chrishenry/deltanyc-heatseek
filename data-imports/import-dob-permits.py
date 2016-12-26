@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
-from utils import *
 from clean_utils import *
+from utils import *
 
 mkdir_p(BASE_DIR)
 
@@ -176,10 +175,8 @@ def import_csv(args):
 def sql_cleanup(args):
     log.info('SQL cleanup...')
 
-    boro_mapping = {"mn": "MANHATTAN", "bk": "BROOKLYN", "si": "STATEN ISLAND",
-            "qn": "QUEENS", "br": "BRONX"}
     sql = clean_addresses(table_name, "street_name") + \
-        clean_boro(table_name, "borough", boro_mapping)
+        clean_boro(table_name, "borough", full_name_boro_replacements())
 
     run_sql(SQL)
 
