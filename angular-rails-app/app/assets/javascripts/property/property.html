@@ -29,15 +29,14 @@
             <table class="table">
               <tr>
                 <td class="R">Address</td>
-                <td class="L">{{vm.data.street_address | titleCase}},
-                {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td>
+                <td class="L">{{vm.data.street_address | titleCase}}, {{vm.data.zipcode}}</td>
                 <td class="R">BBL</td>
                 <td class="L">{{vm.data.expand_borough | titleCase}}, {{vm.data.block}}, {{vm.data.lot}}</td>
 
               </tr>
               <tr>
                 <td class="R">Rent Stabilized</td>
-                <td class="L">{{vm.data.rent_stabilized}}</td>
+                <td class="L">{{vm.data.rent_stabilized || 'Unknown'}}</td>
                 <td class="R">BIN</td>
                 <td class="L">{{vm.data.bin}}</td>
               </tr>
