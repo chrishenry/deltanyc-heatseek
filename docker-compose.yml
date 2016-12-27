@@ -1,7 +1,9 @@
 version: '2'
 services:
   db:
-    image: mysql:latest
+    build:
+      dockerfile: Dockerfile.mysql
+      context: .
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
