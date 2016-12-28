@@ -250,23 +250,24 @@ table.table-striped>tbody>tr>td {
   border: 1px solid black;
 }
 
-h4#show_hide {
+h4.show_hide {
   color: rgb(255,165,0);
   display: inline-block;
   margin-right: 5px;
   margin-bottom: 30px;
+  cursor: pointer;
 }
 
-h4#show_hide:hover {
+h4.show_hide:hover {
   color: rgb(255,33,1);
 }
 
-.fa.fa-caret-down {
+fa-caret-down {
   color: rgb(255,165,0);
   font-size: 1.6em;
 }
 
-.fa.fa-caret-right {
+fa-caret-right {
   color: rgb(255,165,0);
   font-size: 1.6em;
 }
