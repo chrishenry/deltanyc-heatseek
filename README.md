@@ -30,16 +30,14 @@ app.
 
 TODO: Needs better documentation.
 
-The second is to use docker;
+The second is to use docker. This method will use an .env file to configure the
+containers.
 
 * [Install Docker and docker-compose](https://docs.docker.com/engine/getstarted/)
-* Run `cp .env.example .env`
+* Run `cp .env.example .env`, and fill in any relevant values
 * Run `docker-compose up`
 * The Jupyter notebook will be running at [localhost:8888](http://localhost:8888)
 * The Rails app will be running at [localhost:3000](http://localhost:3000)
-
-This method will use an .env file to configure the containers.
-
 
 To get into the web container, and run rake tasks, etc;
 
@@ -60,3 +58,16 @@ on why you need to use `127.0.0.1`.
 ```bash
 mysql -h 127.0.0.1 -P 3306 -u deltanyc -ppassword deltanyc
 ```
+
+A note on preg UDFs
+***************************
+The cleanup utils make extensive use of [User Defined preg functions](https://github.com/mysqludf/lib_mysqludf_preg).
+These aren't available in the general MySQL docker container, and the container
+provided by the [uqlibrary](https://github.com/uqlibrary/docker-mysql-udf-preg)
+hasn't been built in a while, so it doesn't have recent fixes to the upstream
+MySQL container.
+
+One challenge here is that the `CREATE FUNCTION` statements need to be called by
+a client, as MySQL UDFs are registered in the `mysql` database. This was solved
+by creating a quick utility container (`db-udf`) that will come up with
+docker-compose, pull the relevant `CREATE` commands, run them, and exit.
