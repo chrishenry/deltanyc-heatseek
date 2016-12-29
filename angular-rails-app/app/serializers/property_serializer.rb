@@ -5,9 +5,15 @@ class PropertySerializer < ActiveModel::Serializer
   has_many :dob_permits
   has_many :dob_violations
   has_many :hpd_violations
-  has_many :hpd_complaints
   has_many :litigations
-  has_many :complaint311s
   has_many :owners
+
+  has_many :complaint311s do
+    @object.complaint311s.limit(5)
+  end
+
+  has_many :hpd_complaints do
+    @object.hpd_complaints.limit(5)
+  end
 
 end
