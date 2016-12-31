@@ -25,10 +25,9 @@ Getting Started
 
 There are two options for getting started with this repo.
 
-The first is to install the Python packages and run Jupyter. Ditto for the rails
-app.
-
-TODO: Needs better documentation.
+The first is to install MySQL, and Python packages listed in requirements.txt.
+Ditto for the rails app. Additionally, MySQL requires additional
+[PRCE UDFs](https://github.com/mysqludf/lib_mysqludf_preg).
 
 The second is to use docker. This method will use an .env file to configure the
 containers.
