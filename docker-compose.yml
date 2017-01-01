@@ -1,12 +1,23 @@
 version: '2'
 services:
   db:
-    image: mysql:latest
+    build:
+      dockerfile: Dockerfile.mysql
+      context: .
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
     ports:
       - "3306:3306"
+  db-udf:
+    build:
+      dockerfile: Dockerfile.mysql-udf
+      context: .
+    environment:
+      MYSQL_HOST: db
+    env_file: .env
+    depends_on:
+      - db
   web:
     build:
       context: ./angular-rails-app/
