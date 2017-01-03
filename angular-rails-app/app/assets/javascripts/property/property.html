@@ -166,24 +166,12 @@
           <h4 style="text-align: center;">HPD Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Complaint ID</th>
+                <th>Date</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="c in vm.data.hpd_complaints">
+                <td>{{ c.complaint_id }}</td>
+                <td>{{ c.status_date }}</td>
               </tr>
             </table>
           </div>
