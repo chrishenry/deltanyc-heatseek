@@ -1,16 +1,30 @@
 class PropertySerializer < ActiveModel::Serializer
   attributes :id, :street_address, :city, :state, :zipcode,
   :total_units, :expand_borough, :block, :lot, :bin, :rent_stabilized, :full_address,
-  :hpd_open_complaints_count
+  :hpd_open_complaints_count, :dob_permits_count, :dob_violations_count
 
-  has_many :dob_permits
-  has_many :dob_violations
   has_many :hpd_violations
   has_many :litigations
   has_many :owners
 
   def hpd_open_complaints_count
     @object.hpd_complaints.where(status: 'OPEN').size
+  end
+
+  def dob_permits_count
+    @object.dob_permits.size
+  end
+
+  def dob_violations_count
+    @object.dob_violations.size
+  end
+
+  has_many :dob_violations do
+    @object.dob_violations.limit(5)
+  end
+
+  has_many :dob_permits do
+    @object.dob_permits.limit(5)
   end
 
   has_many :complaint311s do

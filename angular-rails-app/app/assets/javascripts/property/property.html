@@ -194,7 +194,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Permits</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.dob_permits_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -218,24 +218,14 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Permit Status</th>
+                <th>Work Type</th>
+                <th>Filing Date</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="d in vm.data.dob_permits">
+                <td>{{ d.permit_status | titleCase}}</td>
+                <td>{{ d.work_type }}</td>
+                <td>{{ d.expiration_date }}</td>
               </tr>
             </table>
           </div>
@@ -249,7 +239,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Violations</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.dob_violations_count }}</td>
               </tr>
               <tr>
                 <td class="R">DOB Violations</td>
@@ -272,24 +262,18 @@
           <h4 style="text-align: center;">DOB Violations</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Disposition Date</th>
+                <th>Disposition Comments</th>
+                <th>Issue Date</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="v in vm.data.dob_violations">
+                <td>{{ v.violation_type }}</td>
+                <td>{{ v.violation_category }}</td>
+                <td>{{ v.disposition_date }}</td>
+                <td>{{ v.disposition_comments }}</td>
+                <td>{{ v.issue_date }}</td>
               </tr>
             </table>
           </div>
