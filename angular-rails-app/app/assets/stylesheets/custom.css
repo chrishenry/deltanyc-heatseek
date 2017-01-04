@@ -1,19 +1,41 @@
 html {
   background-color: rgb(242,241,242);
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 nav#my-nav{
-  min-height: 10%;
-  background-color: rgb(169,169,169);
+  min-height: 12%;
+  background-color: white;
+  color:black;
+  border-bottom: 4px solid orange;
+  margin: 0;
+  padding: 0;
 }
 
 nav#my-nav a{
   color:black;
-  margin-top: 8px;
+}
+
+nav li#links{
+  margin-top: 18px;
+  margin-bottom: 18px;
+  font-size: 1.2em;
+}
+
+nav a.navbar-brand {
+  padding-top: 35px;
+  font-weight: 600;
 }
 
 nav#my-nav a:hover{
-  color:white;
+  color:#ff9a33
+}
+
+a img{
+  height: 65px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-right: 7px;
 }
 
 #info-panel {
@@ -25,8 +47,24 @@ nav#my-nav a:hover{
   background-color: white;
 }
 
-#instructions {
-  font-size: 1.2em;
+div#instructions {
+  padding-top: 18px;
+  font-size: 1.1em;
+  display: inline-block;
+  width: 85%;
+}
+
+div#instructions_building {
+  font-size: 1.1em;
+  display: inline-block;
+  width: 85%;
+  margin-top: 140px;
+}
+
+@media (max-width: 765px) {
+  div#instructions_building {
+    margin-top: 20px;
+  }
 }
 
 #breadcrumb {
@@ -40,7 +78,199 @@ td {
   text-align: center;
 }
 
-input {
-  width: 40%;
-  background-color: rgb(242,241,242);
+form {
+  display: inline-block;
+  width: 90%;
 }
+
+input#propertiesSearch {
+  height:40px;
+}
+
+button.btn.btn-secondary {
+  height: 40px;
+  background-color: black;
+  color:white;
+}
+
+#header {
+  margin-top: 5px;
+  color: grey;
+  font-size: 1.5em;
+}
+
+hr.featurette-divider {
+  border: 1px solid grey;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  margin-left: 0;
+  width: 90%;
+}
+
+hr.featurette-divider.property {
+  border: 1px solid grey;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: 0;
+  width: 90%;
+}
+
+hr.featurette-divider.resource {
+  border: 1px solid orange;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: 30%;
+  margin-right: 30%;
+  width: 40%;
+}
+
+hr.featurette-divider.footer {
+  border: 1px solid orange;
+  margin-top: 5px;
+  margin-bottom: 25px;
+  width:100%;
+}
+
+hr.featurette-divider.home {
+  border: 1px solid rgb(183,183,184);
+  margin-top: 40px;
+  margin-bottom: 30px;
+  margin-left: 0;
+  width: 100%;
+  left:0;
+}
+
+#resource_text {
+  color:white;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+  text-decoration: none;
+}
+
+h3#resource_text {
+  text-align: center;
+}
+
+#resource_text a {
+  color:white;
+  font-size: 1.3em;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+  text-decoration: none;
+  line-height: 1.8em;
+}
+
+#resource_text a:hover {
+  color:orange;
+}
+
+footer {
+  background: rgb(127,128,129);
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right:0;
+  padding: 1rem;
+  padding-bottom: 10rem;
+}
+
+footer p{
+  margin-bottom: 50px;
+  font-size: 1.1em;
+  width: 90%;
+  text-align: left;
+}
+
+img.logo {
+  margin-top: 8px;
+  height: 80px;
+}
+
+#info_heading {
+  padding-left: 10px;
+  padding-top: 5px;
+  color: grey;
+}
+
+table.table>tbody>tr>td {
+  border-top: 1px solid white;
+}
+
+td.R {
+  text-align: right;
+  font-weight: 600;
+  border-top: white;
+  font-size: 1.1em;
+}
+
+td.L {
+  text-align: left;
+  font-size: 1.1em;
+}
+
+a.owner {
+  font-size: 1.1em;
+  margin-left: 30px;
+  color: rgb(255,165,0);
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.8em;
+}
+
+a.owner:hover{
+  color: rgb(255,33,1);
+  text-decoration: none;
+}
+
+a.breadcrumb_top {
+  color: rgb(255,165,0);
+  text-decoration: none;
+  background: none;
+}
+
+a.breadcrumb_top:hover{
+  color: rgb(255,33,1);
+  text-decoration: none;
+  background: none;
+}
+
+div.chart {
+  margin-left:10%
+}
+
+tr#blue {
+  background: rgb(169,207,213);
+}
+
+tr#blue th {
+  text-align: center;
+  border: 1px solid black;
+}
+
+table.table-striped>tbody>tr>td {
+  border: 1px solid black;
+}
+
+h4#show_hide {
+  color: rgb(255,165,0);
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 30px;
+}
+
+h4#show_hide:hover {
+  color: rgb(255,33,1);
+}
+
+.fa.fa-caret-down {
+  color: rgb(255,165,0);
+  font-size: 1.6em;
+}
+
+.fa.fa-caret-right {
+  color: rgb(255,165,0);
+  font-size: 1.6em;
+}
+
+
+
+

@@ -1,19 +1,32 @@
 version: '2'
 services:
   db:
-    image: mysql:latest
+    build:
+      dockerfile: Dockerfile.mysql
+      context: .
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
+    ports:
+      - "3306:3306"
+  db-udf:
+    build:
+      dockerfile: Dockerfile.mysql-udf
+      context: .
+    environment:
+      MYSQL_HOST: db
+    env_file: .env
+    depends_on:
+      - db
   web:
     build:
-      context: ./rails-app/
+      context: ./angular-rails-app/
     command: bundle exec rails s -p 3000 -b '0.0.0.0'
     env_file: .env
     environment:
       MYSQL_HOST: db
     volumes:
-      - ./rails-app/:/rails-app/
+      - ./angular-rails-app/:/angular-rails-app/
     ports:
       - "3000:3000"
     depends_on:
@@ -28,7 +41,8 @@ services:
     environment:
       MYSQL_HOST: db
     volumes:
-      - ./JPF/:/root/work/
+      - ./JPF/:/root/JPF/
+      - ./data-imports/:/root/data-imports/
     ports:
       - "8888:8888"
     depends_on:
