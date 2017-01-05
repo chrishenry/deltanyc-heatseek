@@ -69,16 +69,19 @@ def make_index(table, column):
 
 def clean_bbl(table, boro, block, lot):
     return '''
-    SELECT concat(trim({boro}),trim(LPAD({block}, 5, '0')),
-            trim(LPAD({lot}, 4, '0'))) as bbl from hpd_buildings;
-    ALTER TABLE {table} CHANGE bbl bigint(13) NULL DEFAULT NULL;
-    ALTER TABLE {table} ADD INDEX bbl;
+    ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;
+    UPDATE {table} SET bbl =
+            concat(trim({boro}), trim(LPAD({block}, 5, '0')), trim(LPAD({lot}, 4, '0')));
+    ALTER TABLE {table} ADD INDEX (bbl);
     '''.format(table=table, boro=boro, block=block, lot=lot)
 
-def run_sql(sql):
+def run_sql(sql, debug=True):
     """ Runs SQL commands given in the provided string.
         The string can contain multiple statements.
     """
+    if debug:
+        print(sql)
+
     engine = connect()
     connection = engine.raw_connection()
     cursor = connection.cursor()

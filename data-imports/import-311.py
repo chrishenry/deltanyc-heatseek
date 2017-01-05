@@ -144,7 +144,7 @@ def import_csv(args):
             call_311_description,
             call_311_csv,
             call_311_sep_char,
-            call_311_table_name,
+            table_name,
             call_311_dtype_dict,
             call_311_load_pickle,
             call_311_save_pickle,
@@ -161,10 +161,8 @@ def import_csv(args):
 def sql_cleanup(args):
     log.info('SQL cleanup...')
 
-    boro_mapping = {"mn": "MANHATTAN", "bk": "BROOKLYN", "si": "STATEN ISLAND",
-            "qn": "QUEENS", "br": "BRONX"}
     sql = clean_addresses(table_name, "incident_address") + \
-        clean_boro(table_name, "borough", boro_mapping)
+        clean_boro(table_name, "borough", full_name_boro_replacements())
 
     run_sql(sql)
 

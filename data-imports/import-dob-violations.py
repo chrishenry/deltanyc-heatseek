@@ -137,6 +137,7 @@ def sql_cleanup(args):
     sql = clean_addresses(table_name, "street") + \
             clean_bbl(table_name, "boro", "block", "lot") + \
             clean_boro(table_name, "boro", bbl_code_boro_replacements())
+    print(sql)
 
     # TODO: Mysterious 0 and ` boro codes should be cleaned?
 

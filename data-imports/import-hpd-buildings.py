@@ -23,6 +23,8 @@ HPD Buildings import
 
 HPD_BUILDINGS_KEY = 'hpd_buildings'
 
+table_name = 'hpd_buildings'
+
 bld_dtype_dict = {
     'BuildingID':              'int64',
     'BoroID':                  'int64',
@@ -80,9 +82,6 @@ bld_truncate_columns = ''
 bld_date_time_columns = ''
 
 
-table_name = 'hpd_buildings'
-
-
 def main(argv):
     parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
     parser = add_common_arguments(parser)
@@ -121,7 +120,7 @@ def import_csv(args):
                 bld_description,
                 bld_input_csv_url,
                 bld_sep_char,
-                bld_table_name,
+                table_name,
                 bld_dtype_dict,
                 bld_load_pickle,
                 bld_save_pickle,

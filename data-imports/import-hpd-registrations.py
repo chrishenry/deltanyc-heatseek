@@ -118,8 +118,9 @@ def import_csv(args):
 def sql_cleanup(args):
     log.info('SQL cleanup...')
 
-    sql = clean_addresses(table_name, "streetname") + \
-            clean_boro(table_name, "boro", full_name_boro_replacements()) + \
+    # Address cleaning breaks - erases all of some address name?
+    # sql = clean_addresses(table_name, "streetname") + \
+    sql = clean_boro(table_name, "boro", full_name_boro_replacements()) + \
             clean_bbl(table_name, "boroid", "block", "lot")
 
     run_sql(sql)
