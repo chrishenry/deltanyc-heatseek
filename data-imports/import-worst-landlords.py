@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import json
 import logging
 import os
@@ -28,12 +27,8 @@ mkdir_p(data_dir)
 
 data_file = os.path.join(data_dir, 'worst-landlords.json')
 
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import worst landlords list.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import worst landlords list.')
 
     if not args.SKIP_IMPORT:
         import_data(args)
@@ -116,4 +111,4 @@ def sql_cleanup(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv[:1])
+    main()

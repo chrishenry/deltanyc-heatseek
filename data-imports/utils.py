@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import glob
 import os
@@ -14,36 +15,37 @@ from sqlalchemy import create_engine
 
 BASE_DIR = os.path.join(os.path.expanduser('~'), "heatseek")
 
-def add_common_arguments(parser):
+def get_common_arguments(description):
+    parser = argparse.ArgumentParser(description=description)
 
     parser.add_argument("--load-pickle",
             action='store_true',
             dest='LOAD_PICKLE',
             help='Save a pickled version of the data during processing.')
-
     parser.add_argument("--save-pickle",
             action='store_true',
             dest='SAVE_PICKLE',
             help='Save a pickled version of the data during processing.')
-
     parser.add_argument('--bust-disk-cache',
             action='store_true',
             dest='BUST_DISK_CACHE',
             help='Forces re-download of data files.')
-
     parser.add_argument('--update-db',
             action='store_const',
             dest='DB_ACTION',
             default='replace',
             const='append',
             help='"append" to the database if the table already exists instead of "replace".')
-
     parser.add_argument('--skip-import',
             action='store_true',
             dest='SKIP_IMPORT',
             help='Skips the CSV->SQL import.')
 
-    return parser
+    args = parser.parse_args()
+
+    print(args)
+
+    return args
 
 
 def mkdir_p(my_path):
@@ -54,14 +56,14 @@ def mkdir_p(my_path):
 
 
 def connect():
-    """ Returns a connection to the configured database.
+    """ Returns a SQLAlchemy.Engine with a connection pool for the configured database.
     """
     user = os.environ['MYSQL_USER']
     host = os.environ['MYSQL_HOST']
-    pw = os.environ['MYSQL_PASSWORD']
-    db = os.environ['MYSQL_DATABASE']
+    password = os.environ['MYSQL_PASSWORD']
+    database = os.environ['MYSQL_DATABASE']
 
-    conn_str = "mysql+mysqlconnector://{0}:{1}@{2}/{3}".format(user, pw, host, db)
+    conn_str = "mysql+mysqlconnector://{0}:{1}@{2}/{3}".format(user, password, host, database)
     return create_engine(conn_str, echo=False)
 
 
@@ -71,15 +73,17 @@ def guess_sqlcol(dfparam, max_col_len):
     ## GUESS AT SQL COLUMN TYPES FROM DataFrame dtypes.
 
     dtypedict = {}
-    for i,j in zip(dfparam.columns, dfparam.dtypes):
+    for i, j in zip(dfparam.columns, dfparam.dtypes):
         if "object" in str(j):
-            dtypedict.update({i: sqlalchemy.types.NVARCHAR(length=max_col_len)}) ##big field length for HPD violations description
+            # big field length for HPD violations description
+            dtypedict.update({i: sqlalchemy.types.NVARCHAR(length=max_col_len)})
 
         if "datetime" in str(j):
             dtypedict.update({i: sqlalchemy.types.DateTime()})
 
         if "float" in str(j):
-            dtypedict.update({i: sqlalchemy.types.Float(precision=20, asdecimal=True)}) ##big precision for LAT/LONG fields
+            # big precision for LAT/LONG fields
+            dtypedict.update({i: sqlalchemy.types.Float(precision=20, asdecimal=True)})
 
         if "int" in str(j):
             dtypedict.update({i: sqlalchemy.types.BigInteger()})
@@ -87,23 +91,22 @@ def guess_sqlcol(dfparam, max_col_len):
     return dtypedict
 
 
-def hpd_csv2sql(description, input_csv_url, sep_char,
-        table_name, dtype_dict, load_pickle, save_pickle,
-        pickle_file, db_action, truncate_columns, date_time_columns,
-        sql_chunk_size, keep_cols, max_col_len=255, date_format=None,
-        csv_chunk_size=None):
+def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
+        truncate_columns, date_time_columns, keep_cols, pickle_file, sql_chunk_size=2500,
+        max_col_len=255, date_format=None, csv_chunk_size=None, sep_char=","):
     """ Clean up housing data and import into a sql database.
 
         description - tag used for logging
+        args - CLI args obtained from get_common_arguments()
+        input_csv_url - URL or filepath to CSV file
+        table_name - name of the SQL table to create / modify
         dtype_dict - dict from column name to its datatype
-        load_pickle - if True, uses a cached pickle of data if available
-        save_pickle - if True, save a pickle of the data
-        pickle_file - filename of pickle to save/load. should be a format in a unique folder if csv_chunk_size is specified.
-        db_action - "replace", "append"
         truncate_columns - list of string-type columns to truncate
         date_time_columns - list of date-type columns
-        sql_chunk_size - num of rows to send to sql in each operation
         keep_cols - list of columns to keep in the database
+        pickle_file - filename of pickle to save/load.
+            should be a format in a unique folder if csv_chunk_size is specified.
+        sql_chunk_size - num of rows to send to sql in each operation
         max_col_len - length to truncate cells in truncate_columns to
         date_format - expected format of dates in the table
         csv_chunk_size - if defined, the number of rows to process from the CSV at a time.
@@ -114,16 +117,19 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
         level=logging.DEBUG)
     log = logging.getLogger(__name__)
 
-    log.info("Beginning {} Import {}".format(description,datetime.datetime.now()))
+    log.info("Beginning {} Import {}".format(description, datetime.datetime.now()))
 
     # CSV chunking requested
     if csv_chunk_size is not None:
 
         # attempt to load split pickles
-        if load_pickle and os.path.isfile(pickle_file.format(0)):
-            log.info("Flagged load of Pickles with format: ".format(pickle_file))
+        if args.LOAD_PICKLE and os.path.isfile(pickle_file.format(0)):
+            log.info("Flagged load of Pickles with format: {}".format(pickle_file))
 
             pickle_dir = os.path.dirname(pickle_file)
+
+            # copy db_action out of args struct for modification while looping over csv chunks
+            db_action = args.DB_ACTION
 
             for filename in os.listdir(pickle_dir):
                 with open(os.path.join(pickle_dir, filename), 'r') as picklefile:
@@ -143,21 +149,24 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
                 encoding='utf8', chunksize=csv_chunk_size, usecols=keep_cols)
 
         # set up folder to save chunks to if pickling
-        if save_pickle:
+        if args.SAVE_PICKLE:
             mkdir_p(os.path.dirname(pickle_file))
+
+        # copy db_action out of args struct for modification while looping over csv chunks
+        db_action = args.DB_ACTION
 
         chunk_num = 0
         for df in csv_chunks:
             log.info("Processing chunk {}".format(chunk_num))
 
             chunk_pickle_file = pickle_file.format(chunk_num)
-            df = process_df(df, log, description, save_pickle, pickle_file,
+            df = process_df(df, log, description, args.SAVE_PICKLE, chunk_pickle_file,
                     truncate_columns, date_time_columns, date_format, max_col_len)
 
             if chunk_num > 0:
                 db_action = "append"
 
-            send_df_to_sql(df, log, description, table_name, db_action,
+            send_df_to_sql(df, log, description, table_name, args.DB_ACTION,
                     sql_chunk_size, max_col_len)
 
             chunk_num += 1
@@ -165,7 +174,7 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
         return
 
     # Load the entire CSV in one shot
-    if load_pickle and os.path.isfile(pickle_file): #IF FLAGGED TO LOAD PICKLE AS TRUE
+    if args.LOAD_PICKLE and os.path.isfile(pickle_file): #IF FLAGGED TO LOAD PICKLE AS TRUE
         log.info("Flagged load of PICKLE: {} = True".format(pickle_file))
 
         with open(pickle_file, 'r') as picklefile:
@@ -181,10 +190,10 @@ def hpd_csv2sql(description, input_csv_url, sep_char,
 
         log.debug("This is what we've read in from the URL: {}".format(df.columns))
 
-        df = process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
+        df = process_df(df, log, description, args.SAVE_PICKLE, pickle_file, truncate_columns,
                 date_time_columns, date_format, max_col_len)
 
-    send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size,
+    send_df_to_sql(df, log, description, table_name, args.DB_ACTION, sql_chunk_size,
             max_col_len)
 
 
@@ -210,16 +219,16 @@ def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
     for i in date_time_columns:
         log.info("Starting Date: {}".format(i))
         try:
-            df[i] = pd.to_datetime(df[i],format=date_format, infer_datetime_format=True)
+            df[i] = pd.to_datetime(df[i], format=date_format, infer_datetime_format=True)
         except:
             df[i] = pd.to_datetime('19000101')
 
     if save_pickle:
         log.info("Why don't we save our hard work with {} for next time".format(pickle_file))
         with open(pickle_file, 'w') as picklefile:
-            log.info("Begin writing {} Pickle: {}".format(description,datetime.datetime.now()))
+            log.info("Begin writing {} Pickle: {}".format(description, datetime.datetime.now()))
             pickle.dump(df, picklefile)
-        log.info("Finish writing {} Pickle: {}".format(description,datetime.datetime.now()))
+        log.info("Finish writing {} Pickle: {}".format(description, datetime.datetime.now()))
 
     return df
 
@@ -230,7 +239,7 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
     log.info("Let's now try to send it to the DB")
     outputdict = guess_sqlcol(df, max_col_len)  #Guess at SQL columns based on DF dtypes
     log.debug("Show us the DB column guesses\n {}".format(outputdict))
-    log.info("Begin Upload {} SQL".format(description, datetime.datetime.now()))
+    log.info("Begin Upload {} SQL".format(description))
     log.info("Let's see if we should replace or append our table ... {}".format(db_action))
 
     if db_action == 'replace':
@@ -268,11 +277,11 @@ def pandas_concat_csv(directory, dest_file):
     """ Concats a set of CSV files to a single DataFrame.
     """
     # in path provided, look for anything with a '.csv' extension and save it to this variable
-    allFiles = glob.glob(directory + "/*.csv")
+    all_files = glob.glob(directory + "/*.csv")
     pluto_data = pd.DataFrame()
     pluto_list_ = []
-    for file_ in allFiles: # iterate through all csv files and create a pandas df
-        pluto_df = pd.read_csv(file_,index_col=None, header=0)
+    for csv_file in all_files: # iterate through all csv files and create a pandas df
+        pluto_df = pd.read_csv(csv_file, index_col=None, header=0)
         pluto_list_.append(pluto_df) # append every df to a big list
     pluto_data = pd.concat(pluto_list_) # combine the big list into one big pandas df
     pluto_data = pluto_data.reset_index(drop=True)
@@ -283,9 +292,9 @@ def simple_concat_csv(directory, dest_file):
     """ Concats a set of CSV files to a single CSV file.
     """
     #in path provided, look for anything with a '.csv' extension and save it to this variable
-    allFiles = glob.glob(directory + "/*.csv")
+    all_files = glob.glob(directory + "/*.csv")
     with open(dest_file, 'w') as outfile:
-        for fname in allFiles:
+        for fname in all_files:
             with open(fname) as infile:
                 for line in infile:
                     outfile.write(line)

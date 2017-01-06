@@ -20,13 +20,13 @@ log = logging.getLogger(__name__)
 Taxbills Rent Stabilization joined count import
 """
 
-TAXBILLS_KEY = 'taxbills_joined'
+description = "Taxbills Rent Stabilization"
 
 table_name = "rent_stabilization"
 
 primary_key = "ucbbl"
 
-taxbills_dtype_dict = {
+dtype_dict = {
     "borough": "object",
     "ucbbl": "int32",
     "2007uc": "float64", "2007est": "object", "2007dhcr": "object", "2007abat": "object",
@@ -55,7 +55,7 @@ taxbills_dtype_dict = {
     "lat": "float64"
 }
 
-taxbills_keep_cols = [
+keep_cols = [
     "ucbbl",
     "2007uc",
     "2007est",
@@ -95,13 +95,12 @@ taxbills_keep_cols = [
     "2015abat"
 ]
 
+truncate_columns = []
+date_time_columns = []
 
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import joined Rent Stabilization data.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
 
-    print args
+def main():
+    args = get_common_arguments('Import joined Rent Stabilization data.')
 
     if not args.SKIP_IMPORT:
         csv_import(args)
@@ -110,41 +109,29 @@ def main(argv):
 
 
 def csv_import(args):
-    taxbills_joined_dir = os.path.join(BASE_DIR, TAXBILLS_KEY)
+    csv_dir = os.path.join(BASE_DIR, table_name)
     mkdir_p(taxbills_joined_dir)
 
-    taxbills_joined_csv = os.path.join(taxbills_joined_dir, "joined.csv")
+    csv_file = os.path.join(csv_dir, "joined.csv")
 
-    if not os.path.isfile(taxbills_joined_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing joined taxbills data")
-        download_file("http://taxbills.nyc/joined.csv", taxbills_joined_csv)
+        download_file("http://taxbills.nyc/joined.csv", csv_file)
     else:
         log.info("Joined taxbills exists, moving on...")
 
-    taxbills_description = "Taxbills Rent Stabilization"
-    taxbills_pickle = taxbills_joined_dir + '/taxbills.pkl'
-    taxbills_sep_char = ","
-    taxbills_load_pickle = args.LOAD_PICKLE
-    taxbills_save_pickle = args.SAVE_PICKLE
-    taxbills_db_action = 'replace' ## if not = 'replace' then 'append'
-    taxbills_truncate_columns = []
-    taxbills_date_time_columns = []
-    taxbills_chunk_size = 2500
+    pickle = csv_dir + '/taxbills.pkl'
 
     hpd_csv2sql(
-                taxbills_description,
-                taxbills_joined_csv,
-                taxbills_sep_char,
+                description,
+                args,
+                csv_file,
                 table_name,
-                taxbills_dtype_dict,
-                taxbills_load_pickle,
-                taxbills_save_pickle,
-                taxbills_pickle,
-                taxbills_db_action,
-                taxbills_truncate_columns,
-                taxbills_date_time_columns,
-                taxbills_chunk_size,
-                taxbills_keep_cols,
+                dtype_dict,
+                truncate_columns,
+                date_time_columns,
+                keep_cols,
+                pickle,
                 )
 
 
@@ -156,4 +143,4 @@ def sql_cleanup(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()

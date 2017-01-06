@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import os.path
 import sys
 import logging
@@ -20,9 +19,11 @@ log = logging.getLogger(__name__)
 HPD Registration import
 """
 
-HPD_REGISTRATION_KEY = 'hpd_registration'
+description = "HPD Registrations"
 
-reg_dtype_dict = {
+table_name = 'hpd_registrations'
+
+dtype_dict = {
     'RegistrationID':            'int64',
     'BuildingID':                'int64',
     'BoroID':                    'int64',
@@ -41,7 +42,11 @@ reg_dtype_dict = {
     'RegistrationEndDate':      'object'
 }
 
-reg_df_keep_cols = [
+truncate_columns = []
+
+date_time_columns = ['lastregistrationdate', 'registrationenddate']
+
+keep_cols = [
     'RegistrationID',
     'BuildingID',
     'BoroID',
@@ -60,15 +65,9 @@ reg_df_keep_cols = [
     'RegistrationEndDate'
 ]
 
-table_name = 'hpd_registrations'
 
-
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import hpd registration dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import hpd registration dataset.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -76,44 +75,32 @@ def main(argv):
     sql_cleanup(args)
 
 def import_csv(args):
-    hpd_reg_dir = os.path.join(BASE_DIR, HPD_REGISTRATION_KEY)
-    mkdir_p(hpd_reg_dir)
+    csv_dir = os.path.join(BASE_DIR, HPD_REGISTRATION_KEY)
+    mkdir_p(csv_dir)
 
-    hpd_reg_csv = os.path.join(hpd_reg_dir, "hpd_reg.csv")
+    csv_file = os.path.join(csv_dir, "hpd_reg.csv")
 
-    if not os.path.isfile(hpd_reg_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing HPD Registrations")
-        download_file("https://data.cityofnewyork.us/api/views/tesw-yqqr/rows.csv?accessType=DOWNLOAD", hpd_reg_csv)
+        download_file("https://data.cityofnewyork.us/api/views/tesw-yqqr/rows.csv?accessType=DOWNLOAD", csv_file)
     else:
         log.info("HPD Registrations exists, moving on...")
 
-    reg_date_time_columns = ['lastregistrationdate', 'registrationenddate']
-    reg_truncate_columns = ''
-
-    reg_description = "HPD Registrations"
-    reg_input_csv_url = hpd_reg_csv
-    reg_sep_char = ","
-    reg_pickle = os.path.join(hpd_reg_dir, 'df_reg.pkl')
-    reg_load_pickle = args.LOAD_PICKLE
-    reg_save_pickle = args.SAVE_PICKLE
-    reg_db_action = 'replace' ## if not = 'replace' then 'append'
-    reg_chunk_size = 5000
+    pickle = os.path.join(csv_dir, 'df_reg.pkl')
+    chunk_size = 5000
 
     hpd_csv2sql(
-                reg_description,
-                reg_input_csv_url,
-                reg_sep_char,
+                description,
+                csv_file,
                 table_name,
-                reg_dtype_dict,
-                reg_load_pickle,
-                reg_save_pickle,
-                reg_pickle,
-                reg_db_action,
-                reg_truncate_columns,
-                reg_date_time_columns,
-                reg_chunk_size,
-                reg_df_keep_cols
+                dtype_dict,
+                truncate_columns,
+                date_time_columns,
+                keep_cols,
+                pickle,
+                chunk_size,
                )
+
 
 def sql_cleanup(args):
     log.info('SQL cleanup...')
@@ -127,4 +114,4 @@ def sql_cleanup(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()
