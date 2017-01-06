@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
-
-from sqlalchemy import create_engine
-
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -63,14 +60,22 @@ reg_df_keep_cols = [
     'RegistrationEndDate'
 ]
 
-def main(argv):
+table_name = 'hpd_registrations'
 
+
+def main(argv):
     parser = argparse.ArgumentParser(description='Import hpd registration dataset.')
     parser = add_common_arguments(parser)
     args = parser.parse_args()
 
     print args
 
+    if not args.SKIP_IMPORT:
+        import_csv(args)
+
+    sql_cleanup(args)
+
+def import_csv(args):
     hpd_reg_dir = os.path.join(BASE_DIR, HPD_REGISTRATION_KEY)
     mkdir_p(hpd_reg_dir)
 
@@ -89,7 +94,6 @@ def main(argv):
     reg_input_csv_url = hpd_reg_csv
     reg_sep_char = ","
     reg_pickle = os.path.join(hpd_reg_dir, 'df_reg.pkl')
-    reg_table_name = 'hpd_registrations'
     reg_load_pickle = args.LOAD_PICKLE
     reg_save_pickle = args.SAVE_PICKLE
     reg_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -99,7 +103,7 @@ def main(argv):
                 reg_description,
                 reg_input_csv_url,
                 reg_sep_char,
-                reg_table_name,
+                table_name,
                 reg_dtype_dict,
                 reg_load_pickle,
                 reg_save_pickle,
@@ -112,46 +116,15 @@ def main(argv):
                )
 
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
+    log.info('SQL cleanup...')
 
-    SQL = '''  
+    # Address cleaning breaks - erases all of some address name?
+    # sql = clean_addresses(table_name, "streetname") + \
+    sql = clean_boro(table_name, "boro", full_name_boro_replacements()) + \
+            clean_bbl(table_name, "boroid", "block", "lot")
 
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '\.', '', 'g');
-    UPDATE hpd_registrations SET streetname = array_to_string(regexp_matches(streetname, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE streetname ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' LA$', ' LANE', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' LN$', ' LANE', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' PL$', ' PLACE', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' ST$| STR$', ' STREET', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' RD$', ' ROAD', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '^BCH ', 'BEACH ', 'g');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '^E ', 'EAST ');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '^W ', 'WEST ');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '^N ', 'NORTH ');
-    UPDATE hpd_registrations SET streetname = regexp_replace( streetname, '^S ', 'SOUTH '); 
-    UPDATE hpd_registrations SET boro = regexp_replace(boro, 'MANHATTAN', 'MN', 'g');
-    UPDATE hpd_registrations SET boro = regexp_replace(boro, 'BROOKLYN', 'BK', 'g');
-    UPDATE hpd_registrations SET boro = regexp_replace(boro, 'STATEN ISLAND', 'SI', 'g');
-    UPDATE hpd_registrations SET boro = regexp_replace(boro, 'QUEENS', 'QN', 'g');
-    UPDATE hpd_registrations SET boro = regexp_replace(boro, 'BRONX', 'BR', 'g');
-    SELECT concat(trim(hpd_registrations.boroid),trim(LPAD(hpd_registrations.block, 5, '0')),trim(LPAD(hpd_registrations.lot, 4, '0'))) as bbl from hpd_registrations;
-    ALTER TABLE hpd_registrations CHANGE bbl bigint(13) NULL DEFAULT NULL;
-    ALTER TABLE `hpd_registrations` ADD INDEX(bbl);
+    run_sql(sql)
 
-    '''
-
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
 
 if __name__ == "__main__":
     main(sys.argv[:1])

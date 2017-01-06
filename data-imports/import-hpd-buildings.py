@@ -6,6 +6,7 @@ import os.path
 import sys
 import logging
 
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -21,6 +22,8 @@ HPD Buildings import
 """
 
 HPD_BUILDINGS_KEY = 'hpd_buildings'
+
+table_name = 'hpd_buildings'
 
 bld_dtype_dict = {
     'BuildingID':              'int64',
@@ -80,13 +83,19 @@ bld_date_time_columns = ''
 
 
 def main(argv):
-
     parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
     parser = add_common_arguments(parser)
     args = parser.parse_args()
 
     print args
 
+    if not args.SKIP_IMPORT:
+        import_csv(args)
+
+    sql_cleanup(args)
+
+
+def import_csv(args):
     hpd_buildings_dir = os.path.join(BASE_DIR, HPD_BUILDINGS_KEY)
     mkdir_p(hpd_buildings_dir)
 
@@ -102,7 +111,6 @@ def main(argv):
     bld_input_csv_url = hpd_buildings_csv
     bld_sep_char = ","
     bld_pickle = os.path.join(hpd_buildings_dir, 'df_buildings.pkl')
-    bld_table_name = 'hpd_buildings'
     bld_load_pickle = args.LOAD_PICKLE
     bld_save_pickle = args.SAVE_PICKLE
     bld_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -112,7 +120,7 @@ def main(argv):
                 bld_description,
                 bld_input_csv_url,
                 bld_sep_char,
-                bld_table_name,
+                table_name,
                 bld_dtype_dict,
                 bld_load_pickle,
                 bld_save_pickle,
@@ -125,45 +133,14 @@ def main(argv):
                )
 
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
+    log.info('SQL cleanup...')
 
-    SQL = '''  
+    sql = clean_addresses(table_name, "streetname") + \
+            clean_boro(table_name, "boro", full_name_boro_replacements()) + \
+            clean_bbl(table_name, "boroid", "block", "lot")
 
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '\.', '', 'g');
-    UPDATE hpd_buildings SET streetname = array_to_string(regexp_matches(streetname, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE streetname ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' LA$', ' LANE', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' LN$', ' LANE', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' PL$', ' PLACE', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' ST$| STR$', ' STREET', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' RD$', ' ROAD', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '^BCH ', 'BEACH ', 'g');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '^E ', 'EAST ');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '^W ', 'WEST ');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '^N ', 'NORTH ');
-    UPDATE hpd_buildings SET streetname = regexp_replace( streetname, '^S ', 'SOUTH '); 
-    UPDATE hpd_buildings SET boro = regexp_replace(boro, 'MANHATTAN', 'MN', 'g');
-    UPDATE hpd_buildings SET boro = regexp_replace(boro, 'BROOKLYN', 'BK', 'g');
-    UPDATE hpd_buildings SET boro = regexp_replace(boro, 'STATEN ISLAND', 'SI', 'g');
-    UPDATE hpd_buildings SET boro = regexp_replace(boro, 'QUEENS', 'QN', 'g');
-    UPDATE hpd_buildings SET boro = regexp_replace(boro, 'BRONX', 'BR', 'g');
-    SELECT concat(trim(hpd_buildings.boroid),trim(LPAD(hpd_buildings.block, 5, '0')),trim(LPAD(hpd_buildings.lot, 4, '0'))) as bbl from hpd_buildings;
-    ALTER TABLE hpd_buildings CHANGE bbl bigint(13) NULL DEFAULT NULL;
-    ALTER TABLE `hpd_buildings` ADD INDEX(bbl);
+    run_sql(sql)
 
-    '''
 
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
 if __name__ == "__main__":
     main(sys.argv[:1])

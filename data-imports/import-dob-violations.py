@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -69,6 +69,9 @@ vio_dob_truncate_columns = ['description', 'ecb_number', 'number']
 
 vio_dob_date_time_columns = ['issue_date', 'disposition_date']
 
+table_name = "dob_violations"
+
+
 def main(argv):
 
     parser = argparse.ArgumentParser(description='Import dob violations dataset.')
@@ -101,7 +104,6 @@ def import_csv(args):
     vio_dob_description = 'DOB Violations'
     vio_dob_pickle = dob_violations_dir + '/df_dob_violations.pkl'
     vio_dob_sep_char = ","
-    vio_dob_table_name = "dob_violations"
     vio_dob_load_pickle = args.LOAD_PICKLE
     vio_dob_save_pickle = args.SAVE_PICKLE
     vio_dob_db_action = args.DB_ACTION
@@ -113,7 +115,7 @@ def import_csv(args):
                 vio_dob_description,
                 dob_violations_csv,
                 vio_dob_sep_char,
-                vio_dob_table_name,
+                table_name,
                 vio_dob_dtype_dict,
                 vio_dob_load_pickle,
                 vio_dob_save_pickle,
@@ -129,48 +131,17 @@ def import_csv(args):
 
 
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
-
-    SQL = '''  
-
-    UPDATE dob_violations SET street = regexp_replace( street, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE dob_violations SET street = regexp_replace( street, '\.', '', 'g');
-    UPDATE dob_violations SET street = array_to_string(regexp_matches(street, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE street ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE dob_violations SET street = regexp_replace( street, ' LA$', ' LANE', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' LN$', ' LANE', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' PL$', ' PLACE', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' ST$| STR$', ' STREET', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' RD$', ' ROAD', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE dob_violations SET street = regexp_replace( street, '^E ', 'EAST ');
-    UPDATE dob_violations SET street = regexp_replace( street, '^W ', 'WEST ');
-    UPDATE dob_violations SET street = regexp_replace( street, '^N ', 'NORTH ');
-    UPDATE dob_violations SET street = regexp_replace( street, '^S ', 'SOUTH ');
-    UPDATE dob_violations SET street = regexp_replace( street, '^BCH ', 'BEACH ', 'g');
-    UPDATE dob_violations SET boro = regexp_replace(boro, '1', 'MN', 'g');
-    UPDATE dob_violations SET boro = regexp_replace(boro, '3', 'BK', 'g');
-    UPDATE dob_violations SET boro = regexp_replace(boro, '5', 'SI', 'g');
-    UPDATE dob_violations SET boro = regexp_replace(boro, '4', 'QN', 'g');
-    UPDATE dob_violations SET boro = regexp_replace(boro, '2', 'BR', 'g'); 
-    SELECT concat(trim(dob_violations.boroid),dob_violations.block,dob_violations.lot as bbl from dob_violations;
-    ALTER TABLE dob_violations CHANGE bbl bigint(13) NULL DEFAULT NULL;
-    ALTER TABLE `dob_violations` ADD INDEX(bbl);
-
-    '''
-
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
-    # TODO(ryan, alex): actual cleanup
     log.info('SQL cleanup...')
+
+    # clean_bbl must go before clean_boro!
+    sql = clean_addresses(table_name, "street") + \
+            clean_bbl(table_name, "boro", "block", "lot") + \
+            clean_boro(table_name, "boro", bbl_code_boro_replacements())
+    print(sql)
+
+    # TODO: Mysterious 0 and ` boro codes should be cleaned?
+
+    run_sql(sql)
 
 
 if __name__ == "__main__":

@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
-
-from sqlalchemy import create_engine
-
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -24,6 +21,10 @@ Taxbills Rent Stabilization joined count import
 """
 
 TAXBILLS_KEY = 'taxbills_joined'
+
+table_name = "rent_stabilization"
+
+primary_key = "ucbbl"
 
 taxbills_dtype_dict = {
     "borough": "object",
@@ -94,8 +95,6 @@ taxbills_keep_cols = [
     "2015abat"
 ]
 
-taxbills_primary_key = "ucbbl"
-
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Import joined Rent Stabilization data.')
@@ -107,7 +106,7 @@ def main(argv):
     if not args.SKIP_IMPORT:
         csv_import(args)
 
-    sql_cleanup(args):
+    sql_cleanup(args)
 
 
 def csv_import(args):
@@ -125,7 +124,6 @@ def csv_import(args):
     taxbills_description = "Taxbills Rent Stabilization"
     taxbills_pickle = taxbills_joined_dir + '/taxbills.pkl'
     taxbills_sep_char = ","
-    taxbills_table_name = "rent_stabilization"
     taxbills_load_pickle = args.LOAD_PICKLE
     taxbills_save_pickle = args.SAVE_PICKLE
     taxbills_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -137,7 +135,7 @@ def csv_import(args):
                 taxbills_description,
                 taxbills_joined_csv,
                 taxbills_sep_char,
-                taxbills_table_name,
+                table_name,
                 taxbills_dtype_dict,
                 taxbills_load_pickle,
                 taxbills_save_pickle,
@@ -147,14 +145,14 @@ def csv_import(args):
                 taxbills_date_time_columns,
                 taxbills_chunk_size,
                 taxbills_keep_cols,
-                primary_key=taxbills_primary_key
                 )
 
 
 def sql_cleanup(args):
-    conn = connect()
-    conn.execute("ALTER TABLE {} MODIFY {} INT PRIMARY KEY".format(
-        table_name, taxbills_primary_key))
+    log.info('SQL cleanup...')
+
+    sql = make_primary(table_name, primary_key)
+    run_sql(sql)
 
 
 if __name__ == "__main__":

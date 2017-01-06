@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import os.path
 import sys
 import logging
 
-
-from sqlalchemy import create_engine
-
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -61,14 +58,23 @@ rcn_df_keep_cols = [
     'BusinessZip'
 ]
 
-def main(argv):
+table_name = 'hpd_registration_contacts'
 
+
+def main(argv):
     parser = argparse.ArgumentParser(description='Import hpd registration dataset.')
     parser = add_common_arguments(parser)
     args = parser.parse_args()
 
     print args
 
+    if not args.SKIP_IMPORT:
+        import_csv(args)
+
+    sql_cleanup(args)
+
+
+def import_csv(args):
     hpd_creg_dir = os.path.join(BASE_DIR, HPD_REGISTRATION_KEY)
     mkdir_p(hpd_creg_dir)
 
@@ -87,7 +93,6 @@ def main(argv):
     rcn_input_csv_url = hpd_reg_csv
     rcn_sep_char = ","
     rcn_pickle = os.path.join(hpd_creg_dir, 'df_regCon.pkl')
-    rcn_table_name = 'hpd_registration_contacts'
     rcn_load_pickle = args.LOAD_PICKLE
     rcn_save_pickle = args.SAVE_PICKLE
     rcn_db_action = 'replace' ## if not = 'replace' then 'append'
@@ -97,7 +102,7 @@ def main(argv):
                 rcn_description,
                 rcn_input_csv_url,
                 rcn_sep_char,
-                rcn_table_name,
+                table_name,
                 rcn_dtype_dict,
                 rcn_load_pickle,
                 rcn_save_pickle,
@@ -110,41 +115,12 @@ def main(argv):
             )
 
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
+    log.info('SQL cleanup...')
 
-    SQL = '''  
+    sql = clean_addresses(table_name, "businessstreetname")
 
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '\.', '', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = array_to_string(regexp_matches(businessstreetname, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE businessstreetname ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' LA$', ' LANE', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' LN$', ' LANE', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PL$', ' PLACE', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' ST$| STR$', ' STREET', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, 'ST$', ' STREET', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' RD$', ' ROAD', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^BCH ', 'BEACH ', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' DR$', 'DRIVE ', 'g');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^E ', 'EAST ');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^W ', 'WEST ');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^N ', 'NORTH ');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, ' $N ', 'NORTH ');
-    UPDATE hpd_registration_contacts SET businessstreetname = regexp_replace( businessstreetname, '^S ', 'SOUTH '); 
+    run_sql(sql)
 
-    '''
-
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
 
 if __name__ == "__main__":
     main(sys.argv[:1])
