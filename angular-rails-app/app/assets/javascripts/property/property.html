@@ -297,7 +297,7 @@
             <table class="table">
               <tr>
                 <td class="R">Cases</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.litigations_count}}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -321,24 +321,12 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Case Type</th>
+                <th>Judgement</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="l in vm.data.litigations">
+                <td>{{ l.case_type }}</td>
+                <td>{{ l.judgement }}</td>
               </tr>
             </table>
           </div>
