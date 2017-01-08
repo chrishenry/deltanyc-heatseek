@@ -348,7 +348,7 @@
             <table class="table">
               <tr>
                 <td class="R">Complaints</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.complaint311s_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -371,25 +371,16 @@
         <h4 style="text-align: center;">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Type</th>
+                <th>Agency</th>
+                <th>Status</th>
+                <th>Resoutions Description</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="c in vm.data.complaint311s">
+                <td>{{ c.complaint_type }}</td>
+                <td>{{ c.agency }}</td>
+                <td>{{ c.status }}</td>
+                <td>{{ c.resolution_description }}</td>
               </tr>
             </table>
           </div>
