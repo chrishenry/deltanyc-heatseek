@@ -125,7 +125,7 @@ def sql_cleanup(args):
 
     # TODO: Mysterious 0 and ` boro codes should be cleaned?
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":

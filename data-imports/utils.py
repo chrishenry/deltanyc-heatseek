@@ -40,6 +40,9 @@ def get_common_arguments(description):
             action='store_true',
             dest='SKIP_IMPORT',
             help='Skips the CSV->SQL import.')
+    parser.add_argument('--test-mode',
+            action='store_true',
+            dest='TEST_MODE')
 
     args = parser.parse_args()
 
@@ -55,13 +58,13 @@ def mkdir_p(my_path):
         os.mkdir(my_path)
 
 
-def connect():
+def connect(test_mode):
     """ Returns a SQLAlchemy.Engine with a connection pool for the configured database.
     """
     user = os.environ['MYSQL_USER']
     host = os.environ['MYSQL_HOST']
     password = os.environ['MYSQL_PASSWORD']
-    database = os.environ['MYSQL_DATABASE']
+    database = os.environ['MYSQL_DATABASE'] if not test_mode else 'heatseek_test'
 
     conn_str = "mysql+mysqlconnector://{0}:{1}@{2}/{3}".format(user, password, host, database)
     return create_engine(conn_str, echo=False)
@@ -119,6 +122,9 @@ def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
 
     log.info("Beginning {} Import {}".format(description, datetime.datetime.now()))
 
+    if args.TEST_MODE:
+        csv_chunk_size = 1000
+
     # CSV chunking requested
     if csv_chunk_size is not None:
 
@@ -136,7 +142,7 @@ def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
                     log.info("Begin OPEN {} Pickle: {}".format(filename, datetime.datetime.now()))
                     df = pickle.load(picklefile)
                     send_df_to_sql(df, log, description, table_name, db_action,
-                            sql_chunk_size, max_col_len)
+                            sql_chunk_size, max_col_len, args.TEST_MODE)
                     db_action = "append"  # only first sql import should replace!
 
             return
@@ -167,9 +173,12 @@ def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
                 db_action = "append"
 
             send_df_to_sql(df, log, description, table_name, args.DB_ACTION,
-                    sql_chunk_size, max_col_len)
+                    sql_chunk_size, max_col_len, args.TEST_MODE)
 
             chunk_num += 1
+
+            if args.TEST_MODE:
+                break
 
         return
 
@@ -194,7 +203,7 @@ def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
                 date_time_columns, date_format, max_col_len)
 
     send_df_to_sql(df, log, description, table_name, args.DB_ACTION, sql_chunk_size,
-            max_col_len)
+            max_col_len, args.TEST_MODE)
 
 
 def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
@@ -233,7 +242,8 @@ def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
     return df
 
 
-def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, max_col_len):
+def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, max_col_len,
+        test_mode):
     """ Imports a DataFrame into a SQL database.
     """
     log.info("Let's now try to send it to the DB")
@@ -247,7 +257,7 @@ def send_df_to_sql(df, log, description, table_name, db_action, sql_chunk_size, 
     else:
         action = 'append'
 
-    conn = connect()
+    conn = connect(test_mode)
 
     log.info("We're going with db_action = {}".format(action))
     log.info("Sending our df to {}".format(table_name))

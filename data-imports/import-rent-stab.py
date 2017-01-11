@@ -139,7 +139,7 @@ def sql_cleanup(args):
     log.info('SQL cleanup...')
 
     sql = make_primary(table_name, primary_key)
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":

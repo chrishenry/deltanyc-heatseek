@@ -161,7 +161,7 @@ def sql_cleanup(args):
     sql = clean_addresses(table_name, "street_name") + \
         clean_boro(table_name, "borough", full_name_boro_replacements())
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":

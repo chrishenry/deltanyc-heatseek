@@ -109,7 +109,7 @@ def sql_cleanup(args):
             clean_boro(table_name, "borough", full_name_boro_replacements()) + \
             clean_bbl(table_name, "boroughid", "block", "lot")
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":

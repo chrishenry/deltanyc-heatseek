@@ -106,7 +106,7 @@ def sql_cleanup(args):
 
     sql = clean_addresses(table_name, "businessstreetname")
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":

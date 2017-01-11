@@ -75,14 +75,14 @@ def clean_bbl(table, boro, block, lot):
     ALTER TABLE {table} ADD INDEX (bbl);
     '''.format(table=table, boro=boro, block=block, lot=lot)
 
-def run_sql(sql, debug=True):
+def run_sql(sql, test_mode, debug=True):
     """ Runs SQL commands given in the provided string.
         The string can contain multiple statements.
     """
     if debug:
         print(sql)
 
-    engine = connect()
+    engine = connect(test_mode)
     connection = engine.raw_connection()
     cursor = connection.cursor()
 
