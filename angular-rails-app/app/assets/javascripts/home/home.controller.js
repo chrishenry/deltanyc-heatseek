@@ -5,6 +5,12 @@ angular
 function HomeController($scope, HomeService, $state) {
   var vm = this;
 
+  $scope.place = null;
+  $scope.autocompleteOptions = {
+      componentRestrictions: { country: 'us'}, // political: "New York", country: 'us',
+      types: ['geocode']
+  }
+
   vm.place ='';
 
   vm.componentForm = {

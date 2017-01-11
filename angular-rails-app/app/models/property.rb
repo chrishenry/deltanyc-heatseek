@@ -9,7 +9,32 @@ class Property < ActiveRecord::Base
   has_many :hpd_violations
   has_many :litigations
 
+  @boros = {
+    'MN' => 'MANHATTAN',
+    'BK' => 'BROOKLYN',
+    'BX' => 'BRONX',
+    'SI' => 'STATEN ISLAND',
+    'QN' => 'QUEENS',
+  }
+
   def full_address
     "#{self.street_address}, #{self.city}, #{self.state} #{self.zipcode}"
   end
+
+  def self.full_borough
+    x = self.read_attribute(:borough)
+    @boros[x]
+  end
+
+  def expand_borough
+    boros = {
+      'MN' => 'MANHATTAN',
+      'BK' => 'BROOKLYN',
+      'BX' => 'BRONX',
+      'SI' => 'STATEN ISLAND',
+      'QN' => 'QUEENS',
+    }
+    boros[self.borough]
+  end
+
 end

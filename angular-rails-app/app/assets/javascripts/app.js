@@ -4,33 +4,35 @@ angular
 
       $stateProvider
         .state('home', {
-          url: '/', 
-          templateUrl: 'home/home.html', 
+          url: '/',
+          templateUrl: 'home/home.html',
           controller: 'HomeController as vm',
-          onEnter: function(){
-            initialize();
-          }
         })
         .state('resources', {
-          url: '/resources', 
-          templateUrl: 'home/resources.html', 
+          url: '/resources',
+          templateUrl: 'home/resources.html',
         })
         .state('contact', {
-          url: '/contact', 
-          templateUrl: 'home/contact.html', 
+          url: '/contact',
+          templateUrl: 'home/contact.html',
         })
         .state('owner', {
-          url: '/owners/:id', 
-          templateUrl: 'owner/owner.html', 
+          url: '/owners/:id',
+          templateUrl: 'owner/owner.html',
           controller: 'OwnerController as vm'
         })
         .state('property', {
-          url: '/properties/:id', 
-          templateUrl: 'property/property.html', 
+          url: '/properties/:id',
+          templateUrl: 'property/property.html',
           controller: 'PropertyController as vm'
         });
-        
+
 
       $urlRouterProvider.otherwise('/');
 
+    }).filter('titleCase', function() {
+      return function(input) {
+        input = input || '';
+        return input.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      };
     });

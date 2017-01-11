@@ -1,76 +1,56 @@
 <div class="container">
+  <div class="row">
 
-<div class="row">
-  <div class="col-sm-8">
-
-  
-
-      <h3 style="margin-top: 155px;">BUILDING LOOKUP</h3> 
-
-
+    <div class="col-sm-8">
+      <h3 style="margin-top: 155px;">BUILDING LOOKUP</h3>
       <form class="form input-group" ng-submit="vm.getProperty()">
-                <input id="propertiesSearch" placeholder="Enter Address"class="form-control" g-places-autocomplete force-selection="true" ng-model="vm.place"/>
+        <input id="propertiesSearch" placeholder="Enter Address" class="form-control" g-places-autocomplete force-selection="true" ng-model="vm.place" options="autocompleteOptions" autocomplete="off"/>
+        <span class="input-group-btn">
+          <button class="btn btn-secondary" type="button" ng-click="vm.getProperty()">Go</button>
+        </span>
+      </form>
+    </div><!--column-->
 
-                 <span class="input-group-btn">
-                  <button class="btn btn-secondary" 
-                  type="button"
-                  ng-click="vm.getProperty()">Go</button>
-                </span>
-            </form>
-
-  </div><!--column-->
-  <div class="col-sm-4">         
-
-            <div id="instructions_building">Look up a building’s Owners, BBL, BIN, Total Units, Rent Stabilized Units, HPD Violations, HPD Complaints, DOB Permits, DOB Violations, Litigation History, 311 Complaints, Financial and Tax Lien Information, and information about changes in Rent Stabilization.</div>
-
-  </div><!--column--> 
+    <div class="col-sm-4">
+      <div id="instructions_building">
+        Look up a building’s Owners, BBL, BIN, Total Units, Rent Stabilized Units, HPD Violations, HPD Complaints, DOB Permits, DOB Violations, Litigation History, 311 Complaints, Financial and Tax Lien Information, and information about changes in Rent Stabilization.
+      </div>
+    </div><!--column-->
 
   </div><!-- row1-->
 </div><!--container-->
 
 <hr class="featurette-divider home">
-
 <div class="container">
-<div class="row">
-  <div class="col-sm-8">
+  <div class="row">
 
-  
-
-      <h3>OWNER LOOKUP</h3> 
-
-
+    <div class="col-sm-8">
+      <h3>OWNER LOOKUP</h3>
       <form class="form input-group">
-                <input id="propertiesSearch" class="form-control" 
-                placeholder="Enter Name or Company" />
+        <input id="ownersSearch" class="form-control"
+        placeholder="Enter Name or Company" />
+        <span class="input-group-btn">
+          <button class="btn btn-secondary"
+          type="button"
+          ng-click="">Go</button>
+        </span>
+      </form>
+    </div><!--column-->
 
-                 <span class="input-group-btn">
-                  <button class="btn btn-secondary" 
-                  type="button"
-                  ng-click="">Go</button>
-                </span>
-            </form>
-
-  </div><!--column-->
-  <div class="col-sm-4">         
-
-            <div id="instructions">
-            <p>Enter an Owner or Company and see a list of all associated properties.</p>
-            <p>Note: The use of one or multiple LLCs may affect search results.</p>
-    </div><br><br><br><br><br>
-
-  </div><!--column--> 
+    <div class="col-sm-4">
+      <div id="instructions">
+        <p>Enter an Owner or Company and see a list of all associated properties.</p>
+        <p>Note: The use of one or multiple LLCs may affect search results.</p>
+      </div><br><br><br><br><br>
+    </div><!--column-->
 
   </div><!-- row1-->
-
 </div>
 
 <footer>
   <div class="container" id="resource_text">
     <hr class="featurette-divider footer">
-      <p class="col-sm-9">This tool was built by Heatseek NYC and the Civic Hall Labs Delta.NYC Program. It is designed to be a free resource for tenants’ rights advocates, lawyers, and anybody else interested in defending tenants’ rights.</p>
-
-      <%=image_tag "heatSeek_logo.png", :class => "logo pull-right"%>
+    <p class="col-sm-9">This tool was built by Heatseek NYC and the Civic Hall Labs Delta.NYC Program. It is designed to be a free resource for tenants’ rights advocates, lawyers, and anybody else interested in defending tenants’ rights.</p>
+    <%=image_tag "heatSeek_logo.png", :class => "logo pull-right"%>
   </div>
 </footer>
-
-
