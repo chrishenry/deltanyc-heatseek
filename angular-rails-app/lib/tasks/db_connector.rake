@@ -92,7 +92,7 @@ namespace :db_connector do
     # puts count_result
 
     # sql = "SELECT * FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
-    sql = "SELECT * FROM hpd_registration_contact hr WHERE
+    sql = "SELECT * FROM hpd_registration_contacts hr WHERE
            businesshousenumber IS NOT NULL AND
            businessstreetname IS NOT NULL AND
             businessapartment IS NOT NULL AND
