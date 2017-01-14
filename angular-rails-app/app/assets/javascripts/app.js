@@ -1,5 +1,5 @@
 angular
-    .module('app', ['ui.router', 'templates', 'google.places', 'angularSlideables'])
+    .module('app', ['ui.router', 'templates', 'google.places', 'angularSlideables', 'ui.bootstrap'])
     .config(function ($stateProvider, $urlRouterProvider) {
 
       $stateProvider
