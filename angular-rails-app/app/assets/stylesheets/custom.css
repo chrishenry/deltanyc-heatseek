@@ -85,12 +85,14 @@ form {
 
 input#propertiesSearch {
   height:40px;
+  margin-bottom: 10px;
 }
 
 button.btn.btn-secondary {
   height: 40px;
   background-color: black;
   color:white;
+  margin-bottom: 10px;
 }
 
 #header {
@@ -270,6 +272,14 @@ fa-caret-down {
 fa-caret-right {
   color: rgb(255,165,0);
   font-size: 1.6em;
+}
+
+div.alert {
+    padding: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    width: 90%;
+    margin-bottom: 0px;
 }
 
 
