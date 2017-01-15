@@ -282,6 +282,22 @@ div.alert {
     margin-bottom: 0px;
 }
 
+.alert-dismissable .close, .alert-dismissible .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: black;
+}
+
+.close {
+    float: right;
+    margin-right: 25px;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    color: black;
+}
+
 
 
 

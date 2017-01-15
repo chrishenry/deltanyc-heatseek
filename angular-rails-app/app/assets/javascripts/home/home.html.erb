@@ -18,9 +18,9 @@
 
             <div uib-alert 
             ng-repeat="alert in vm.alerts" 
-            ng-class="alert-warning" 
+            type='alert.warning' 
             close="vm.closeAlert()" 
-            style="background-color: rgb(175,205,212); text-align: center;">
+            style="background-color: rgb(185,215,222); text-align: center;">
             {{alert.msg}}</div>      
 
         </div>
