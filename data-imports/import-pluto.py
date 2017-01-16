@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import os.path
 import sys
 import logging
@@ -16,16 +15,14 @@ logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)
     level=logging.INFO)
 log = logging.getLogger(__name__)
 
-"""
-PLUTO IMPORT
-Manually Download PLUTO.zip from below, extract to a directory. Run below pointed at that directory.
+###################
+# CSV import config
 
-http://www1.nyc.gov/assets/planning/download/zip/data-maps/open-data/nyc_pluto_16v2%20.zip
-"""
+description = 'PLUTO'
 
-PLUTO_KEY = 'pluto'
+table_name = "pluto_nyc"
 
-PLUTO_dtype_dict = {
+dtype_dict = {
     'Borough':       'object',
     'Block':       'int64',
     'Lot':       'int64',
@@ -111,9 +108,11 @@ PLUTO_dtype_dict = {
     'PLUTOMapID':       'int64'
 }
 
+truncate_columns = []
 
+date_time_columns = ['appdate']
 
-PLUTO_df_keep_cols = [
+keep_cols = [
     'Borough',
     'Block',
     'Lot',
@@ -200,16 +199,8 @@ PLUTO_df_keep_cols = [
 ]
 
 
-table_name = "pluto_nyc"
-
-
-def main(argv):
-
-    parser = argparse.ArgumentParser(description='Import Pluto dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import Pluto dataset.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -218,11 +209,11 @@ def main(argv):
 
 
 def import_csv(args):
-    pluto_dir = os.path.join(BASE_DIR, PLUTO_KEY)
-    mkdir_p(pluto_dir)
+    csv_dir = os.path.join(BASE_DIR, table_name)
+    mkdir_p(csv_dir)
 
-    local_pluto_file = os.path.join(pluto_dir, 'pluto.zip')
-    pluto_csv = os.path.join(pluto_dir, "pluto.csv")
+    local_pluto_file = os.path.join(csv_dir, 'pluto.zip')
+    csv_file = os.path.join(csv_dir, "pluto.csv")
 
     if not os.path.isfile(local_pluto_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing Pluto")
@@ -230,49 +221,38 @@ def import_csv(args):
     else:
         log.info("Pluto exists, moving on...")
 
-    if not os.path.isfile(pluto_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         sys.stdout.write("\rUnzipping Pluto archive....")
-        unzip(local_pluto_file, pluto_dir)
+        unzip(local_pluto_file, csv_dir)
         sys.stdout.flush()
         sys.stdout.write("\rUnzipping Pluto archive....done.\n")
 
         sys.stdout.write("\rConcatenating Pluto boro csvs....")
-        pluto_csv_files_dir = os.path.join(pluto_dir, "BORO_zip_files_csv")
-        pandas_concat_csv(pluto_csv_files_dir, pluto_csv)
+        pluto_csv_files_dir = os.path.join(csv_dir, "BORO_zip_files_csv")
+        pandas_concat_csv(pluto_csv_files_dir, csv_file)
         sys.stdout.flush()
         sys.stdout.write("\rConcatenating Pluto boro csvs....done.\n")
     else:
         sys.stdout.write("\rUsing previously concat'ed files....\n")
 
-    PLUTO_date_time_columns = ['appdate']
-    PLUTO_description = 'PLUTO'
-    PLUTO_input_csv_url = pluto_csv
-    PLUTO_pickle = os.path.join(pluto_dir, 'df_PLUTO_NYC.pkl')
-    PLUTO_sep_char = ","
-    PLUTO_load_pickle = args.LOAD_PICKLE
-    PLUTO_save_pickle = args.SAVE_PICKLE
-    PLUTO_db_action = "replace"
-    PLUTO_truncate_columns = []
-    PLUTO_chunk_size = 5000
-    PLUTO_max_column_size = 255
-    PLUTO_date_format = "%m/%d/%Y"
+    pickle = os.path.join(dir, 'df_NYC.pkl')
+    chunk_size = 5000
+    max_column_size = 255
+    date_format = "%m/%d/%Y"
 
     hpd_csv2sql(
-                PLUTO_description,
-                PLUTO_input_csv_url,
-                PLUTO_sep_char,
+                description,
+                args,
+                csv_file,
                 table_name,
-                PLUTO_dtype_dict,
-                PLUTO_load_pickle,
-                PLUTO_save_pickle,
-                PLUTO_pickle,
-                PLUTO_db_action,
-                PLUTO_truncate_columns,
-                PLUTO_date_time_columns,
-                PLUTO_chunk_size,
-                PLUTO_df_keep_cols,
-                PLUTO_max_column_size,
-                PLUTO_date_format,
+                dtype_dict,
+                truncate_columns,
+                date_time_columns,
+                keep_cols,
+                pickle,
+                chunk_size,
+                max_column_size,
+                date_format=date_format,
                )
 
 
@@ -282,8 +262,8 @@ def sql_cleanup(args):
     sql = clean_addresses(table_name, "address") + \
         clean_boro(table_name, "borough", full_name_boro_replacements())
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()

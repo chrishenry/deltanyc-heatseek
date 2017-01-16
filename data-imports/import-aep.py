@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import argparse
-import os.path
 import sys
 import logging
+
+import pandas as pd
 
 from clean_utils import *
 from utils import *
@@ -16,14 +16,14 @@ logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)
     level=logging.INFO)
 log = logging.getLogger(__name__)
 
+
+###################
+# CSV import config
+
 table_name = 'aep_list'
 
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import Alternative Enforcement Program dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import Alternative Enforcement Program dataset.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -47,8 +47,8 @@ def sql_cleanup(args):
 
     sql = clean_addresses(table_name, "full_addr") + \
         clean_boro(table_name, "borough", full_name_boro_replacements())
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == '__main__':
-    main(sys.argv[:1])
+    main()

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import os
 import os.path
 import sys
@@ -21,11 +20,11 @@ log = logging.getLogger(__name__)
 HPD Buildings import
 """
 
-HPD_BUILDINGS_KEY = 'hpd_buildings'
+description = "HPD Buildings"
 
 table_name = 'hpd_buildings'
 
-bld_dtype_dict = {
+dtype_dict = {
     'BuildingID':              'int64',
     'BoroID':                  'int64',
     'Boro':                   'object',
@@ -51,7 +50,11 @@ bld_dtype_dict = {
     'RecordStatus':           'object'
 }
 
-bld_df_keep_cols = [
+truncate_columns = []
+
+date_time_columns = []
+
+keep_cols = [
     'BuildingID',
     'BoroID',
     'Boro',
@@ -77,17 +80,9 @@ bld_df_keep_cols = [
     'RecordStatus'
 ]
 
-bld_truncate_columns = ''
 
-bld_date_time_columns = ''
-
-
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import hpd buildings dataset.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -96,40 +91,32 @@ def main(argv):
 
 
 def import_csv(args):
-    hpd_buildings_dir = os.path.join(BASE_DIR, HPD_BUILDINGS_KEY)
-    mkdir_p(hpd_buildings_dir)
+    csv_dir = os.path.join(BASE_DIR, table_name)
+    mkdir_p(csv_dir)
 
-    hpd_buildings_csv = os.path.join(hpd_buildings_dir, "hpd_buildings.csv")
+    csv_file = os.path.join(csv_dir, "hpd_buildings.csv")
 
-    if not os.path.isfile(hpd_buildings_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing HPD Buildings")
-        download_file("https://data.cityofnewyork.us/api/views/kj4p-ruqc/rows.csv?accessType=DOWNLOAD", hpd_buildings_csv)
+        download_file("https://data.cityofnewyork.us/api/views/kj4p-ruqc/rows.csv?accessType=DOWNLOAD", csv_file)
     else:
         log.info("HPD Buildings exists, moving on...")
 
-    bld_description = "HPD Buildings"
-    bld_input_csv_url = hpd_buildings_csv
-    bld_sep_char = ","
-    bld_pickle = os.path.join(hpd_buildings_dir, 'df_buildings.pkl')
-    bld_load_pickle = args.LOAD_PICKLE
-    bld_save_pickle = args.SAVE_PICKLE
-    bld_db_action = 'replace' ## if not = 'replace' then 'append'
-    bld_chunk_size = 5000
+    pickle = os.path.join(csv_dir, 'df_buildings.pkl')
+
+    chunk_size = 5000
 
     hpd_csv2sql(
-                bld_description,
-                bld_input_csv_url,
-                bld_sep_char,
+                description,
+                args,
+                csv_file,
                 table_name,
-                bld_dtype_dict,
-                bld_load_pickle,
-                bld_save_pickle,
-                bld_pickle,
-                bld_db_action,
-                bld_truncate_columns,
-                bld_date_time_columns,
-                bld_chunk_size,
-                bld_df_keep_cols
+                dtype_dict,
+                truncate_columns,
+                date_time_columns,
+                keep_cols,
+                pickle,
+                chunk_size
                )
 
 def sql_cleanup(args):
@@ -139,8 +126,8 @@ def sql_cleanup(args):
             clean_boro(table_name, "boro", full_name_boro_replacements()) + \
             clean_bbl(table_name, "boroid", "block", "lot")
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()

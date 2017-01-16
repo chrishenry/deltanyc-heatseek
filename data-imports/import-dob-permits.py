@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import os.path
 import sys
 import logging
@@ -20,9 +19,11 @@ log = logging.getLogger(__name__)
 DOB Permits import
 """
 
-DOB_PERMITS_KEY = 'dob_permits'
+description = 'DOB Permits'
 
-perm_dob_dtype_dict = {
+table_name = "dob_permits"
+
+dtype_dict = {
         'BOROUGH':                                'object',
         'Bin #':                               'float64',
         'House #':                              'object',
@@ -79,8 +80,17 @@ perm_dob_dtype_dict = {
         'DOBRunDate':                             'object'
         }
 
+truncate_columns = ['borough']
 
-perm_dob_df_keep_cols = [
+date_time_columns = [
+        'filing_date',
+        'issuance_date',
+        'expiration_date',
+        'job_start_date',
+        'dobrundate'
+        ]
+
+keep_cols = [
         'BOROUGH',
         'Bin #',
         'House #',
@@ -105,27 +115,8 @@ perm_dob_df_keep_cols = [
         ]
 
 
-perm_dob_date_time_columns = [
-        'filing_date',
-        'issuance_date',
-        'expiration_date',
-        'job_start_date',
-        'dobrundate'
-        ]
-
-
-perm_dob_truncate_columns = ['borough']
-
-
-table_name = "dob_permits"
-
-
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import hpd buildings dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import hpd buildings dataset.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -134,41 +125,33 @@ def main(argv):
 
 
 def import_csv(args):
-    dob_permits_dir = os.path.join(BASE_DIR, DOB_PERMITS_KEY)
-    mkdir_p(dob_permits_dir)
+    csv_dir = os.path.join(BASE_DIR, table_name)
+    mkdir_p(csv_dir)
 
-    dob_permits_csv = os.path.join(dob_permits_dir, "dob_permits.csv")
+    csv_file = os.path.join(csv_dir, "dob_permits.csv")
 
-    if not os.path.isfile(dob_permits_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing DOB Permits")
         download_file(
                 'https://data.cityofnewyork.us/api/views/ipu4-2q9a/rows.csv?accessType=DOWNLOAD',
-                dob_permits_csv)
+                csv_file)
     else:
         log.info("DOB Permits exists, moving on...")
 
-    perm_dob_description = 'DOB Permits'
-    perm_dob_pickle = dob_permits_dir + '/df_dob_permit.pkl'
-    perm_dob_sep_char = ","
-    perm_dob_load_pickle = args.LOAD_PICKLE
-    perm_dob_save_pickle = args.SAVE_PICKLE
-    perm_dob_db_action = args.DB_ACTION
-    perm_dob_chunk_size = 2500
+    pickle = csv_dir + '/df_dob_permit.pkl'
+    chunk_size = 2500
 
     hpd_csv2sql(
-            perm_dob_description,
-            dob_permits_csv,
-            perm_dob_sep_char,
+            description,
+            args,
+            csv_file,
             table_name,
-            perm_dob_dtype_dict,
-            perm_dob_load_pickle,
-            perm_dob_save_pickle,
-            perm_dob_pickle,
-            perm_dob_db_action,
-            perm_dob_truncate_columns,
-            perm_dob_date_time_columns,
-            perm_dob_chunk_size,
-            perm_dob_df_keep_cols
+            dtype_dict,
+            truncate_columns,
+            date_time_columns,
+            keep_cols,
+            pickle,
+            chunk_size,
             )
 
 
@@ -178,8 +161,8 @@ def sql_cleanup(args):
     sql = clean_addresses(table_name, "street_name") + \
         clean_boro(table_name, "borough", full_name_boro_replacements())
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()

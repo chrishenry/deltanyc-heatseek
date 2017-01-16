@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import os.path
 import sys
 import logging
@@ -20,9 +19,11 @@ log = logging.getLogger(__name__)
 HPD Buildings import
 """
 
-hpd_complaints_KEY = 'hpd_complaints'
+description = "HPD Complaints"
 
-cmp_dtype_dict = {
+table_name = 'hpd_complaints'
+
+dtype_dict = {
     'ComplaintID':         'int64',
     'BuildingID':          'int64',
     'BoroughID':           'int64',
@@ -40,7 +41,11 @@ cmp_dtype_dict = {
     'StatusDate':         'object'
 }
 
-cmp_df_keep_cols = [
+date_time_columns = ['statusdate','receiveddate']
+
+truncate_columns = []
+
+keep_cols = [
     'ComplaintID',
     'BuildingID',
     'BoroughID',
@@ -58,19 +63,9 @@ cmp_df_keep_cols = [
     'StatusDate',
 ]
 
-cmp_date_time_columns = ['statusdate','receiveddate']
 
-cmp_truncate_columns = ''
-
-table_name = 'hpd_complaints'
-
-
-def main(argv):
-    parser = argparse.ArgumentParser(description='Import hpd complaints.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
-
-    print args
+def main():
+    args = get_common_arguments('Import hpd complaints.')
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -79,40 +74,31 @@ def main(argv):
 
 
 def import_csv(args):
-    hpd_complaints_dir = os.path.join(BASE_DIR, hpd_complaints_KEY)
-    mkdir_p(hpd_complaints_dir)
+    csv_dir = os.path.join(BASE_DIR, table_name)
+    mkdir_p(csv_dir)
 
-    hpd_complaints_csv = os.path.join(hpd_complaints_dir, "hpd_complaints.csv")
+    csv_file = os.path.join(csv_dir, "hpd_complaints.csv")
 
-    if not os.path.isfile(hpd_complaints_csv) or args.BUST_DISK_CACHE:
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing HPD Complaints")
-        download_file("https://data.cityofnewyork.us/api/views/uwyv-629c/rows.csv?accessType=DOWNLOAD", hpd_complaints_csv)
+        download_file("https://data.cityofnewyork.us/api/views/uwyv-629c/rows.csv?accessType=DOWNLOAD", csv_file)
     else:
         log.info("HPD Complaints exists, moving on...")
 
-    cmp_description = "HPD Complaints"
-    cmp_input_csv_url = hpd_complaints_csv
-    cmp_sep_char = ","
-    cmp_pickle = os.path.join(hpd_complaints_dir, 'df_complaints.pkl')
-    cmp_load_pickle = args.LOAD_PICKLE
-    cmp_save_pickle = args.SAVE_PICKLE
-    cmp_db_action = args.DB_ACTION
-    cmp_chunk_size = 5000
+    pickle = os.path.join(csv_dir, 'df_complaints.pkl')
+    chunk_size = 5000
 
     hpd_csv2sql(
-                cmp_description,
-                cmp_input_csv_url,
-                cmp_sep_char,
+                description,
+                args,
+                csv_file,
                 table_name,
-                cmp_dtype_dict,
-                cmp_load_pickle,
-                cmp_save_pickle,
-                cmp_pickle,
-                cmp_db_action,
-                cmp_truncate_columns,
-                cmp_date_time_columns,
-                cmp_chunk_size,
-                cmp_df_keep_cols
+                dtype_dict,
+                truncate_columns,
+                date_time_columns,
+                keep_cols,
+                pickle,
+                chunk_size,
                )
 
 
@@ -123,8 +109,8 @@ def sql_cleanup(args):
             clean_boro(table_name, "borough", full_name_boro_replacements()) + \
             clean_bbl(table_name, "boroughid", "block", "lot")
 
-    run_sql(sql)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()
