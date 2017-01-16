@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row">
-
     <div class="col-sm-8">
+
       <h3 style="margin-top: 155px;">BUILDING LOOKUP</h3>
       <form class="form input-group" ng-submit="vm.getProperty()">
         <input id="propertiesSearch" placeholder="Enter Address" class="form-control" g-places-autocomplete force-selection="true" ng-model="vm.place" options="autocompleteOptions" autocomplete="off"/>
@@ -9,6 +9,23 @@
           <button class="btn btn-secondary" type="button" ng-click="vm.getProperty()">Go</button>
         </span>
       </form>
+
+      <!--alerts-->
+       <div>             
+          <script type="text/ng-template" id="alert.html">
+            <div ng-transclude></div>
+          </script>
+
+            <div uib-alert 
+            ng-repeat="alert in vm.alerts" 
+            type='alert.warning' 
+            close="vm.closeAlert()" 
+            style="background-color: rgb(185,215,222); text-align: center;">
+            {{alert.msg}}</div>      
+
+        </div>
+       <!-- end of alert section -->
+
     </div><!--column-->
 
     <div class="col-sm-4">
@@ -27,7 +44,7 @@
     <div class="col-sm-8">
       <h3>OWNER LOOKUP</h3>
       <form class="form input-group">
-        <input id="ownersSearch" class="form-control"
+        <input id="propertiesSearch" class="form-control"
         placeholder="Enter Name or Company" />
         <span class="input-group-btn">
           <button class="btn btn-secondary"

@@ -53,13 +53,13 @@ namespace :db_connector do
 
     @boros.each do |key, value|
       sql = "UPDATE hpd_buildings SET boro = '#{key}' WHERE boro = '#{value}';"
-      # conn.execute(sql)
+      conn.execute(sql)
     end
 
     # Load addresses from HPD. This will catch additional addresses in hpd that are *not* in pluto
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
     SELECT TRIM(streetname), 'New York', 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings;"
-    # conn.execute(sql)
+    conn.execute(sql)
 
     # Find properties without hpd_reg_id, and match the reg_id from hpd
     sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
@@ -81,7 +81,7 @@ namespace :db_connector do
 
     indexes = Hash[
       "hpd_registrations" => "registrationid",
-      "hpd_registration_contact" => "registrationid"
+      "hpd_registration_contacts" => "registrationid"
     ]
 
     add_indexes(indexes)
@@ -92,7 +92,7 @@ namespace :db_connector do
     # puts count_result
 
     # sql = "SELECT * FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
-    sql = "SELECT * FROM hpd_registration_contact hr WHERE
+    sql = "SELECT * FROM hpd_registration_contacts hr WHERE
            businesshousenumber IS NOT NULL AND
            businessstreetname IS NOT NULL AND
             businessapartment IS NOT NULL AND
