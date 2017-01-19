@@ -12,7 +12,7 @@ mkdir_p(BASE_DIR)
 logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
     datefmt='%H:%M:%S',
     stream=sys.stdout,
-    level=logging.INFO)
+    level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 """
@@ -46,8 +46,8 @@ truncate_columns = []
 date_time_columns = []
 
 keep_cols = [
-    'Registrationcontactid',
-    'Registrationid',
+    'RegistrationContactID',
+    'RegistrationID',
     'Type',
     'ContactDescription',
     'CorporationName',
