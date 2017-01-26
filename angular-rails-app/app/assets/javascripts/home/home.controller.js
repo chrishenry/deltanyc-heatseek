@@ -5,6 +5,12 @@ angular
 function HomeController($scope, HomeService, $state) {
   var vm = this;
 
+  $scope.place = null;
+  $scope.autocompleteOptions = {
+      componentRestrictions: { country: 'us'}, // political: "New York", country: 'us',
+      types: ['geocode']
+  }
+
   vm.place ='';
 
   vm.componentForm = {
@@ -47,11 +53,25 @@ function HomeController($scope, HomeService, $state) {
     HomeService.getProperty(vm.details)
     .then(function(propertyData){
       console.log(propertyData);
-      return $state.go('property', {id: propertyData.data[0].id});
+      if((propertyData.data[0]!= undefined) && (propertyData.data[0].id)){
+        $state.go('property', {id: propertyData.data[0].id})
+      }
+      else{
+        vm.addressError();
+      }
     }, function(error){
       alert('Unable to get property' + error.statusText);
     });
  }
+
+
+ vm.addressError = function() {
+      vm.alerts = [{msg: 'Address not found in database.  Perhaps try another variation.'}];
+    };
+
+ vm.closeAlert = function() {
+     vm.alerts = [];
+    };
 
 
 

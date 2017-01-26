@@ -32,6 +32,8 @@ gem 'ngannotate-rails'
 gem 'sdoc', '~> 0.4.0', group: :doc
 # pagination.
 gem 'will_paginate', '~> 3.1.0'
+# ui directives for Angular
+gem 'angular-ui-bootstrap-rails'
 
 gem 'httparty', '~> 0.13.6'
 

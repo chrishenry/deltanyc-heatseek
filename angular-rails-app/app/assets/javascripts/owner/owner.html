@@ -9,16 +9,16 @@
 
 
 <section style="background: white;">
-    <div class="container">      
+    <div class="container">
       <h2 style="color:grey">OWNER</h2>
         <hr class="featurette-divider">
-        <h2>{{vm.data.name}}</h2>
+        <h2>{{vm.data.name | titleCase}}</h2>
         <br>
     </div>
 </section>
 
 <section style="background: white; margin-top: 10px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">GENERAL</h4>
       <hr class="featurette-divider property">
 
@@ -29,30 +29,30 @@
             <table class="table">
               <tr>
                 <td class="R">Name</td>
-                <td class="L">{{vm.data.name}}</td> 
+                <td class="L">{{vm.data.name | titleCase}}</td>
                 <td class="R"></td>
-                <td class="L"></td> 
+                <td class="L"></td>
 
               </tr>
               <tr>
                 <td class="R">Mailing Address</td>
-                <td class="L">{{vm.data.address_line_one}} {{vm.data.address_line_two}}, {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td> 
+                <td class="L">{{vm.data.address_line_one | titleCase}} {{vm.data.address_line_two | titleCase}}, {{vm.data.city}} {{vm.data.state}} {{vm.data.zipcode}}</td>
                 <td class="R"></td>
-                <td class="L"></td> 
+                <td class="L"></td>
               </tr>
-  
+
             </table>
           </div>
 
         </div>
-      </div> 
-    </div>        
+      </div>
+    </div>
   </div>
 </section><!-- End of General Info Section -->
 
 
 <section style="background: white; margin-top: 10px; margin-bottom: 60px;">
-    <div class="container">      
+    <div class="container">
       <h4 id="info_heading">ASSOCIATED PROPERTIES</h4>
       <hr class="featurette-divider property">
 
@@ -64,8 +64,8 @@
           </div>
 
         </div>
-      </div> 
-    </div>        
+      </div>
+    </div>
   </div>
 </section>
 

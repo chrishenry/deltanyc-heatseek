@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-import argparse
-import os
 import os.path
 import sys
 import logging
 
-from sqlalchemy import create_engine
-
+from clean_utils import *
 from utils import *
 
 mkdir_p(BASE_DIR)
@@ -18,9 +15,15 @@ logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)
         level=logging.INFO)
 log = logging.getLogger(__name__)
 
-CALL_311_KEY = '311-complaints'
 
-call_311_dtype_dict = {
+###################
+# CSV import config
+
+description = "311_complaints"
+
+table_name = "call_311"
+
+dtype_dict = {
         'Unique Key':'int64',
         'Created Date':'object',
         'Closed Date':'object',
@@ -76,7 +79,7 @@ call_311_dtype_dict = {
         'Location':'object'
 }
 
-call_311_df_keep_cols = [
+keep_cols = [
     "Unique Key",
     "Created Date",
     "Closed Date",
@@ -101,94 +104,47 @@ call_311_df_keep_cols = [
     "Location"
 ]
 
+truncate_columns = ['resolution_description']
 
-def main(argv):
+date_time_columns = ['created_date','closed_date','due_date', 'resolution_action_updated_date']
 
-    parser = argparse.ArgumentParser(description='Import 311 complaints dataset.')
-    parser = add_common_arguments(parser)
-    args = parser.parse_args()
 
-    print args
+def main():
+    args = get_common_arguments('Import 311 complaints dataset.')
 
-    call_311_dir = os.path.join(BASE_DIR, CALL_311_KEY)
-    mkdir_p(call_311_dir)
+    if not args.SKIP_IMPORT:
+        import_csv(args)
 
-    call_311_csv = os.path.join(call_311_dir, '311-full.csv')
+    sql_cleanup(args)
 
-    if not os.path.isfile(call_311_csv) or args.BUST_DISK_CACHE:
+
+def import_csv(args):
+    csv_dir = os.path.join(BASE_DIR, table_name)
+    mkdir_p(csv_dir)
+
+    csv_file = os.path.join(csv_dir, '311-full.csv')
+
+    if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing 311 complaints")
-        download_file("https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD", call_311_csv)
+        download_file("https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD", csv_file)
     else:
         log.info("311 complaints exist, moving on...")
 
-    call_311_description = "311_complaints"
-    call_311_pickle = os.path.join(call_311_dir, 'split', '311-chunk-{}.pkl')
-    call_311_sep_char = ","
-    call_311_table_name = "call_311"
-    call_311_load_pickle = args.LOAD_PICKLE
-    call_311_save_pickle = args.SAVE_PICKLE
-    call_311_db_action = 'replace' ## if not = 'replace' then 'append'
-    call_311_truncate_columns = ['resolution_description']
-    call_311_date_time_columns = ['created_date','closed_date','due_date', 'resolution_action_updated_date']
-    call_311_sql_chunk_size = 2500
-    call_311_csv_chunk_size = 250000
+    pickle = os.path.join(csv_dir, 'split', '311-chunk-{}.pkl')
+    csv_chunk_size = 250000
 
-    hpd_csv2sql(
-            call_311_description,
-            call_311_csv,
-            call_311_sep_char,
-            call_311_table_name,
-            call_311_dtype_dict,
-            call_311_load_pickle,
-            call_311_save_pickle,
-            call_311_pickle,
-            call_311_db_action,
-            call_311_truncate_columns,
-            call_311_date_time_columns,
-            call_311_sql_chunk_size,
-            call_311_df_keep_cols,
-            csv_chunk_size=call_311_csv_chunk_size
-            )
-    
+    hpd_csv2sql(description, args, csv_file, table_name, dtype_dict, truncate_columns,
+            date_time_columns, keep_cols, pickle, csv_chunk_size=csv_chunk_size)
+
+
 def sql_cleanup(args):
-    conn = connect()
-    cursor = conn.cursor()
+    log.info('SQL cleanup...')
 
-    SQL = '''  
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' AVE$|-AVE$| -AVE$', ' AVENUE');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '\.', '', 'g');
-    UPDATE call_311 SET incident_address = array_to_string(regexp_matches(incident_address, '(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '') WHERE incident_address ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LA$', ' LANE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' LN$', ' LANE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PL$', ' PLACE', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' ST$| STR$', ' STREET', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' RD$', ' ROAD', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY$', 'PARKWAY', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' PKWY ', ' PARKWAY ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD$', ' BOULEVARD', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD ', ' BOULEVARD ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, ' BLVD', ' BOULEVARD ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^BCH ', 'BEACH ', 'g');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^E ', 'EAST ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^W ', 'WEST ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^N ', 'NORTH ');
-    UPDATE call_311 SET incident_address = regexp_replace( incident_address, '^S ', 'SOUTH '); 
-    UPDATE call_311 SET borough = regexp_replace(borough, 'MANHATTAN', 'MN', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'BROOKLYN', 'BK', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'STATEN ISLAND', 'SI', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'QUEENS', 'QN', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'BRONX', 'BR', 'g');
-    UPDATE call_311 SET borough = regexp_replace(borough, 'Unspecified', '', 'g');
+    sql = clean_addresses(table_name, "incident_address") + \
+        clean_boro(table_name, "borough", full_name_boro_replacements())
 
-    '''
-
-    for result in cursor.execute(SQL,multi = True):
-        pass
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
-    main(sys.argv[:1])
+    main()

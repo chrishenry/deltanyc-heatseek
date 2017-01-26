@@ -85,12 +85,14 @@ form {
 
 input#propertiesSearch {
   height:40px;
+  margin-bottom: 10px;
 }
 
 button.btn.btn-secondary {
   height: 40px;
   background-color: black;
   color:white;
+  margin-bottom: 10px;
 }
 
 #header {
@@ -250,25 +252,50 @@ table.table-striped>tbody>tr>td {
   border: 1px solid black;
 }
 
-h4#show_hide {
+h4.show_hide {
   color: rgb(255,165,0);
   display: inline-block;
   margin-right: 5px;
   margin-bottom: 30px;
+  cursor: pointer;
 }
 
-h4#show_hide:hover {
+h4.show_hide:hover {
   color: rgb(255,33,1);
 }
 
-.fa.fa-caret-down {
+fa-caret-down {
   color: rgb(255,165,0);
   font-size: 1.6em;
 }
 
-.fa.fa-caret-right {
+fa-caret-right {
   color: rgb(255,165,0);
   font-size: 1.6em;
+}
+
+div.alert {
+    padding: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    width: 90%;
+    margin-bottom: 0px;
+}
+
+.alert-dismissable .close, .alert-dismissible .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: black;
+}
+
+.close {
+    float: right;
+    margin-right: 25px;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    color: black;
 }
 
 
