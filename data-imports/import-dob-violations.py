@@ -80,7 +80,7 @@ def main():
 
 
 def import_csv(args):
-    csv_dir = os.path.join(BASE_DIR, DOB_VIOLATIONS_KEY)
+    csv_dir = os.path.join(BASE_DIR, table_name)
     mkdir_p(csv_dir)
 
     csv_file = os.path.join(csv_dir, "dob_violations.csv")
