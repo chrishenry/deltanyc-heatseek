@@ -299,6 +299,8 @@ namespace :db_connector do
       "LBLVIO-LOW PRESSURE BOILER",
       "LL1081-LOCAL LAW 10/81 - ELEVATOR",
       "LL6291-LOCAL LAW 62/91 - BOILERS",
+      "C-CONSTRUCTION",
+      "B-BOILER",
     ]
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
@@ -372,6 +374,11 @@ namespace :db_connector do
       "WATER LEAK",
       "HEAT/HOT WATER",
       "Standing Water",
+      "Rodent",
+      "Indoor Sewage",
+      "Emergency Response Team (ERT)",
+      "Lead",
+      "Eviction",
     ]
 
     in_list =  "\"" + three11_categories.join("\", \"") + "\""
