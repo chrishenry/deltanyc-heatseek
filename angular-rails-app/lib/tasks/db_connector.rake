@@ -388,30 +388,22 @@ namespace :db_connector do
 
     three11_categories.each do |category|
 
-      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type = " + category + ";"
-      puts sql
+      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type = \"" + category + "\";"
       three11_results = conn.exec_query(sql).to_hash
 
       three11_results.each do |result|
 
-        puts "**************"
+        puts "******* #{category} *******"
 
         # Decently working regex to get ONLY street_number
         street_number = result['incident_address'].scan(/^[^\s]+/).join('')
         street = result['street_name']
         boro_id = @boros_int.key(@boros.key(result['borough']))
 
-        puts result['borough']
-        puts boro_id
-
         begin
           geo_data = nyc_geocode(street_number, street, boro_id)
-        rescue Net::OpenTimeout => e
-          puts "Net error, pausing && continuing"
-          sleep(1)
-          next
-        rescue OpenSSL::SSL::SSLError => e
-          puts "SSL error, pausing && continuing"
+        rescue Exception => e
+          puts "GEO API error, pausing && continuing"
           sleep(1)
           next
         end
