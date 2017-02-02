@@ -235,7 +235,7 @@ def import_csv(args):
     else:
         sys.stdout.write("\rUsing previously concat'ed files....\n")
 
-    pickle = os.path.join(dir, 'df_NYC.pkl')
+    pickle = os.path.join(csv_dir, 'df_NYC.pkl')
     chunk_size = 5000
     max_column_size = 255
     date_format = "%m/%d/%Y"

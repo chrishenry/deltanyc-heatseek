@@ -8,6 +8,7 @@ def clean_addresses(table, column):
     #    UPDATE {table} SET {column} = array_to_string(regexp_matches('(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '', {column} ) WHERE {column} ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
     # No idea where regexp_matches is defined? Looks like it's a Postgresql command?
     return '''
+    UPDATE {table} SET {column} = TRIM({column});
     UPDATE {table} SET {column} = preg_replace( '/\\\./', '', {column} );
     UPDATE {table} SET {column} = preg_replace( '/, MANHATTAN|, BROOKLYN|, STATEN ISLAND|, QUEENS|, BRONX/i', '', {column} );
     UPDATE {table} SET {column} = preg_replace( '/ AVE$|-AVE$| -AVE$/', ' AVENUE', {column} );
