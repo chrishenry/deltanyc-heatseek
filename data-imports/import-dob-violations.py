@@ -123,8 +123,6 @@ def sql_cleanup(args):
             clean_boro(table_name, "boro", bbl_code_boro_replacements())
     print(sql)
 
-    # TODO: Mysterious 0 and ` boro codes should be cleaned?
-
     run_sql(sql, args.TEST_MODE)
 
 

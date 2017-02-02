@@ -58,7 +58,7 @@ def mkdir_p(my_path):
         os.mkdir(my_path)
 
 
-def connect(test_mode):
+def connect(test_mode=False):
     """ Returns a SQLAlchemy.Engine with a connection pool for the configured database.
     """
     user = os.environ['MYSQL_USER']
