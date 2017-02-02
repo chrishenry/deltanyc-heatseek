@@ -33,10 +33,10 @@ def main():
 
 def import_csv(args):
     log.info('Importing pre-created AEP csv...')
-    data_file = 'data/AEP_LIST.csv'
+    data_file = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data/AEP_LIST.csv'))
     df = pd.read_csv(data_file)
 
-    conn = connect()
+    conn = connect(args.TEST_MODE)
 
     df.to_sql(name=table_name, con=conn, if_exists=args.DB_ACTION,
             index=False, chunksize=2500)

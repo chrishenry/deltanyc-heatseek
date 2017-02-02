@@ -43,6 +43,7 @@ services:
     volumes:
       - ./JPF/:/root/JPF/
       - ./data-imports/:/root/data-imports/
+      - ./data/:/root/data/
     ports:
       - "8888:8888"
     depends_on:
