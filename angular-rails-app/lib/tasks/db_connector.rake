@@ -358,35 +358,7 @@ namespace :db_connector do
     puts "adding indexes"
     add_indexes(indexes)
 
-    # There are ~240 categories. We def don't care about all of them
-    # This is just a guess as to what we *do* care about.
-    three11_categories = [
-      "Maintenance or Facility",
-      "HEATING",
-      "Building/Use",
-      "APPLIANCE",
-      "BEST/Site Safety",
-      "Indoor Air Quality",
-      "Air Quality",
-      "Weatherization",
-      "Water Quality",
-      "Indoor Sewage",
-      "Boilers",
-      "Mold",
-      "UNSANITARY CONDITION",
-      "WATER LEAK",
-      "HEAT/HOT WATER",
-      "Standing Water",
-      "Rodent",
-      "Indoor Sewage",
-      "Emergency Response Team (ERT)",
-      "Lead",
-      "Eviction",
-    ]
-
-    in_list =  "\"" + three11_categories.join("\", \"") + "\""
-
-    three11_categories.each do |category|
+    Complaint311::Categories.each do |category|
 
       sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type = \"" + category + "\";"
       three11_results = conn.exec_query(sql).to_hash
