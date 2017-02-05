@@ -39,6 +39,7 @@ COPY docker/start.sh /usr/local/bin/
 COPY docker/start-notebook.sh /usr/local/bin/
 COPY docker/start-singleuser.sh /usr/local/bin/
 COPY docker/jupyter_notebook_config.py /root/.jupyter/
+COPY docker/.bashrc /root/.bashrc
 COPY requirements.txt /root/requirements.txt
 
 RUN pip --no-cache-dir install -r /root/requirements.txt

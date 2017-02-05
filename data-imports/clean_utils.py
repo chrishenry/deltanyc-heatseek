@@ -8,6 +8,7 @@ def clean_addresses(table, column):
     #    UPDATE {table} SET {column} = array_to_string(regexp_matches('(.*)(\d+)(?:TH|RD|ND|ST)( .+)'), '', {column} ) WHERE {column} ~ '.*(\d+)(?:TH|RD|ND|ST)( .+).*';
     # No idea where regexp_matches is defined? Looks like it's a Postgresql command?
     return '''
+    UPDATE {table} SET {column} = TRIM({column});
     UPDATE {table} SET {column} = preg_replace( '/\\\./', '', {column} );
     UPDATE {table} SET {column} = preg_replace( '/, MANHATTAN|, BROOKLYN|, STATEN ISLAND|, QUEENS|, BRONX/i', '', {column} );
     UPDATE {table} SET {column} = preg_replace( '/ AVE$|-AVE$| -AVE$/', ' AVENUE', {column} );
@@ -67,13 +68,34 @@ def make_index(table, column):
     """
     return "ALTER TABLE {} ADD INDEX {};".format(table, column)
 
+def column_exists(table, column, schema='deltanyc'):
+
+    sql = """
+        SELECT column_name FROM information_schema.columns WHERE
+            table_schema = '{schema}'
+            AND table_name = '{table}'
+            AND column_name = '{column}'
+        """.format(schema=schema, table=table, column=column)
+
+    result = connect().execute(sql)
+
+    return (result.rowcount == 1)
+
 def clean_bbl(table, boro, block, lot):
-    return '''
-    ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;
+    sql = '''
+    UPDATE {table} SET {block} = REPLACE({block}, ' ', 0);
+    UPDATE {table} SET {block} = REPLACE({block}, '`', '');
+    UPDATE {table} SET {lot} = REPLACE({lot}, ' ', 0);
     UPDATE {table} SET bbl =
-            concat(trim({boro}), trim(LPAD({block}, 5, '0')), trim(LPAD({lot}, 4, '0')));
+            concat(trim({boro}), trim(LPAD({block}, 5, '0')), trim(LPAD({lot}, 4, '0')))
+            WHERE {boro} REGEXP '^[0-9]+$' AND {block} REGEXP '^[0-9]+$' AND {lot} REGEXP '^[0-9]+$';
     ALTER TABLE {table} ADD INDEX (bbl);
     '''.format(table=table, boro=boro, block=block, lot=lot)
+
+    if not column_exists(table, 'bbl'):
+        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;".format(table=table, boro=boro, block=block, lot=lot) + sql
+
+    return sql
 
 def run_sql(sql, test_mode, debug=True):
     """ Runs SQL commands given in the provided string.
