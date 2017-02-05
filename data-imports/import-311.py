@@ -124,9 +124,13 @@ def import_csv(args):
 
     csv_file = os.path.join(csv_dir, '311-full.csv')
 
+    unfiltered_csv = "https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD"
+
+    csv_address = "https://data.cityofnewyork.us/api/views/7y5a-jzir/rows.csv?accessType=DOWNLOAD"
+
     if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing 311 complaints")
-        download_file("https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD", csv_file)
+        download_file(csv_address, csv_file)
     else:
         log.info("311 complaints exist, moving on...")
 
