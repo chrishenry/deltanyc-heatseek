@@ -7,5 +7,9 @@ FactoryGirl.define do
     f.total_units {rand(5..200)}
     f.rent_stabilized {FFaker::Boolean.random}
   end
+
+  factory :invalid_property, parent: :property do |f|
+    f.street_address nil
+  end
 end
 
