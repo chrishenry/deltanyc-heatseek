@@ -108,9 +108,23 @@ truncate_columns = ['resolution_description']
 
 date_time_columns = ['created_date','closed_date','due_date', 'resolution_action_updated_date']
 
+datasets = {
+    'complete': "https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD",
+    # This is a view created by Chris Henry which filters by the complaint type
+    #   indicated https://docs.google.com/spreadsheets/d/1hJIRu1Ku2pgaKfbFjXLEzN2jNH9rYmUtjpLZZHbfe80/edit
+    # Additional views can be created at https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9/data
+    'filtered': "https://data.cityofnewyork.us/api/views/7y5a-jzir/rows.csv?accessType=DOWNLOAD"
+}
 
 def main():
-    args = get_common_arguments('Import 311 complaints dataset.')
+    extra_args = {
+        '--dataset': {
+            'default': 'filtered',
+            'choices': ['complete','filtered'],
+            'help': "Which 311 Socrata dataset."
+        }
+    }
+    args = get_common_arguments('Import 311 complaints dataset.', extra_args=extra_args)
 
     if not args.SKIP_IMPORT:
         import_csv(args)
@@ -123,14 +137,11 @@ def import_csv(args):
     mkdir_p(csv_dir)
 
     csv_file = os.path.join(csv_dir, '311-full.csv')
-
-    unfiltered_csv = "https://nycopendata.socrata.com/api/views/erm2-nwe9/rows.csv?accessType=DOWNLOAD"
-
-    csv_address = "https://data.cityofnewyork.us/api/views/7y5a-jzir/rows.csv?accessType=DOWNLOAD"
+    csv_url = datasets[args.dataset]
 
     if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing 311 complaints")
-        download_file(csv_address, csv_file)
+        download_file(csv_url, csv_file)
     else:
         log.info("311 complaints exist, moving on...")
 
