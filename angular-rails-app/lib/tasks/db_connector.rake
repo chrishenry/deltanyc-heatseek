@@ -27,15 +27,18 @@ namespace :db_connector do
     url = "https://api.cityofnewyork.us/geoclient/v1/address.json?houseNumber=#{house_number}&street=#{street}&borough=#{boro}&app_id=#{app_key}&app_key=#{app_secret}"
     response = HTTParty.get(url)
     JSON.parse(response.body)
+
   end
 
   def add_indexes(indexes)
 
     conn = ActiveRecord::Base.connection
 
-    indexes.each do |table, index_|
-      if not conn.index_exists?(table, index_) then
-        conn.add_index(table, index_)
+    indexes.each do |ar|
+      table = ar[0]
+      col = ar[1]
+      if not conn.index_exists?(table, col) then
+        conn.add_index(table, col)
       end
     end
 
@@ -79,9 +82,9 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    indexes = Hash[
-      "hpd_registrations" => "registrationid",
-      "hpd_registration_contacts" => "registrationid"
+    indexes = [
+      ["hpd_registrations", "registrationid"],
+      ["hpd_registration_contacts", "registrationid"]
     ]
 
     add_indexes(indexes)
@@ -299,6 +302,8 @@ namespace :db_connector do
       "LBLVIO-LOW PRESSURE BOILER",
       "LL1081-LOCAL LAW 10/81 - ELEVATOR",
       "LL6291-LOCAL LAW 62/91 - BOILERS",
+      "C-CONSTRUCTION",
+      "B-BOILER",
     ]
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
@@ -338,8 +343,6 @@ namespace :db_connector do
 
     end
 
-
-
   end
 
   desc "Pull in 311 complaints"
@@ -347,73 +350,59 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    indexes = Hash[
-      "call_311" => "complaint_type",
+    indexes = [
+      ["call_311", "borough"],
+      ["call_311", "complaint_type"],
     ]
 
+    puts "adding indexes"
     add_indexes(indexes)
 
-    # There are ~240 categories. We def don't care about all of them
-    # This is just a guess as to what we *do* care about.
-    three11_categories = [
-      "Maintenance or Facility",
-      "HEATING",
-      "Building/Use",
-      "APPLIANCE",
-      "BEST/Site Safety",
-      "Indoor Air Quality",
-      "Air Quality",
-      "Weatherization",
-      "Water Quality",
-      "Indoor Sewage",
-      "Boilers",
-      "Mold",
-      "UNSANITARY CONDITION",
-      "WATER LEAK",
-      "HEAT/HOT WATER",
-      "Standing Water",
-    ]
+    Complaint311::Categories.each do |category|
 
-    in_list =  "\"" + three11_categories.join("\", \"") + "\""
+      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type = \"" + category + "\";"
+      three11_results = conn.exec_query(sql).to_hash
 
-    sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type IN (" + in_list + ");"
-    three11_results = conn.exec_query(sql).to_hash
+      three11_results.each do |result|
 
-    three11_results.each do |result|
+        puts "******* #{category} *******"
 
-      puts "**************"
+        # Decently working regex to get ONLY street_number
+        street_number = result['incident_address'].scan(/^[^\s]+/).join('')
+        street = result['street_name']
+        boro_id = @boros_int.key(@boros.key(result['borough']))
 
-      # Decently working regex to get ONLY street_number
-      street_number = result['incident_address'].scan(/^[^\s]+/).join('')
-      street = result['street_name']
-      boro_id = @boros_int.key(@boros.key(result['borough']))
-
-      puts result['borough']
-      puts boro_id
-
-      geo_data = nyc_geocode(street_number, street, boro_id)
-
-      boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
-      block = geo_data['address']['bblTaxBlock'].to_i
-      lot = geo_data['address']['bblTaxLot'].to_i
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop and not Complaint311.find_by(unique_key: result['unique_key'])
-
-        complaint = Complaint311.new do |c|
-          c.property_id = prop.id
-          c.unique_key = result['unique_key']
-          c.created_date = result['created_date']
-          c.closed_date = result['closed_date']
-          c.agency = result['agency']
-          c.complaint_type = result['complaint_type']
-          c.status = result['status']
-          c.due_date = result['due_date']
-          c.resolution_description = result['resolution_description']
+        begin
+          geo_data = nyc_geocode(street_number, street, boro_id)
+        rescue Exception => e
+          puts "GEO API error, pausing && continuing"
+          sleep(1)
+          next
         end
 
-        complaint.save
+        boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
+        block = geo_data['address']['bblTaxBlock'].to_i
+        lot = geo_data['address']['bblTaxLot'].to_i
+
+        prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+        if prop and not Complaint311.find_by(unique_key: result['unique_key'])
+
+          complaint = Complaint311.new do |c|
+            c.property_id = prop.id
+            c.unique_key = result['unique_key']
+            c.created_date = result['created_date']
+            c.closed_date = result['closed_date']
+            c.agency = result['agency']
+            c.complaint_type = result['complaint_type']
+            c.status = result['status']
+            c.due_date = result['due_date']
+            c.resolution_description = result['resolution_description']
+          end
+
+          complaint.save
+
+        end
 
       end
 
