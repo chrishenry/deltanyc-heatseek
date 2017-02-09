@@ -110,7 +110,7 @@ def main():
 
 def csv_import(args):
     csv_dir = os.path.join(BASE_DIR, table_name)
-    mkdir_p(taxbills_joined_dir)
+    mkdir_p(csv_dir)
 
     csv_file = os.path.join(csv_dir, "joined.csv")
 
