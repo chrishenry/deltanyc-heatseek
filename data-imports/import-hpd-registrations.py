@@ -91,7 +91,7 @@ def import_csv(args):
 
     hpd_csv2sql(
                 description,
-                args        
+                args,
                 csv_file,
                 table_name,
                 dtype_dict,
