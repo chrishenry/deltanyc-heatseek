@@ -15,7 +15,7 @@ from sqlalchemy import create_engine
 
 BASE_DIR = os.path.join(os.path.expanduser('~'), "heatseek")
 
-def get_common_arguments(description):
+def get_common_arguments(description, extra_args=None):
     parser = argparse.ArgumentParser(description=description)
 
     parser.add_argument("--load-pickle",
@@ -43,6 +43,10 @@ def get_common_arguments(description):
     parser.add_argument('--test-mode',
             action='store_true',
             dest='TEST_MODE')
+
+    if extra_args:
+        for arg, kwargs in extra_args.iteritems():
+            parser.add_argument(arg, **kwargs)
 
     args = parser.parse_args()
 

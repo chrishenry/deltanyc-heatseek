@@ -75,7 +75,7 @@ def main():
     sql_cleanup(args)
 
 def import_csv(args):
-    csv_dir = os.path.join(BASE_DIR, HPD_REGISTRATION_KEY)
+    csv_dir = os.path.join(BASE_DIR, table_name)
     mkdir_p(csv_dir)
 
     csv_file = os.path.join(csv_dir, "hpd_reg.csv")
@@ -91,6 +91,7 @@ def import_csv(args):
 
     hpd_csv2sql(
                 description,
+                args,
                 csv_file,
                 table_name,
                 dtype_dict,
