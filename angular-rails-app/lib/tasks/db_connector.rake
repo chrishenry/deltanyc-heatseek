@@ -21,8 +21,8 @@ namespace :db_connector do
 
   def nyc_geocode(house_number, street, boro)
 
-    app_key = ENV['NY_GEOCLIENT_APP_KEY']
-    app_secret = ENV['NY_GEOCLIENT_APP_SECRET']
+    app_key = ENV['NY_GEOCLIENT_APP_ID']
+    app_secret = ENV['NY_GEOCLIENT_APP_KEY']
 
     url = "https://api.cityofnewyork.us/geoclient/v1/address.json?houseNumber=#{house_number}&street=#{street}&borough=#{boro}&app_id=#{app_key}&app_key=#{app_secret}"
     response = HTTParty.get(url)
