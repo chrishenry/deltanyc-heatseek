@@ -7,11 +7,11 @@ describe PropertiesController do
       expect(response).to be_success
     end
 
-    it "returns all properties" do
-      FactoryGirl.create_list(:property, 5)
+    it "pagination returns 30 properties" do
+      FactoryGirl.create_list(:property, 35)
       get :index, format: :json
       parsed_response = JSON.parse(response.body)
-      expect(parsed_response.length).to eq(5)
+      expect(parsed_response.length).to eq(30)
     end    
   end
   
