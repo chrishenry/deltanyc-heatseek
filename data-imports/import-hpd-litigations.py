@@ -39,8 +39,6 @@ dtype_dict = {
     'CaseJudgement':     'object'
 }
 
-
-
 date_time_columns = ['caseopendate']
 
 truncate_columns = []
