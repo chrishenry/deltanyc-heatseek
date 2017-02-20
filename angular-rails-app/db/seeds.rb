@@ -1,3 +1,4 @@
+=begin
 50.times do
      Property.create(
         street_address: FFaker::AddressUS.street_address,
@@ -29,12 +30,20 @@ end
 
 
   Property.create(
-    street_address: '10 West 109th St.',
+    street_address: '10 West 109th Street',
     city: 'New York',
     state: 'NY',
     zipcode: '10025',
     total_units: rand(5..200),
     rent_stabilized: FFaker::Boolean.random,
     )
+=end
+
+2.times do
+    OwnerProperty.create(
+      owner_id: rand(1..20),  
+      property_id: 16055
+      )
+  end
 
 

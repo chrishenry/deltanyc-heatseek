@@ -52,6 +52,13 @@ group :development, :test do
   gem 'thor', '0.19.1'
   gem 'rspec-rails', '~> 3.5'
   gem 'ffaker'
+  gem 'factory_girl_rails'
+end
+
+group :test do
+  gem 'capybara'
+  gem 'guard-rspec'
+  gem 'launchy'
 end
 
 group :development do

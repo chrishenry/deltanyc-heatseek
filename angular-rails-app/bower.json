@@ -3,8 +3,12 @@
   "vendor": {
     "name": "heatseek-assets",
     "dependencies": {
-      "angular" : "1.5.8",
-      "angular-ui-router" : "latest"
+      "angular": "1.5.8",
+      "angular-ui-router": "latest"
     }
+  },
+  "devDependencies": {
+    "jasmine-core": "^2.5.2",
+    "karma-jasmine": "^1.1.0"
   }
 }
