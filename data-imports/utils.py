@@ -231,10 +231,9 @@ def process_df(df, log, description, save_pickle, pickle_file, truncate_columns,
     log.info("Lastly .. let's convert the {} Dates to Dates".format(len(date_time_columns)))
     for i in date_time_columns:
         log.info("Starting Date: {}".format(i))
-        try:
-            df[i] = pd.to_datetime(df[i], format=date_format, infer_datetime_format=True)
-        except:
-            df[i] = pd.to_datetime('19000101')
+        # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.to_datetime.html
+        # errors coerce will result invalid data set to NULL in MySQL
+        df[i] = pd.to_datetime(df[i], format=date_format, infer_datetime_format=True, errors='coerce')
 
     if save_pickle:
         log.info("Why don't we save our hard work with {} for next time".format(pickle_file))
