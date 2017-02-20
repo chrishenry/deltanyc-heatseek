@@ -24,50 +24,50 @@ description = 'DOB Violations'
 table_name = "dob_violations"
 
 dtype_dict = {
-        'ISN_DOB_BIS_VIOL':       'int64',
-        'BORO':       'object',
-        'BIN':       'float64',
-        'BLOCK':       'object',
-        'LOT':       'object',
-        'ISSUE_DATE':       'object',
-        'VIOLATION_TYPE_CODE':       'object',
-        'VIOLATION_NUMBER':       'object',
-        'HOUSE_NUMBER':       'object',
-        'STREET':       'object',
-        'DISPOSITION_DATE':       'object',
-        'DISPOSITION_COMMENTS':       'object',
-        'DEVICE_NUMBER':       'object',
-        'DESCRIPTION':       'object',
-        'ECB_NUMBER':       'object',
-        'NUMBER':       'object',
-        'VIOLATION_CATEGORY':       'object',
-        'VIOLATION_TYPE':       'object'
-        }
+    'ISN_DOB_BIS_VIOL':       'int64',
+    'BORO':       'object',
+    'BIN':       'float64',
+    'BLOCK':       'object',
+    'LOT':       'object',
+    'ISSUE_DATE':       'object',
+    'VIOLATION_TYPE_CODE':       'object',
+    'VIOLATION_NUMBER':       'object',
+    'HOUSE_NUMBER':       'object',
+    'STREET':       'object',
+    'DISPOSITION_DATE':       'object',
+    'DISPOSITION_COMMENTS':       'object',
+    'DEVICE_NUMBER':       'object',
+    'DESCRIPTION':       'object',
+    'ECB_NUMBER':       'object',
+    'NUMBER':       'object',
+    'VIOLATION_CATEGORY':       'object',
+    'VIOLATION_TYPE':       'object'
+}
 
 truncate_columns = ['description', 'ecb_number', 'number']
 
 date_time_columns = ['issue_date', 'disposition_date']
 
 keep_cols = [
-        'ISN_DOB_BIS_VIOL',
-        'BORO',
-        'BIN',
-        'BLOCK',
-        'LOT',
-        'ISSUE_DATE',
-        'VIOLATION_TYPE_CODE',
-        'VIOLATION_NUMBER',
-        'HOUSE_NUMBER',
-        'STREET',
-        'DISPOSITION_DATE',
-        'DISPOSITION_COMMENTS',
-        'DEVICE_NUMBER',
-        'DESCRIPTION',
-        'ECB_NUMBER',
-        'NUMBER',
-        'VIOLATION_CATEGORY',
-        'VIOLATION_TYPE'
-        ]
+    'ISN_DOB_BIS_VIOL',
+    'BORO',
+    'BIN',
+    'BLOCK',
+    'LOT',
+    'ISSUE_DATE',
+    'VIOLATION_TYPE_CODE',
+    'VIOLATION_NUMBER',
+    'HOUSE_NUMBER',
+    'STREET',
+    'DISPOSITION_DATE',
+    'DISPOSITION_COMMENTS',
+    'DEVICE_NUMBER',
+    'DESCRIPTION',
+    'ECB_NUMBER',
+    'NUMBER',
+    'VIOLATION_CATEGORY',
+    'VIOLATION_TYPE'
+]
 
 
 def main():
@@ -96,7 +96,7 @@ def import_csv(args):
     pickle = csv_dir + '/df_dob_violations.pkl'
     chunk_size = 5000
     max_col_len = 255
-    vio_date_format = "%Y%m%d"
+    date_format = "%Y%m%d"
 
     hpd_csv2sql(
                 description,
@@ -110,7 +110,7 @@ def import_csv(args):
                 pickle,
                 chunk_size,
                 max_col_len,
-                vio_date_format
+                date_format=date_format,
                )
 
 
