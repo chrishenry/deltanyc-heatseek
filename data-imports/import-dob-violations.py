@@ -123,7 +123,7 @@ def sql_cleanup(args):
             clean_boro(table_name, "boro", bbl_code_boro_replacements())
     print(sql)
 
-    # run_sql(sql, args.TEST_MODE)
+    run_sql(sql, args.TEST_MODE)
 
 
 if __name__ == "__main__":
