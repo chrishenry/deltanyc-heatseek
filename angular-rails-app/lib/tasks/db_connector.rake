@@ -360,7 +360,7 @@ namespace :db_connector do
 
     Complaint311::Categories.each do |category|
 
-      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type = \"" + category + "\";"
+      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND incident_address != '' AND complaint_type = \"" + category + "\";"
       three11_results = conn.exec_query(sql).to_hash
 
       three11_results.each do |result|
@@ -370,7 +370,7 @@ namespace :db_connector do
         # Decently working regex to get ONLY street_number
         street_number = result['incident_address'].scan(/^[^\s]+/).join('')
         street = result['street_name']
-        boro_id = @boros_int.key(@boros.key(result['borough']))
+        boro_id = @boros_int.key(result['borough'])
 
         begin
           geo_data = nyc_geocode(street_number, street, boro_id)
@@ -387,6 +387,8 @@ namespace :db_connector do
         prop = Property.find_by(borough: boro, block: block, lot: lot)
 
         if prop and not Complaint311.find_by(unique_key: result['unique_key'])
+
+          puts "Found property, adding complaint"
 
           complaint = Complaint311.new do |c|
             c.property_id = prop.id
