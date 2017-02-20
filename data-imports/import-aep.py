@@ -33,7 +33,7 @@ def main():
 
 def import_csv(args):
     log.info('Importing pre-created AEP csv...')
-    data_file = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data/AEP_LIST.csv'))
+    data_file = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../heatseek/AEP_LIST.csv'))
     df = pd.read_csv(data_file)
 
     conn = connect(args.TEST_MODE)

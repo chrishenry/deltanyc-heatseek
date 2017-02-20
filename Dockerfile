@@ -45,8 +45,8 @@ COPY requirements.txt /root/requirements.txt
 RUN pip --no-cache-dir install -r /root/requirements.txt
 
 EXPOSE 8888
-RUN mkdir /root/JPF
-WORKDIR /root/JPF
+RUN mkdir /root/JPF && mkdir /root/data-imports && mkdir /root/heatseek
+WORKDIR /root/data-imports
 
 # Configure container startup
 ENTRYPOINT ["tini", "--"]

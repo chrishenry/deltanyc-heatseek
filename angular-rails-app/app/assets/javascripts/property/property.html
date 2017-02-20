@@ -167,10 +167,12 @@
             <table class="table table-striped">
               <tr id="blue">
                 <th>Complaint ID</th>
+                <th>Apartment</th>
                 <th>Date</th>
               </tr>
               <tr ng-repeat="c in vm.data.hpd_complaints">
                 <td>{{ c.complaint_id }}</td>
+                <td>{{ c.apartment }}</td>
                 <td>{{ c.status_date }}</td>
               </tr>
             </table>
