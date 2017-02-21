@@ -96,12 +96,6 @@ namespace :db_connector do
 
     add_indexes(indexes)
 
-    # sql = "SELECT COUNT(*) AS cnt FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
-    # count_result = conn.exec_query(sql).to_hash[0]['cnt']
-
-    # puts count_result
-
-    # sql = "SELECT * FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
     sql = "SELECT * FROM hpd_registration_contacts hr WHERE
            businesshousenumber IS NOT NULL AND
            businessstreetname IS NOT NULL AND
@@ -111,17 +105,15 @@ namespace :db_connector do
                   businesszip IS NOT NULL;"
     owners_result = conn.exec_query(sql).to_hash
 
+    owners_result_count = owners_result.count
 
-    owners_result.each do |owner|
-      puts "*********************owner"
+    puts "Found #{owners_result_count} owners...matching."
 
-      # short_boro = @boros.key(owner['boro'])
-      # prop = Property.find_by(borough: short_boro, block: owner['block'], lot: owner['lot'])
-      # puts prop.id
+    owners_result.each_with_index do |owner, idx|
 
-      prop2 = Property.find_by(hpd_registration_id: owner['registrationid'])
+      prop = Property.find_by(hpd_registration_id: owner['registrationid'])
 
-      if prop2 then
+      if prop then
 
         if Owner.find_by(hpd_registration_contact_id: owner['registrationcontactid']) then
           next
@@ -139,9 +131,14 @@ namespace :db_connector do
           o.hpd_registration_contact_id = owner['registrationcontactid']
         end
 
-        prop2.owners << owner
+        prop.owners << owner
+        prop.save
+
 
       end
+
+      print "Saved #{idx}/#{owners_result_count} \r"
+      $stdout.flush
 
     end
 
