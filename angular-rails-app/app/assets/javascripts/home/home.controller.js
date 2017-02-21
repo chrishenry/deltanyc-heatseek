@@ -68,15 +68,6 @@ function HomeController($scope, HomeService, $state,$http) {
  }
 
 
- vm.addressError = function() {
-      vm.alerts = [{msg: 'Address not found in database.  Perhaps try another variation.'}];
-    };
-
- vm.closeAlert = function() {
-     vm.alerts = [];
-    };
-
-
  //************ Owners data ***************//  
 
  vm.selectedOwner = ''
@@ -92,4 +83,36 @@ function HomeController($scope, HomeService, $state,$http) {
         return owners;
     });
   };
+
+  vm.goToOwner = function(){
+     if(vm.selectedOwner != '' && vm.selectedOwner.id){
+        $state.go('owner', {id: vm.selectedOwner.id})
+      }
+      else{
+        vm.ownerError();
+      }
+    }, function(error){
+      alert('Unable to get owner' + error.statusText);
+    };
+
+//************ Error Handling | Alert boxes ***************//  
+
+  vm.errors = ''
+
+  vm.addressError = function() {
+      vm.alerts = [{msg: 'Address not found in database.  Perhaps try another variation.'}];
+      vm.errors = 'address';
+    };
+
+  vm.closeAlert = function() {
+     vm.alerts = [];
+     vm.errors = '';
+    };
+
+  vm.ownerError = function() {
+    vm.alerts = [{msg: 'Owner not found in database.  Perhaps try another spelling.'}];
+    vm.errors = 'owner';
+  };
+
+
 }

@@ -10,8 +10,8 @@
         </span>
       </form>
 
-      <!--alerts-->
-       <div>             
+      <!--property alert box-->
+       <div ng-if="vm.errors == 'address'">             
           <script type="text/ng-template" id="alert.html">
             <div ng-transclude></div>
           </script>
@@ -43,7 +43,7 @@
 
     <div class="col-sm-8">
       <h3>OWNER LOOKUP</h3>
-      <form class="form input-group">
+      <form class="form input-group"  ng-submit="vm.goToOwner()">
         <input id="propertiesSearch" class="form-control"
         type="text" ng-model="vm.selectedOwner" 
         uib-typeahead="owner as owner.name for owner in vm.getOwners($viewValue)"
@@ -56,11 +56,28 @@
           ng-click="">Go</button>
         </span>
       </form>
+
+
+      <!-- owner alert box-->
+       <div ng-if="vm.errors == 'owner'">             
+          <script type="text/ng-template" id="alert.html">
+            <div ng-transclude></div>
+          </script>
+
+            <div uib-alert 
+            ng-repeat="alert in vm.alerts" 
+            type='alert.warning' 
+            close="vm.closeAlert()" 
+            style="background-color: rgb(185,215,222); text-align: center;">
+            {{alert.msg}}</div>      
+
+        </div>
+       <!-- end of alert section -->
+
+
     </div><!--column-->
 
 
-     
-    <h4>{{vm.selectedOwner.id}}</h4>
 
     <div class="col-sm-4">
       <div id="instructions">
