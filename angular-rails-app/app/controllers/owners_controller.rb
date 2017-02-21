@@ -3,9 +3,14 @@ class OwnersController < ApplicationController
    before_action :set_owner, only: [:show]
 
   def index
-    @owners = Owner.all
+    if params[:name]
+       @owners = Owner.where("name LIKE (?)", "%#{params[:name]}%").limit(6)
+    else
+      @owners = Owner.all
+    end
     render json: @owners, status: 200
   end
+
 
   def show
     render json: @owner, status: 200
