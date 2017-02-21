@@ -4,7 +4,7 @@ class OwnersController < ApplicationController
 
   def index
     if params[:name]
-       @owners = Owner.where("name LIKE (?)", "%#{params[:name]}%")
+       @owners = Owner.where("name LIKE (?)", "%#{params[:name]}%").limit(6)
     else
       @owners = Owner.all
     end

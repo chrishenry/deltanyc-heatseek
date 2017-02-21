@@ -82,14 +82,13 @@ function HomeController($scope, HomeService, $state,$http) {
  vm.selectedOwner = ''
 
   vm.getOwners = function(input) {
-    var limit = 5;
+    var limit = 6;
     return HomeService.getOwners(input).then(function(res){
         var owners = [];
         var lim = Math.min(limit,res.data.length);
         for (var i = 0; i < lim; i++) {
           owners.push(res.data[i]);
         }
-        console.log(owners);
         return owners;
     });
   };
