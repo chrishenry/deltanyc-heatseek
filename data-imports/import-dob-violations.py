@@ -97,6 +97,7 @@ def import_csv(args):
     chunk_size = 5000
     max_col_len = 255
     date_format = "%Y%m%d"
+    csv_chunk_size = 250000
 
     hpd_csv2sql(
                 description,
@@ -111,6 +112,7 @@ def import_csv(args):
                 chunk_size,
                 max_col_len,
                 date_format=date_format,
+                csv_chunk_size=csv_chunk_size
                )
 
 
