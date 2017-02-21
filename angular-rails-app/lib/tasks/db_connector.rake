@@ -49,31 +49,38 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    # Load addresses from Pluto
-    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(address), 'New York', 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc;"
-    records_array = conn.execute(sql)
-
-    @boros.each do |key, value|
-      sql = "UPDATE hpd_buildings SET boro = '#{key}' WHERE boro = '#{value}';"
-      conn.execute(sql)
-    end
-
-    # Load addresses from HPD. This will catch additional addresses in hpd that are *not* in pluto
+    # Load addresses from HPD.
+    print "Copying from hpd_buildings..."
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(streetname), 'New York', 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings;"
+    SELECT TRIM(streetname), 'New York', 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
     conn.execute(sql)
+    puts "done"
 
-    # Find properties without hpd_reg_id, and match the reg_id from hpd
-    sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
+    # Load addresses from Pluto. This will add address that aren't in HPD.
+    print "Copying from pluto_nyc..."
+    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
+    SELECT TRIM(address), 'New York', 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc WHERE address != '';"
+    records_array = conn.execute(sql)
+    puts "done"
+
+    # Find hpd_buildings that are hpd_reg_id, and match the reg_id from hpd
+    sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid != 0 AND registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
     reg_ids = conn.execute(sql)
+    reg_ids_count = reg_ids.count
 
-    reg_ids.each do |reg_id|
+    puts "Found #{reg_ids_count} addresses without registrationid...fixing."
+
+    reg_ids.each_with_index do |reg_id, idx|
       prop = Property.find_by(borough: reg_id[0], block: reg_id[1], lot: reg_id[2])
 
       prop.hpd_registration_id = reg_id[3]
       prop.save
+
+      print "Saved #{idx}/#{reg_ids_count} \r"
+      $stdout.flush
     end
+
+    puts "Finished importing properties"
 
   end
 
