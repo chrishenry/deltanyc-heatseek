@@ -13,7 +13,14 @@ angular
             state: details.state,
             zipcode: details.zip
         }));
-  };
+  }
+
+
+  this.getOwners = function (input){
+    return $http.get(API_URL + '/owners?' + $.param({
+            name: input
+        }));
+  }
 
 
 

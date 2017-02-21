@@ -1,9 +1,12 @@
 angular
   .module('app')
-  .controller('HomeController', ['$scope', 'HomeService', '$state', HomeController])
+  .controller('HomeController', ['$scope', 'HomeService', '$state','$http', HomeController])
 
-function HomeController($scope, HomeService, $state) {
+function HomeController($scope, HomeService, $state,$http) {
   var vm = this;
+
+
+//********** Properties Data *************//
 
   $scope.place = null;
   $scope.autocompleteOptions = {
@@ -74,6 +77,20 @@ function HomeController($scope, HomeService, $state) {
     };
 
 
+ //************ Owners data ***************//  
 
+ vm.selectedOwner = ''
 
+  vm.getOwners = function(input) {
+    var limit = 5;
+    return HomeService.getOwners(input).then(function(res){
+        var owners = [];
+        var lim = Math.min(limit,res.data.length);
+        for (var i = 0; i < lim; i++) {
+          owners.push(res.data[i]);
+        }
+        console.log(owners);
+        return owners;
+    });
+  };
 }

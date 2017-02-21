@@ -45,6 +45,10 @@
       <h3>OWNER LOOKUP</h3>
       <form class="form input-group">
         <input id="propertiesSearch" class="form-control"
+        type="text" ng-model="vm.selectedOwner" 
+        uib-typeahead="owner as owner.name for owner in vm.getOwners($viewValue)"
+        typeahead-loading="loading"
+        typeahead-min-length="2"
         placeholder="Enter Name or Company" />
         <span class="input-group-btn">
           <button class="btn btn-secondary"
@@ -53,6 +57,10 @@
         </span>
       </form>
     </div><!--column-->
+
+
+     
+    <h4>{{vm.selectedOwner.id}}</h4>
 
     <div class="col-sm-4">
       <div id="instructions">
