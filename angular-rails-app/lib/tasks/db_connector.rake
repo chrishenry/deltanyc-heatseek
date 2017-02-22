@@ -111,6 +111,9 @@ namespace :db_connector do
 
     owners_result.each_with_index do |owner, idx|
 
+      print "Saving #{idx}/#{owners_result_count} \r"
+      $stdout.flush
+
       prop = Property.find_by(hpd_registration_id: owner['registrationid'])
 
       if prop then
@@ -119,26 +122,28 @@ namespace :db_connector do
           next
         end
 
-        owner = Owner.new do |o|
-          o.name = "#{owner['firstname']} #{owner['middleinitial']} #{owner['lastname']}".sub! '  ', ' '
-          o.corporation_name = owner['corporationname']
-          o.address_line_one = "#{owner['businesshousenumber']} #{owner['businessstreetname']}"
-          o.address_line_two = owner['businessapartment']
-          o.city = owner['businesscity']
-          o.state = owner['businessstate']
-          o.zipcode = owner['businesszip']
-          o.hpd_registration_id = owner['registrationid']
-          o.hpd_registration_contact_id = owner['registrationcontactid']
+        begin
+
+          owner = Owner.new do |o|
+            o.name = "#{owner['firstname']} #{owner['middleinitial']} #{owner['lastname']}".sub! '  ', ' '
+            o.corporation_name = owner['corporationname']
+            o.address_line_one = "#{owner['businesshousenumber']} #{owner['businessstreetname']}"
+            o.address_line_two = owner['businessapartment']
+            o.city = owner['businesscity']
+            o.state = owner['businessstate']
+            o.zipcode = owner['businesszip']
+            o.hpd_registration_id = owner['registrationid']
+            o.hpd_registration_contact_id = owner['registrationcontactid']
+          end
+
+          prop.owners << owner
+          prop.save
+
+        rescue Exception => e
+          puts e.message
         end
 
-        prop.owners << owner
-        prop.save
-
-
       end
-
-      print "Saved #{idx}/#{owners_result_count} \r"
-      $stdout.flush
 
     end
 
