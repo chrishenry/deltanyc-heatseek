@@ -14,14 +14,14 @@ html {
 nav#my-nav {
   min-height: 12%;
   background-color: white;
-  color:black;
+  color: black;
   border-bottom: 4px solid orange;
   margin: 0;
   padding: 0;
 }
 
 nav#my-nav a {
-  color:black;
+  color: black;
 }
 
 nav li#links {
@@ -35,7 +35,7 @@ nav a.navbar-brand {
 }
 
 nav#my-nav a:hover {
-  color:#ff9a33
+  color: #ff9a33
 }
 
 a img{
@@ -53,14 +53,14 @@ form {
 }
 
 input#propertiesSearch {
-  height:40px;
+  height: 40px;
   margin-bottom: 10px;
 }
 
 button.btn.btn-secondary {
   height: 40px;
   background-color: black;
-  color:white;
+  color: white;
   margin-bottom: 10px;
 }
 
@@ -113,7 +113,7 @@ footer {
 hr.featurette-divider.footer {
   border: 1px solid orange;
   margin: 5px 0 25px 0;
-  width:100%;
+  width: 100%;
 }
 
 footer p {
@@ -260,7 +260,7 @@ a.owner:hover{
 }
 
 div.chart {
-  margin-left:10%
+  margin-left: 10%;
 }
 
 h4.show-hide {
@@ -308,14 +308,14 @@ hr.featurette-divider.resource {
 }
 
 #resource-text {
-  color:white;
+  color: white;
   text-align: center;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
   text-decoration: none;
 }
 
 #resource-text a {
-  color:white;
+  color: white;
   font-size: 1.3em;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
   text-decoration: none;
@@ -323,7 +323,7 @@ hr.featurette-divider.resource {
 }
 
 #resource-text a:hover {
-  color:orange;
+  color: orange;
 }
 
 
