@@ -1,24 +1,24 @@
-<section style="min-height: 65px;margin-top:105px;">
+<section class="added-space-under-nav">
   <div class="container">
     <p id="breadcrumb">
-      <a class="breadcrumb_top" ui-sref="home">Home /</a> Owner 
+      <a class="breadcrumb-top" ui-sref="home">Home /</a> Owner 
     </p>
   </div>
 </section>
 
 
-<section style="background: white;">
+<section class="category-section">
     <div class="container">
-      <h2 style="color:grey">OWNER</h2>
+      <h2 class="page-title">OWNER</h2>
         <hr class="featurette-divider">
         <h2>{{vm.data.name | titleCase}}</h2>
         <br>
     </div>
 </section>
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
     <div class="container">
-      <h4 id="info_heading">GENERAL</h4>
+      <h4 id="info-heading">GENERAL</h4>
       <hr class="featurette-divider property">
 
       <div class="row">
@@ -50,12 +50,12 @@
 </section><!-- End of General Info Section -->
 
 
-<section style="background: white; margin-top: 10px; margin-bottom: 60px;">
+<section class="category-section-last">
     <div class="container">
-      <h4 id="info_heading">ASSOCIATED PROPERTIES</h4>
+      <h4 id="info-heading">ASSOCIATED PROPERTIES</h4>
       <hr class="featurette-divider property">
 
-        <div class="col-sm-4" style="padding-top: 10px;">
+        <div class="col-sm-4 list-items">
             <div ng-repeat="property in vm.data.properties | orderBy: 'zipcode'">
                <a class="owner" ui-sref="property({ id: property.id })">{{property.street_address}}</a>
             </div>
