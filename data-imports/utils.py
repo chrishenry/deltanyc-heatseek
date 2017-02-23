@@ -176,7 +176,7 @@ def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
             if chunk_num > 0:
                 db_action = "append"
 
-            send_df_to_sql(df, log, description, table_name, args.DB_ACTION,
+            send_df_to_sql(df, log, description, table_name, db_action,
                     sql_chunk_size, max_col_len, args.TEST_MODE)
 
             chunk_num += 1
@@ -286,28 +286,17 @@ def unzip(filename, directory_to_extract_to):
     zip_ref.close()
 
 
-def pandas_concat_csv(directory, dest_file):
-    """ Concats a set of CSV files to a single DataFrame.
-    """
-    # in path provided, look for anything with a '.csv' extension and save it to this variable
-    all_files = glob.glob(directory + "/*.csv")
-    pluto_data = pd.DataFrame()
-    pluto_list_ = []
-    for csv_file in all_files: # iterate through all csv files and create a pandas df
-        pluto_df = pd.read_csv(csv_file, index_col=None, header=0)
-        pluto_list_.append(pluto_df) # append every df to a big list
-    pluto_data = pd.concat(pluto_list_) # combine the big list into one big pandas df
-    pluto_data = pluto_data.reset_index(drop=True)
-    pluto_data.to_csv(dest_file, index=False)
-
-
 def simple_concat_csv(directory, dest_file):
     """ Concats a set of CSV files to a single CSV file.
     """
     #in path provided, look for anything with a '.csv' extension and save it to this variable
     all_files = glob.glob(directory + "/*.csv")
     with open(dest_file, 'w') as outfile:
+        with open(all_files[0], 'rb') as header_file:
+            outfile.write(header_file.next())
+
         for fname in all_files:
             with open(fname) as infile:
+                infile.next()
                 for line in infile:
                     outfile.write(line)
