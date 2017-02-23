@@ -150,6 +150,8 @@ namespace :db_connector do
 
       end
 
+      print "Done."
+
     end
 
   end
