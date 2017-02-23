@@ -160,8 +160,13 @@ div.alert {
 /* ---->>> PROPERTY AND OWNER SHOW PAGES <<<-------*/
 /* ------------------------------------------------*/
 
+.added-space-under-nav {
+  min-height: 65px; 
+  margin-top: 95px;
+}
+
 #breadcrumb {
-  margin: 5px;
+  margin-top: 20px;
   color: grey;
   font-size: 1.2em;
 }
@@ -178,6 +183,20 @@ a.breadcrumb_top:hover {
   background: none;
 }
 
+.page-title {
+  color: grey;
+}
+
+.category-section {
+  background: white; 
+  margin-top: 10px;
+}
+
+.category-section-last {
+  background: white; 
+  margin: 10px 0 60px 0;
+}
+
 #info_heading {
   padding: 5px 0 0 10px;
   color: grey;
@@ -187,7 +206,11 @@ hr.featurette-divider.property {
   border: 1px solid grey;
   margin: 5px 0 10px 0;
   width: 90%;
-}                              
+} 
+
+.table-title {
+  text-align: center;
+}                             
 
 table.table>tbody>tr>td {
   border-top: 1px solid white;
@@ -259,6 +282,14 @@ fa-caret-down {
 fa-caret-right {
   color: rgb(255,165,0);
   font-size: 1.6em;
+}
+
+.owners-heading {
+  margin-left: 30px;
+}
+
+.list-items {
+  padding-top: 10px;
 }
 
 

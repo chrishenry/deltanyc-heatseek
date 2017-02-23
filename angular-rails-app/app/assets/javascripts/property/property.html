@@ -1,4 +1,4 @@
-<section style="min-height: 65px;margin-top:105px;">
+<section class="added-space-under-nav">
   <div class="container">
     <p id="breadcrumb">
       <a class="breadcrumb_top" ui-sref="home">Home /</a> Building 
@@ -6,16 +6,16 @@
   </div>
 </section>
 
-<section style="background: white;">
+<section class="category-section">
     <div class="container">
-      <h2 style="color:grey">BUILDING</h2>
+      <h2 class="page-title">BUILDING</h2>
         <hr class="featurette-divider">
         <h2>{{vm.data.street_address | titleCase}}</h2>
         <br>
     </div>
 </section>
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
     <div class="container">
       <h4 id="info_heading">GENERAL</h4>
       <hr class="featurette-divider property">
@@ -54,16 +54,16 @@
 </section><!-- End of General Info Section -->
 
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
   <div class="container">
     <h4 id="info_heading">PROPERTY OWNER(S)</h4>
     <hr class="featurette-divider property">
 
       <div class="row">
-        <div class="col-sm-1" style="margin-left: 30px;">
+        <div class="col-sm-1 owners-heading">
             <h4>Owners</h4>
         </div>
-        <div class="col-sm-4" style="padding-top: 10px;">
+        <div class="col-sm-4 list-items">
           <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
             <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
@@ -76,7 +76,7 @@
   </div>
 </section>
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
     <div class="container">
       <h4 id="info_heading">HPD</h4>
       <hr class="featurette-divider property">
@@ -107,7 +107,7 @@
           </h4>
 
           <div class="table-responsive slideable" id="hpd_violations">
-          <h4 style="text-align: center;">Open HPD Violations</h4>
+          <h4 class="table-title">Open HPD Violations</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
@@ -162,7 +162,7 @@
         </h4>
 
           <div class="table-responsive slideable" id="hpd_complaints">
-          <h4 style="text-align: center;">HPD Complaints</h4>
+          <h4 class="table-title">HPD Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <th>Complaint ID</th>
@@ -184,7 +184,7 @@
 
 </section>
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
     <div class="container">
       <h4 id="info_heading">DOB</h4>
       <hr class="featurette-divider property">
@@ -215,7 +215,7 @@
         </h4>
 
           <div class="table-responsive slideable" id="dob_permits">
-          <h4 style="text-align: center;">DOB Permits</h4>
+          <h4 class="table-title">DOB Permits</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
@@ -260,7 +260,7 @@
         </h4>
 
           <div class="table-responsive slideable" id="dob_violations">
-          <h4 style="text-align: center;">DOB Violations</h4>
+          <h4 class="table-title">DOB Violations</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <th>Type</th>
@@ -287,7 +287,7 @@
 </section>
 
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section">
     <div class="container">
       <h4 id="info_heading">LITIGATIONS</h4>
       <hr class="featurette-divider property">
@@ -318,7 +318,7 @@
         </h4>
 
           <div class="table-responsive slideable" id="litigations">
-          <h4 style="text-align: center;">Litigations</h4>
+          <h4 class="table-title">Litigations</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
@@ -338,7 +338,7 @@
 
 </section>
 
-<section style="background: white; margin-top: 10px;">
+<section class="category-section-last">
     <div class="container">
       <h4 id="info_heading">311</h4>
       <hr class="featurette-divider property">
@@ -369,7 +369,7 @@
         </h4>
 
         <div class="table-responsive slideable" id="complaints311">
-        <h4 style="text-align: center;">311 Complaints</h4>
+        <h4 class="table-title">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
                 <th>Type</th>
