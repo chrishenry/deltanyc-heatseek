@@ -97,9 +97,14 @@ namespace :db_connector do
     add_indexes(indexes)
 
     sql = "SELECT * FROM hpd_registration_contacts hr WHERE
+           firstname IS NOT NULL AND
+           firstname != '' AND
+           lastname IS NOT NULL AND
+           lastname != '' AND
+           corporationname IS NOT NULL AND
+           corporationname != '' AND
            businesshousenumber IS NOT NULL AND
            businessstreetname IS NOT NULL AND
-            businessapartment IS NOT NULL AND
                  businesscity IS NOT NULL AND
                 businessstate IS NOT NULL AND
                   businesszip IS NOT NULL;"
