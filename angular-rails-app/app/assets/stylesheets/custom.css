@@ -71,7 +71,7 @@ div#instructions {
   width: 85%;
 }
 
-div#instructions_building {
+div#instructions-building {
   font-size: 1.1em;
   display: inline-block;
   width: 85%;
@@ -79,7 +79,7 @@ div#instructions_building {
 }
 
 @media (max-width: 765px) {
-  div#instructions_building {
+  div#instructions-building {
     margin-top: 20px;
   }
 }
@@ -90,7 +90,7 @@ hr.featurette-divider {
   width: 90%;
 }
 
- shr.featurette-divider.home {
+hr.featurette-divider.home {
   border: 1px solid rgb(183,183,184);
   margin: 40px 0 30px 0;
   width: 100%;
@@ -171,13 +171,13 @@ div.alert {
   font-size: 1.2em;
 }
 
-a.breadcrumb_top {
+a.breadcrumb-top {
   color: rgb(255,165,0);
   text-decoration: none;
   background: none;
 }
 
-a.breadcrumb_top:hover {
+a.breadcrumb-top:hover {
   color: rgb(255,33,1);
   text-decoration: none;
   background: none;
@@ -197,7 +197,7 @@ a.breadcrumb_top:hover {
   margin: 10px 0 60px 0;
 }
 
-#info_heading {
+#info-heading {
   padding: 5px 0 0 10px;
   color: grey;
 }
@@ -263,14 +263,14 @@ div.chart {
   margin-left:10%
 }
 
-h4.show_hide {
+h4.show-hide {
   color: rgb(255,165,0);
   display: inline-block;
   margin: 0 5px 30px 0;
   cursor: pointer;
 }
 
-h4.show_hide:hover {
+h4.show-hide:hover {
   color: rgb(255,33,1);
 }
 
@@ -297,7 +297,7 @@ fa-caret-right {
 /* ->>> RELATED RESOURCES AND CONTACT PAGES <<--------*/
 /* ---------------------------------------------------*/
 
-h3#resource_text {
+h3#resource-text {
   text-align: center;
 }
 
@@ -307,14 +307,14 @@ hr.featurette-divider.resource {
   width: 40%;
 }
 
-#resource_text {
+#resource-text {
   color:white;
   text-align: center;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
   text-decoration: none;
 }
 
-#resource_text a {
+#resource-text a {
   color:white;
   font-size: 1.3em;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
@@ -322,7 +322,7 @@ hr.featurette-divider.resource {
   line-height: 1.8em;
 }
 
-#resource_text a:hover {
+#resource-text a:hover {
   color:orange;
 }
 
