@@ -70,3 +70,8 @@ One challenge here is that the `CREATE FUNCTION` statements need to be called by
 a client, as MySQL UDFs are registered in the `mysql` database. This was solved
 by creating a quick utility container (`db-udf`) that will come up with
 docker-compose, pull the relevant `CREATE` commands, run them, and exit.
+
+
+Data Conventions
+***************************
+Borough (Boro) should be shortened to a 2 letter wherever stored.
