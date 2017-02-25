@@ -11,9 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161224032545) do
-
-  add_index "hpd_registrations", ["registrationid"], name: "index_hpd_registrations_on_registrationid", using: :btree
+ActiveRecord::Schema.define(version: 20170225185334) do
 
   create_table "complaint311s", force: :cascade do |t|
     t.integer  "property_id",            limit: 4
@@ -28,8 +26,6 @@ ActiveRecord::Schema.define(version: 20161224032545) do
     t.datetime "updated_at",                         null: false
     t.integer  "unique_key",             limit: 4
   end
-
-  add_index "complaint311s", ["unique_key"], name: "index_r_complaint311s_on_unique_key", unique: true, using: :btree
 
   create_table "dob_permits", force: :cascade do |t|
     t.integer  "property_id",     limit: 4
@@ -126,7 +122,7 @@ ActiveRecord::Schema.define(version: 20161224032545) do
     t.string   "zipcode",                     limit: 255
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.integer  "corporation_name",            limit: 4
+    t.string   "corporation_name",            limit: 255
     t.integer  "hpd_registration_id",         limit: 4
     t.integer  "hpd_registration_contact_id", limit: 4
     t.string   "hpd_type",                    limit: 255
