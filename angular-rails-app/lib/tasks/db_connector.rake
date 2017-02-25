@@ -52,16 +52,24 @@ namespace :db_connector do
     # Load addresses from HPD.
     print "Copying from hpd_buildings..."
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(streetname), 'New York', 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+    SELECT TRIM(streetname), boro, 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
     conn.execute(sql)
     puts "done"
 
     # Load addresses from Pluto. This will add address that aren't in HPD.
     print "Copying from pluto_nyc..."
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(address), 'New York', 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc WHERE address != '';"
+    SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc WHERE address != '';"
     records_array = conn.execute(sql)
-    puts "done"
+    puts "done."
+
+    print "Expanding city from 2 letter boro code..."
+    @boros.each do |key, value|
+      sql = "UPDATE r_properties SET city = '#{value.titleize}' WHERE city = '#{key}';"
+      print sql
+      conn.execute(sql)
+    end
+    puts "done."
 
     # Find hpd_buildings that are hpd_reg_id, and match the reg_id from hpd
     sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid != 0 AND registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
