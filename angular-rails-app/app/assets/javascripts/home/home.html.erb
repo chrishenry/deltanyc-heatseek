@@ -46,7 +46,7 @@
       <form class="form input-group"  ng-submit="vm.goToOwner()">
         <input id="propertiesSearch" class="form-control"
         type="text" ng-model="vm.selectedOwner" 
-        uib-typeahead="owner as owner.name for owner in vm.getOwners($viewValue)"
+        uib-typeahead="owner as owner.full_identity for owner in vm.getOwners($viewValue)"
         typeahead-loading="loading"
         typeahead-min-length="2"
         placeholder="Enter Name or Company" />

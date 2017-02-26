@@ -3,8 +3,8 @@ class OwnersController < ApplicationController
    before_action :set_owner, only: [:show]
 
   def index
-    if params[:name]
-       @owners = Owner.where("name LIKE (?)", "%#{params[:name]}%").limit(6)
+    if params[:name]       
+      @owners = Owner.where('name LIKE :input OR corporation_name LIKE :input ', input: "%#{params[:name]}%").limit(6)
     else
       @owners = Owner.all
     end
