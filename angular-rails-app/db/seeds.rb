@@ -1,4 +1,3 @@
-=begin
 require 'ffaker'
 
 50.times do
@@ -39,7 +38,6 @@ end
     total_units: rand(5..200),
     rent_stabilized: FFaker::Boolean.random,
     )
-=end
 
 2.times do
     OwnerProperty.create(
