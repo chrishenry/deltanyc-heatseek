@@ -26,6 +26,6 @@ Once everything is installed, only the nb or web containers need to be explicitl
 
 Alternatively, the repo can run without Docker, but the user is responsible for installing all requirements themselves: MySQL, Python, packages specified in requirements.txt, Ruby on Rails, packagese specified in the Gemfile, and nodejs. You'll also need to install [the user-defined functions providing regular expressions for MySQL](https://github.com/mysqludf/lib_mysqludf_preg/blob/testing/INSTALL).
 
-Data Conventions
-***************************
+## Data Conventions
+
 Borough (Boro) should be shortened to a 2 letter wherever stored.
