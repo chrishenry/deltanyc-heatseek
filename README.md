@@ -22,7 +22,7 @@ Before using any of our Docker images, you'll need to create a .env file. The re
 * nb: Installs Python and starts a Jupyter notebook at [localhost:8888](http://localhost:8888). Can also be used to run the data-import scripts: run `docker exec -it deltanycheatseek_nb_1 /bin/bash`, then execute the scripts
 * web: Installs Ruby on Rails and starts a server at [localhost:3000](http://localhost:3000). Like the data-import scripts, you can conect to a running instance with `docker exec -it deltanycheattseek_web_1 /bin/bash` to run rake tasks. To view a demo of the tool, connect to the instance, then run `rake db:setup`. In the demo, fake data will be provided for "10 West 109th Street".
 
-Once all the images are installed and run once, only the nb or web images need to be explicitly lanched via docker-compose (eg. `docker-compose up web`) depending on the type of work you plan to do. Launching either will also launch the db container.
+Once all the images are built and run once, only the nb or web images need to be explicitly lanched via docker-compose (eg. `docker-compose up web`) depending on the type of work you plan to do. Launching either will also launch the db container.
 
 Alternatively, the repo can run without Docker, but the user is responsible for installing all requirements themselves: MySQL, Python, packages specified in requirements.txt, Ruby on Rails, packagese specified in the Gemfile, and nodejs. You'll also need to install [the user-defined functions providing regular expressions for MySQL](https://github.com/mysqludf/lib_mysqludf_preg/blob/testing/INSTALL).
 
