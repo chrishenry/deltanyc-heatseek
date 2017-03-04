@@ -1,5 +1,9 @@
 sudo: required
 
+language: ruby
+rvm:
+  - 2.3.4
+
 services:
   - docker
 
@@ -8,4 +12,4 @@ before_install:
   - docker ps
 
 script:
-  - docker run -e "RAILS_ENV=docker-test" rails-app rake delta_test:test
+  - docker run -e "RAILS_ENV=test" rails-app bash entrypoint_test.sh
