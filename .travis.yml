@@ -1,18 +1,11 @@
-env:
-  DOCKER_COMPOSE_VERSION: 1.11.1
-
 sudo: required
 
 services:
   - docker
 
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-  - sudo cp .env.example .env
+  - cd angular-rails-app && docker build -t rails-app .
+  - docker ps
 
 script:
-  - docker-compose build web
-  - docker-compose run web rspec
+  - docker run -e "RAILS_ENV=docker-test" rails-app rake delta_test:test
