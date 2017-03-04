@@ -29,8 +29,8 @@ services:
       - ./angular-rails-app/:/angular-rails-app/
     ports:
       - "3000:3000"
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
   nb:
     build:
       context: .
