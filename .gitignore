@@ -95,3 +95,7 @@ ENV/
 *zip
 mysql-data/*
 !mysql-data/.gitkeep
+
+# Rails ignores
+angular-rails-app/log/
+angular-rails-app/vendor/assets/bower_components/
