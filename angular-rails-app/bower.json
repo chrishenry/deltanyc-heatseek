@@ -4,11 +4,10 @@
     "name": "heatseek-assets",
     "dependencies": {
       "angular": "1.5.8",
-      "angular-ui-router": "latest"
+      "angular-ui-router": "latest",
+      "AngularSlideables": "*",
+      "angular-google-places-autocomplete": "0.2.7",
+      "angular-mocks": "1.5.8"
     }
-  },
-  "devDependencies": {
-    "jasmine-core": "^2.5.2",
-    "karma-jasmine": "^1.1.0"
   }
 }

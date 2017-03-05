@@ -21,7 +21,7 @@ services:
   web:
     build:
       context: ./angular-rails-app/
-    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    command: ["sh", "-c", "/angular-rails-app/docker-cmd.sh"]
     env_file: .env
     environment:
       MYSQL_HOST: db
