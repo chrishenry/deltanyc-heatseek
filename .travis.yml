@@ -3,6 +3,9 @@ sudo: required
 services:
   - docker
 
+before_install:
+  - sudo cp .env.example .env
+
 script:
   - docker-compose -f docker-compose.yml -f docker-compose.test.yml up --no-deps -d web
   - docker-compose ps
