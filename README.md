@@ -26,6 +26,90 @@ Once all the images are built and run once, only the nb or web images need to be
 
 Alternatively, the repo can run without Docker, but the user is responsible for installing all requirements themselves: MySQL, Python, packages specified in requirements.txt, Ruby on Rails, packagese specified in the Gemfile, and nodejs. You'll also need to install [the user-defined functions providing regular expressions for MySQL](https://github.com/mysqludf/lib_mysqludf_preg/blob/testing/INSTALL).
 
-## Data Conventions
+## Data Sources
 
-Borough (Boro) should be shortened to a 2 letter wherever stored.
+### 311 Complaint data
+
+Filtered by complaint types described [here](https://docs.google.com/spreadsheets/d/1hJIRu1Ku2pgaKfbFjXLEzN2jNH9rYmUtjpLZZHbfe80/edit).
+Includes from: March 14th, 2014
+146295 data points
+
+Complaints can be made to 311 and directed to HPD for interior housing maintenance issues (as opposed to exterior and/structural issues which usually get directed to DOB). The Complaints database is part of the NYC Open Data portal, and is updated nightly. 
+
+
+### AEP
+
+Includes from: 2008
+1885 datapoints
+Not included in web app
+
+The Alternative Enforcement Program (AEP) is an enforcement program which identifies the 200 most distressed multiple dwellings citywide each year. Owners of multiple dwellings can avoid participation in AEP by properly maintaining their building, submitting a current and valid property registration to the Department of Housing Preservation and Development (HPD), and correcting and certifying all HPD violations. The City will let registered owners, managing agents, and tenants know that their building was chosen to be in the program.
+
+
+### DOB Permits
+
+Includes from: 2013-04-25
+648528 data points
+
+A list of permits issued for a particular day and associated data - included in the NYC Open Data. Additionally, prior weekly and monthly reports are archived at DOB and are not available on NYC Open Data.
+
+
+### DOB Violations
+
+Not sure how far the data goes back, as dates are not formatted correctly.
+1144624 data points
+
+Violations stemming from complaints made about poor building conditions, mainly pertaining to the exterior of the building and/or the building’s structural integrity, but also covering complaints having to do with construction. When complaints are made, a DOB inspector is dispatched to the building to validate the complaints and issue violations.
+
+
+### HPD Buildings
+
+307352 buildings
+
+???
+
+### HPD Complaints
+
+Includes from: 2003-03-20
+917522 data points
+
+In addition to calling 311 to make complaints about building conditions, individuals can also call HPD directly to lodge a complaint.
+
+### HPD Registrations
+
+Includes from: 1993-04-01 (This might be earlier, as there's no date telling us when the data was created, only when it was last updated)
+162948 data points
+
+Property owners of residential buildings are required by law to register annually with HPD if the property is a multiple dwelling (3+ residential units) or a private dwelling (1-2 residential units) where neither the owner nor the owner's immediate family resides. Ownership information is often found in these registrations.
+
+### Pluto
+
+Includes from: 1984-11-14
+858370 data points
+
+Planning and Land Use data. Extensive land use and geographic data at the tax lot level in comma–separated values (CSV) file format. The PLUTO files contain more than seventy fields derived from data maintained by city agencies.
+
+### Rent Stabilization Data
+
+Includes from 2007
+45064 data points
+
+Derived from the quarterly tax filings with New York State, where landlords are supposed to list how many rent-stabilized units there are in the building. Allows us to track changes in rent stabilized units over time.
+
+### HPD Litigation Data
+
+Stats for Litigations;
+67382 data points
+Includes from: 2000-09-11
+
+Cases initiated by HPD against a landlord in Housing Court. Tenant-initiated cases are not included in this data.
+
+## Abbreviations:
+
+**HPD**: NYC Agency, stands for Housing Preservation and Development
+
+**DOB**: NYC Agency, stands for Department of Buildings
+
+**311**: NYC Agency - operates as a call center for all types of information sharing. Information submitted to 311, usually in the form of complaints, gets directed to the appropriate agency for follow up.
+
+**Rent Stabilization**: for a detailed FAQ, see here.
