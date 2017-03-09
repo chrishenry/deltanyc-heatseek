@@ -48,17 +48,19 @@ gem 'httparty', '~> 0.13.6'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'sqlite3'
   gem 'byebug'
   gem 'thor', '0.19.1'
   gem 'rspec-rails', '~> 3.5'
   gem 'ffaker'
-  gem 'factory_girl_rails'
+  gem 'factory_girl_rails', :require => false
 end
 
 group :test do
   gem 'capybara'
   gem 'guard-rspec'
   gem 'launchy'
+  gem 'rake'
 end
 
 group :development do

@@ -12,9 +12,9 @@ describe PropertiesController do
       get :index, format: :json
       parsed_response = JSON.parse(response.body)
       expect(parsed_response.length).to eq(30)
-    end    
+    end
   end
-  
+
   describe "GET #show" do
     let(:property) { FactoryGirl.create(:property) }
 
@@ -29,16 +29,15 @@ describe PropertiesController do
       expect(parsed_response).to_not be_nil
     end
 
-    it "returns null if the property does not exist" do
-      get :show, id: 200 , format: :json
-      expect(response.body).to eq("null")
+    it "returns 404 if the property does not exist" do
+      expect{ get :show, :id => 'bad_id' }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
-  
+
   describe "GET #query" do
     pending
   end
- 
-    
+
+
 
 end

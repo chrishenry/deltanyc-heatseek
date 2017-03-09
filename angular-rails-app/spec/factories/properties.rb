@@ -1,6 +1,8 @@
+require 'ffaker'
+
 FactoryGirl.define do
   factory :property do |f|
-    f.street_address{FFaker::AddressUS.street_address} 
+    f.street_address{FFaker::AddressUS.street_address}
     f.city {FFaker::AddressUS.city}
     f.state {FFaker::AddressUS.state_abbr}
     f.zipcode {FFaker::AddressUS.zip_code}
