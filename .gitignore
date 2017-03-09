@@ -104,3 +104,5 @@ angular-rails-app/vendor/assets/bower_components/
 
 # Luigi
 luigi/state
+
+.bash_history
