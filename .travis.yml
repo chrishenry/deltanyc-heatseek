@@ -7,9 +7,7 @@ rvm:
 services:
   - docker
 
-before_install:
-  - cd angular-rails-app && docker build -t rails-app .
-  - docker ps
-
 script:
-  - docker run -e "RAILS_ENV=test" rails-app bash entrypoint_test.sh
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml up --no-deps -d web
+  - docker-compose ps
+  - docker-compose exec web bash entrypoint_test.sh
