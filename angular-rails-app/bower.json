@@ -3,11 +3,11 @@
   "vendor": {
     "name": "heatseek-assets",
     "dependencies": {
-      "angular": "1.5.8",
-      "angular-ui-router": "latest",
+      "angular": "1.5.x",
+      "angular-ui-router": "0.4.x",
       "AngularSlideables": "*",
-      "angular-google-places-autocomplete": "0.2.7",
-      "angular-mocks": "1.5.8"
+      "angular-google-places-autocomplete": "0.2.x",
+      "angular-mocks": "1.5.x"
     }
   }
 }
