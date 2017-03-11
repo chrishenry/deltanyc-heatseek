@@ -289,6 +289,7 @@ DEPENDENCIES
   mysql2 (>= 0.3.13, < 0.5)
   ngannotate-rails
   rails (= 4.2.6)
+  rake
   rspec-rails (~> 3.5)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
