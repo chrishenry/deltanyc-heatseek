@@ -111,24 +111,24 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Inspection Date</th>
+                <th>Violation Class </th>
+                <th>Order #</th>
+                <th>NOV ID</th>
+                <th>Description</th>
+                <th>Current Status</th>
+                <th>Status Date</th>
+                <th>Certified Date</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="v in vm.data.hpd_violations">
+                <td>{{ v.inspection_date }}</td>
+                <td>{{ v.violation_class }}</td>
+                <td>{{ v.order_number }}</td>
+                <td>{{ v.novid }}</td>
+                <td>{{ v.nov_description }}</td>
+                <td>{{ v.current_status }}</td>
+                <td>{{ v.current_status_date }}</td>
+                <td>{{ v.certified_date }}</td>
               </tr>
             </table>
           </div>
