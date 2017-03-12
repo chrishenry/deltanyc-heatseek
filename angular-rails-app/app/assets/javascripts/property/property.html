@@ -165,18 +165,29 @@
           <h4 class="table-title">HPD Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Complaint ID</th>
-                <th>Apartment</th>
-                <th>Date</th>
+                <th>Received Date</th>
+                <th>Code ID</th>
+                <th>Apt.</th>
+                <th>Complaint Type</th>
+                <th>Major Category ID</th>
+                <th>Minor Category ID</th>
+                <th>Status</th>
+                <th>Status ID</th>
+                <th>Status Date</th>
               </tr>
               <tr ng-repeat="c in vm.data.hpd_complaints">
-                <td>{{ c.complaint_id }}</td>
+                <td>{{ c.received_date }}</td>
+                <td>{{ c.code_id }}</td>
                 <td>{{ c.apartment }}</td>
+                <td>{{ c.complaint_type }}</td>
+                <td>{{ c.major_category_id }}</td>
+                <td>{{ c.minor_category_id }}</td>
+                <td>{{ c.status }}</td>
+                <td>{{ c.status_id }}</td>
                 <td>{{ c.status_date }}</td>
               </tr>
             </table>
           </div>
-
         </div>
       </div>
 
