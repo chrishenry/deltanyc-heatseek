@@ -111,7 +111,7 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Inspection Date</th>
+                <th>Inspection<br>Date</th>
                 <th>Violation Class </th>
                 <th>Order #</th>
                 <th>NOV ID</th>
@@ -165,12 +165,12 @@
           <h4 class="table-title">HPD Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Received Date</th>
+                <th>Received<br>Date</th>
                 <th>Code ID</th>
                 <th>Apt.</th>
-                <th>Complaint Type</th>
-                <th>Major Category ID</th>
-                <th>Minor Category ID</th>
+                <th>Complaint<br>Type</th>
+                <th>Major<br>Category ID</th>
+                <th>Minor<br>Category ID</th>
                 <th>Status</th>
                 <th>Status ID</th>
                 <th>Status Date</th>
@@ -230,14 +230,28 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Permit Status</th>
-                <th>Work Type</th>
-                <th>Filing Date</th>
+                <th>Job #</th>
+                <th>Job<br>Type</th>
+                <th>Job<br> Start Date</th>
+                <th>Expiration<br> Date</th>
+                <th>Permit<br>Status</th>
+                <th>Permit<br>Type</th>
+                <th>Filing<br>Status</th>
+                <th>Filing<br>Date</th>
+                <th>Building<br>Type</th>
+                <th>Work<br>Type</th>
               </tr>
               <tr ng-repeat="d in vm.data.dob_permits">
-                <td>{{ d.permit_status | titleCase}}</td>
-                <td>{{ d.work_type }}</td>
+                <td>{{ d.job_num }}</td>
+                <td>{{ d.job_type }}</td>
+                <td>{{ d.job_start_date }}</td>
                 <td>{{ d.expiration_date }}</td>
+                <td>{{ d.permit_status | titleCase}}</td>
+                <td>{{ d.permit_type }}</td>
+                <td>{{ d.filling_status }}</td>
+                <td>{{ d.filing_date }}</td>
+                <td>{{ d.bldg_type }}</td>
+                <td>{{ d.work_type }}</td>
               </tr>
             </table>
           </div>
