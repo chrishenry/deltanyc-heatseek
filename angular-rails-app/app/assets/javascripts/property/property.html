@@ -60,10 +60,10 @@
     <hr class="featurette-divider property">
 
       <div class="row">
-        <div class="col-sm-2 owners-heading">
+        <div class="col-xs-2 owners-heading">
             <h4 class="pull-right owners-heading">Owners</h4>
         </div>
-        <div class="col-sm-4 list-items">
+        <div class="col-xs-4 list-items">
           <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
             <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
@@ -87,7 +87,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.hpd_violations_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
@@ -288,18 +288,18 @@
           <h4 class="table-title">DOB Violations</h4>
             <table class="table table-striped">
               <tr id="blue">
+                <th>Issue Date</th>
                 <th>Type</th>
                 <th>Category</th>
                 <th>Disposition Date</th>
                 <th>Disposition Comments</th>
-                <th>Issue Date</th>
               </tr>
               <tr ng-repeat="v in vm.data.dob_violations">
+                <td>{{ v.issue_date }}</td>
                 <td>{{ v.violation_type }}</td>
                 <td>{{ v.violation_category }}</td>
                 <td>{{ v.disposition_date }}</td>
                 <td>{{ v.disposition_comments }}</td>
-                <td>{{ v.issue_date }}</td>
               </tr>
             </table>
           </div>
@@ -347,12 +347,16 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
+                <th>Open Date</th>
                 <th>Case Type</th>
+                <th>Status</th>
                 <th>Judgement</th>
               </tr>
               <tr ng-repeat="l in vm.data.litigations">
+                <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
-                <td>{{ l.judgement }}</td>
+                <td>{{ l.case_status }}</td>
+                <td>{{ l.case_judgement }}</td>
               </tr>
             </table>
           </div>
@@ -397,15 +401,21 @@
         <h4 class="table-title">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Type</th>
-                <th>Agency</th>
+                <th>Created Date</th>
+                <th>Complaint Type</th>
                 <th>Status</th>
+                <th>Due Date</th>
+                <th>Agency</th>
+                <th>Closed Date</th>
                 <th>Resoutions Description</th>
               </tr>
               <tr ng-repeat="c in vm.data.complaint311s">
+                <td>{{ c.created_date }}</td>
                 <td>{{ c.complaint_type }}</td>
-                <td>{{ c.agency }}</td>
                 <td>{{ c.status }}</td>
+                <td>{{ c.due_date }}</td>
+                <td>{{ c.agency }}</td>
+                <td>{{ c.closed_date }}</td>
                 <td>{{ c.resolution_description }}</td>
               </tr>
             </table>
