@@ -91,14 +91,14 @@
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
+                <td class="L">Class A: ?, Class B: ?, Class C: ?</td>
               </tr>
             </table>
           </div>
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if ="vm.data.hpd_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_violations"
           data-ng-init="hpd_violations=false"
@@ -146,14 +146,14 @@
               </tr>
               <tr>
                 <td class="R">HPD Complaints</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
+                <td class="L">Class A: ?, Class B: ?, Class C: ?</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-if ="vm.data.hpd_open_complaints_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_complaints"
           data-ng-init="hpd_complaints=false"
@@ -217,7 +217,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if ="vm.data.dob_permits_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_permits"
           data-ng-init="dob_permits=false"
@@ -272,7 +272,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-if="vm.data.dob_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_violations"
           data-ng-init="dob_violations=false"
@@ -330,7 +330,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.litigations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#litigations"
           data-ng-init="litigations=false"
@@ -385,7 +385,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.complaint311s_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#complaints311"
         data-ng-init="complaints311=false"
