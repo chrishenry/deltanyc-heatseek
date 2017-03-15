@@ -12,17 +12,14 @@ gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
-gem 'twitter-bootstrap-rails'
 
-# Use jquery as the JavaScript library
+# Javascript deps
 gem 'jquery-rails'
-# Use Angular-Rails-Templates
-gem 'angular-rails-templates'
-# Use Bower for Angular
 gem 'bower-rails'
-# Use ActiveModel::Serializer
+gem 'angular-rails-templates'
+gem 'twitter-bootstrap-rails'
+gem 'angular-ui-bootstrap-rails'
+
 gem 'active_model_serializers', '~> 0.10.0'
 # Add rails authenticy token into headers for angular $http requests
 gem 'angular_rails_csrf'
@@ -32,8 +29,6 @@ gem 'ngannotate-rails'
 gem 'sdoc', '~> 0.4.0', group: :doc
 # pagination.
 gem 'will_paginate', '~> 3.1.0'
-# ui directives for Angular
-gem 'angular-ui-bootstrap-rails'
 
 gem 'httparty', '~> 0.13.6'
 
@@ -54,6 +49,9 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.5'
   gem 'ffaker'
   gem 'factory_girl_rails', :require => false
+
+  # Javascript testing
+  gem 'teaspoon-jasmine'
 end
 
 group :test do
