@@ -60,10 +60,10 @@
     <hr class="featurette-divider property">
 
       <div class="row">
-        <div class="col-sm-1 owners-heading">
-            <h4>Owners</h4>
+        <div class="col-xs-2 owners-heading">
+            <h4 class="pull-right owners-heading">Owners</h4>
         </div>
-        <div class="col-sm-4 list-items">
+        <div class="col-xs-4 list-items">
           <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
             <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
@@ -87,18 +87,18 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">5</td>
+                <td class="L">{{ vm.data.hpd_violations_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
+                <td class="L">Class A: ?, Class B: ?, Class C: ?</td>
               </tr>
             </table>
           </div>
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.hpd_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_violations"
           data-ng-init="hpd_violations=false"
@@ -111,24 +111,24 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Lorem</th>
-                <th>Lorem ipsum dolor </th>
+                <th>Inspection<br>Date</th>
+                <th>Violation Class </th>
+                <th>Order #</th>
+                <th>NOV ID</th>
+                <th>Description</th>
+                <th>Current Status</th>
+                <th>Status Date</th>
+                <th>Certified Date</th>
               </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
-              </tr>
-              <tr>
-                <td>Lorem ipsum</td>
-                <td>Lorem ipsum dolor</td>
+              <tr ng-repeat="v in vm.data.hpd_violations">
+                <td>{{ v.inspection_date }}</td>
+                <td>{{ v.violation_class }}</td>
+                <td>{{ v.order_number }}</td>
+                <td>{{ v.novid }}</td>
+                <td>{{ v.nov_description }}</td>
+                <td>{{ v.current_status }}</td>
+                <td>{{ v.current_status_date }}</td>
+                <td>{{ v.certified_date }}</td>
               </tr>
             </table>
           </div>
@@ -146,14 +146,14 @@
               </tr>
               <tr>
                 <td class="R">HPD Complaints</td>
-                <td class="L">Class A: 0, Class B: 3, Class C: 2</td>
+                <td class="L">Class A: ?, Class B: ?, Class C: ?</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-if="vm.data.hpd_open_complaints_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_complaints"
           data-ng-init="hpd_complaints=false"
@@ -165,18 +165,29 @@
           <h4 class="table-title">HPD Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Complaint ID</th>
-                <th>Apartment</th>
-                <th>Date</th>
+                <th>Received<br>Date</th>
+                <th>Code ID</th>
+                <th>Apt.</th>
+                <th>Complaint<br>Type</th>
+                <th>Major<br>Category ID</th>
+                <th>Minor<br>Category ID</th>
+                <th>Status</th>
+                <th>Status ID</th>
+                <th>Status Date</th>
               </tr>
               <tr ng-repeat="c in vm.data.hpd_complaints">
-                <td>{{ c.complaint_id }}</td>
+                <td>{{ c.received_date }}</td>
+                <td>{{ c.code_id }}</td>
                 <td>{{ c.apartment }}</td>
+                <td>{{ c.complaint_type }}</td>
+                <td>{{ c.major_category_id }}</td>
+                <td>{{ c.minor_category_id }}</td>
+                <td>{{ c.status }}</td>
+                <td>{{ c.status_id }}</td>
                 <td>{{ c.status_date }}</td>
               </tr>
             </table>
           </div>
-
         </div>
       </div>
 
@@ -206,7 +217,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.dob_permits_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_permits"
           data-ng-init="dob_permits=false"
@@ -219,14 +230,28 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
-                <th>Permit Status</th>
-                <th>Work Type</th>
-                <th>Filing Date</th>
+                <th>Job #</th>
+                <th>Job<br>Type</th>
+                <th>Job<br> Start Date</th>
+                <th>Expiration<br> Date</th>
+                <th>Permit<br>Status</th>
+                <th>Permit<br>Type</th>
+                <th>Filing<br>Status</th>
+                <th>Filing<br>Date</th>
+                <th>Building<br>Type</th>
+                <th>Work<br>Type</th>
               </tr>
               <tr ng-repeat="d in vm.data.dob_permits">
-                <td>{{ d.permit_status | titleCase}}</td>
-                <td>{{ d.work_type }}</td>
+                <td>{{ d.job_num }}</td>
+                <td>{{ d.job_type }}</td>
+                <td>{{ d.job_start_date }}</td>
                 <td>{{ d.expiration_date }}</td>
+                <td>{{ d.permit_status | titleCase}}</td>
+                <td>{{ d.permit_type }}</td>
+                <td>{{ d.filling_status }}</td>
+                <td>{{ d.filing_date }}</td>
+                <td>{{ d.bldg_type }}</td>
+                <td>{{ d.work_type }}</td>
               </tr>
             </table>
           </div>
@@ -242,16 +267,12 @@
                 <td class="R">Total DOB Violations</td>
                 <td class="L">{{ vm.data.dob_violations_count }}</td>
               </tr>
-              <tr>
-                <td class="R">DOB Violations</td>
-                <td class="L"></td>
-              </tr>
             </table>
           </div>
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" ng-if="vm.data.dob_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_violations"
           data-ng-init="dob_violations=false"
@@ -263,18 +284,18 @@
           <h4 class="table-title">DOB Violations</h4>
             <table class="table table-striped">
               <tr id="blue">
+                <th>Issue Date</th>
                 <th>Type</th>
                 <th>Category</th>
                 <th>Disposition Date</th>
                 <th>Disposition Comments</th>
-                <th>Issue Date</th>
               </tr>
               <tr ng-repeat="v in vm.data.dob_violations">
+                <td>{{ v.issue_date }}</td>
                 <td>{{ v.violation_type }}</td>
                 <td>{{ v.violation_category }}</td>
                 <td>{{ v.disposition_date }}</td>
                 <td>{{ v.disposition_comments }}</td>
-                <td>{{ v.issue_date }}</td>
               </tr>
             </table>
           </div>
@@ -309,7 +330,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.litigations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#litigations"
           data-ng-init="litigations=false"
@@ -322,12 +343,16 @@
             <table class="table table-striped">
               <tr id="blue">
                 <tr id="blue">
+                <th>Open Date</th>
                 <th>Case Type</th>
+                <th>Status</th>
                 <th>Judgement</th>
               </tr>
               <tr ng-repeat="l in vm.data.litigations">
+                <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
-                <td>{{ l.judgement }}</td>
+                <td>{{ l.case_status }}</td>
+                <td>{{ l.case_judgement }}</td>
               </tr>
             </table>
           </div>
@@ -360,7 +385,7 @@
 
         </div>
       </div>
-      <div class="row">
+      <div class="row" ng-if="vm.data.complaint311s_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#complaints311"
         data-ng-init="complaints311=false"
@@ -372,15 +397,21 @@
         <h4 class="table-title">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
-                <th>Type</th>
-                <th>Agency</th>
+                <th>Created Date</th>
+                <th>Complaint Type</th>
                 <th>Status</th>
+                <th>Due Date</th>
+                <th>Agency</th>
+                <th>Closed Date</th>
                 <th>Resoutions Description</th>
               </tr>
               <tr ng-repeat="c in vm.data.complaint311s">
+                <td>{{ c.created_date }}</td>
                 <td>{{ c.complaint_type }}</td>
-                <td>{{ c.agency }}</td>
                 <td>{{ c.status }}</td>
+                <td>{{ c.due_date }}</td>
+                <td>{{ c.agency }}</td>
+                <td>{{ c.closed_date }}</td>
                 <td>{{ c.resolution_description }}</td>
               </tr>
             </table>
