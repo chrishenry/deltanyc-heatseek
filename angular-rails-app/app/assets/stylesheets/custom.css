@@ -62,6 +62,7 @@ button.btn.btn-secondary {
   background-color: black;
   color: white;
   margin-bottom: 10px;
+  width: 50px;
 }
 
 div#instructions {
