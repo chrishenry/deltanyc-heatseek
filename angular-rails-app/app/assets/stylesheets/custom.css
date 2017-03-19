@@ -7,6 +7,10 @@ html {
   font-family: 'Source Sans Pro', sans-serif;
 }
 
+div {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
 /* -----------------------------------------*/
 /* ------------->>> NAV BAR <<<-------------*/
 /* -----------------------------------------*/
@@ -18,6 +22,11 @@ nav#my-nav {
   border-bottom: 4px solid orange;
   margin: 0;
   padding: 0;
+}
+
+div.navbar-header a.navbar-brand {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2em;
 }
 
 nav#my-nav a {
