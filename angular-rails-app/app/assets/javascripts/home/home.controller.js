@@ -1,8 +1,8 @@
 angular
   .module('app')
-  .controller('HomeController', ['$scope', 'HomeService', '$state','$http', HomeController])
+  .controller('HomeController', ['$scope', 'HomeService', '$state','spinnerService', HomeController])
 
-function HomeController($scope, HomeService, $state,$http) {
+function HomeController($scope, HomeService, $state, spinnerService) {
   var vm = this;
 
 
@@ -35,6 +35,7 @@ function HomeController($scope, HomeService, $state,$http) {
   };
 
   vm.details = {};
+  vm.go = true;
 
   vm.setDetails = function() {
     if (vm.place.address_components) {
@@ -53,6 +54,8 @@ function HomeController($scope, HomeService, $state,$http) {
 
 
  vm.getProperty = function(){
+    vm.go = false
+    spinnerService.show('propertiesSpinner');
     HomeService.getProperty(vm.details)
     .then(function(propertyData){
       console.log(propertyData);
@@ -62,7 +65,12 @@ function HomeController($scope, HomeService, $state,$http) {
       else{
         vm.addressError();
       }
-    }, function(error){
+    })
+    .finally(function () {
+       spinnerService.hide('propertiesSpinner');
+       vm.go = true
+    }, 
+      function(error){
       alert('Unable to get property' + error.statusText);
     });
  }

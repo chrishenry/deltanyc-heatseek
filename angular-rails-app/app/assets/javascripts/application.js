@@ -19,4 +19,5 @@
 //= require twitter/bootstrap
 //= require angular-google-places-autocomplete
 //= require AngularSlideables/angularSlideables
+//= require angular-spinners
 //= require_tree .
