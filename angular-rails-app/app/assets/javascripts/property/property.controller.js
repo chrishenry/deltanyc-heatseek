@@ -6,10 +6,7 @@ PropertyController.$inject = ['PropertyService', '$stateParams', '$state', 'prop
 
 
 function PropertyController(PropertyService, $stateParams, $state, property) {
-  var vm = this;
-  
+  var vm = this;  
   vm.data = property.data;
- 
-
 }
 
