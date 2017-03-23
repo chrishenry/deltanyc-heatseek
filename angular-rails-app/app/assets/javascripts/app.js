@@ -24,7 +24,12 @@ angular
         .state('property', {
           url: '/properties/:id',
           templateUrl: 'property/property.html',
-          controller: 'PropertyController as vm'
+          controller: 'PropertyController as vm',
+          resolve: {
+          property: function (PropertyService, $stateParams) {
+            return PropertyService.getProperty($stateParams.id);
+          }
+        }
         });
 
 
