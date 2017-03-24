@@ -181,7 +181,7 @@ namespace :db_connector do
         next
       end
 
-      boro = @boros_int[complaint['boroughid']]
+      boro = complaint['boroughid']
       block = complaint['block']
       lot = complaint['lot']
 
@@ -229,7 +229,7 @@ namespace :db_connector do
         next
       end
 
-      boro = @boros_int[litigation['boroid']]
+      boro = litigation['boroid']
       block = litigation['block']
       lot = litigation['lot']
 
@@ -404,7 +404,7 @@ namespace :db_connector do
         # Decently working regex to get ONLY street_number
         street_number = result['incident_address'].scan(/^[^\s]+/).join('')
         street = result['street_name']
-        boro_id = @boros_int.key(result['borough'])
+        boro_id = result['borough']
 
         begin
           geo_data = nyc_geocode(street_number, street, boro_id)
