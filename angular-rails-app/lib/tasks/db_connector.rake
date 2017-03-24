@@ -271,12 +271,14 @@ namespace :db_connector do
     sql = "SELECT * FROM dob_permits"
     permits = conn.exec_query(sql).to_hash
 
-
     puts "Found #{permits.length} permits"
 
-    permits.each do |permit|
+    permits.each_with_index do |permit, idx|
 
-      boro = @boros.key(permit['borough'])
+      print "Saving #{idx}/#{permits.length} \r"
+      $stdout.flush
+
+      boro = permit['borough']
       block = permit['block'].to_i
       lot = permit['lot'].to_i
 
@@ -303,7 +305,6 @@ namespace :db_connector do
       end
 
       permit.save
-      puts "Saved permit"
 
     end
 
