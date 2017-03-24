@@ -315,6 +315,12 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
+    puts "Adding indexes..."
+    indexes = [
+      ["dob_violations", "violation_type"]
+    ]
+    add_indexes(indexes)
+
     v_types = [
       "IMD-IMMEDIATE EMERGENCY",
       "COMPBLD-STRUCTURALLY COMPROMISED BUILDING",
@@ -333,17 +339,21 @@ namespace :db_connector do
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
+    puts "Pulling dob violations..."
     sql = "SELECT * FROM dob_violations WHERE violation_type IN (#{in_list})"
     violation_results = conn.exec_query(sql).to_hash
 
-    violation_results.each do |violation|
+    violation_results.each_with_index do |violation,idx|
+
+      print "Saving #{idx}/#{violation_results.length} \r"
+      $stdout.flush
 
       if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
         puts "Exists, skipping"
         next
       end
 
-      boro = @boros_int[violation['boro'].to_i]
+      boro = violation['boro']
       block = violation['block'].to_i
       lot = violation['lot'].to_i
 
@@ -363,7 +373,6 @@ namespace :db_connector do
         d.disposition_comments = violation['disposition_comments']
       end
 
-      puts "Saved violation"
       violation.save
 
     end
