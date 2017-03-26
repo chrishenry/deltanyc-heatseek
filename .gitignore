@@ -91,5 +91,11 @@ ENV/
 
 # Data files
 *csv
+*pdf
+*zip
 mysql-data/*
 !mysql-data/.gitkeep
+
+# Rails ignores
+angular-rails-app/log/
+angular-rails-app/vendor/assets/bower_components/

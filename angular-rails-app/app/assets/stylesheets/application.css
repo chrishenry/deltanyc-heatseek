@@ -11,7 +11,7 @@
  * file per style scope.
  *
  *= require custom
- *= require autocomplete
+ *= require angular-google-places-autocomplete
  *= require_tree .
  *= require_self
  */

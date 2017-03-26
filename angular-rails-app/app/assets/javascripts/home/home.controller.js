@@ -1,9 +1,12 @@
 angular
   .module('app')
-  .controller('HomeController', ['$scope', 'HomeService', '$state', HomeController])
+  .controller('HomeController', ['$scope', 'HomeService', '$state','spinnerService', HomeController])
 
-function HomeController($scope, HomeService, $state) {
+function HomeController($scope, HomeService, $state, spinnerService) {
   var vm = this;
+
+
+//********** Properties Data *************//
 
   $scope.place = null;
   $scope.autocompleteOptions = {
@@ -32,6 +35,7 @@ function HomeController($scope, HomeService, $state) {
   };
 
   vm.details = {};
+  vm.go = true;
 
   vm.setDetails = function() {
     if (vm.place.address_components) {
@@ -50,6 +54,8 @@ function HomeController($scope, HomeService, $state) {
 
 
  vm.getProperty = function(){
+    vm.go = false
+    spinnerService.show('propertiesSpinner');
     HomeService.getProperty(vm.details)
     .then(function(propertyData){
       console.log(propertyData);
@@ -59,21 +65,62 @@ function HomeController($scope, HomeService, $state) {
       else{
         vm.addressError();
       }
-    }, function(error){
+    })
+    .finally(function () {
+       spinnerService.hide('propertiesSpinner');
+       vm.go = true
+    }, 
+      function(error){
       alert('Unable to get property' + error.statusText);
     });
  }
 
 
- vm.addressError = function() {
+ //************ Owners data ***************//  
+
+ vm.selectedOwner = ''
+
+  vm.getOwners = function(input) {
+    var limit = 6;
+    return HomeService.getOwners(input).then(function(res){
+        var owners = [];
+        var lim = Math.min(limit,res.data.length);
+        for (var i = 0; i < lim; i++) {
+          owners.push(res.data[i]);
+        }
+        return owners;
+    });
+  };
+
+  vm.goToOwner = function(){
+     if(vm.selectedOwner != '' && vm.selectedOwner.id){
+        $state.go('owner', {id: vm.selectedOwner.id})
+      }
+      else{
+        vm.ownerError();
+      }
+    }, function(error){
+      alert('Unable to get owner' + error.statusText);
+    };
+
+//************ Error Handling | Alert boxes ***************//  
+
+  vm.errors = ''
+
+  vm.addressError = function() {
       vm.alerts = [{msg: 'Address not found in database.  Perhaps try another variation.'}];
+      vm.errors = 'address';
     };
 
- vm.closeAlert = function() {
+  vm.closeAlert = function() {
      vm.alerts = [];
+     vm.errors = '';
     };
 
-
+  vm.ownerError = function() {
+    vm.alerts = [{msg: 'Owner not found in database.  Perhaps try another spelling.'}];
+    vm.errors = 'owner';
+  };
 
 
 }

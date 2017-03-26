@@ -21,21 +21,24 @@ namespace :db_connector do
 
   def nyc_geocode(house_number, street, boro)
 
-    app_key = ENV['NY_GEOCLIENT_APP_KEY']
-    app_secret = ENV['NY_GEOCLIENT_APP_SECRET']
+    app_key = ENV['NY_GEOCLIENT_APP_ID']
+    app_secret = ENV['NY_GEOCLIENT_APP_KEY']
 
     url = "https://api.cityofnewyork.us/geoclient/v1/address.json?houseNumber=#{house_number}&street=#{street}&borough=#{boro}&app_id=#{app_key}&app_key=#{app_secret}"
     response = HTTParty.get(url)
     JSON.parse(response.body)
+
   end
 
   def add_indexes(indexes)
 
     conn = ActiveRecord::Base.connection
 
-    indexes.each do |table, index_|
-      if not conn.index_exists?(table, index_) then
-        conn.add_index(table, index_)
+    indexes.each do |ar|
+      table = ar[0]
+      col = ar[1]
+      if not conn.index_exists?(table, col) then
+        conn.add_index(table, col)
       end
     end
 
@@ -46,31 +49,46 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    # Load addresses from Pluto
-    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(address), 'New York', 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc;"
-    records_array = conn.execute(sql)
+    # Load addresses from HPD.
+    print "Copying from hpd_buildings..."
+    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
+    SELECT TRIM(streetname), boro, 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+    conn.execute(sql)
+    puts "done"
 
+    # Load addresses from Pluto. This will add address that aren't in HPD.
+    print "Copying from pluto_nyc..."
+    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
+    SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc WHERE address != '';"
+    records_array = conn.execute(sql)
+    puts "done."
+
+    print "Expanding city from 2 letter boro code..."
     @boros.each do |key, value|
-      sql = "UPDATE hpd_buildings SET boro = '#{key}' WHERE boro = '#{value}';"
+      sql = "UPDATE r_properties SET city = '#{value.titleize}' WHERE city = '#{key}';"
+      print sql
       conn.execute(sql)
     end
+    puts "done."
 
-    # Load addresses from HPD. This will catch additional addresses in hpd that are *not* in pluto
-    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(streetname), 'New York', 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings;"
-    conn.execute(sql)
-
-    # Find properties without hpd_reg_id, and match the reg_id from hpd
-    sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
+    # Find hpd_buildings that are hpd_reg_id, and match the reg_id from hpd
+    sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid != 0 AND registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
     reg_ids = conn.execute(sql)
+    reg_ids_count = reg_ids.count
 
-    reg_ids.each do |reg_id|
+    puts "Found #{reg_ids_count} addresses without registrationid...fixing."
+
+    reg_ids.each_with_index do |reg_id, idx|
       prop = Property.find_by(borough: reg_id[0], block: reg_id[1], lot: reg_id[2])
 
       prop.hpd_registration_id = reg_id[3]
       prop.save
+
+      print "Saved #{idx}/#{reg_ids_count} \r"
+      $stdout.flush
     end
+
+    puts "Finished importing properties"
 
   end
 
@@ -79,59 +97,68 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    indexes = Hash[
-      "hpd_registrations" => "registrationid",
-      "hpd_registration_contacts" => "registrationid"
+    indexes = [
+      ["hpd_registrations", "registrationid"],
+      ["hpd_registration_contacts", "registrationid"]
     ]
 
     add_indexes(indexes)
 
-    # sql = "SELECT COUNT(*) AS cnt FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
-    # count_result = conn.exec_query(sql).to_hash[0]['cnt']
-
-    # puts count_result
-
-    # sql = "SELECT * FROM hpd_registration_contact hrc INNER JOIN hpd_registrations hr ON hrc.registrationid = hr.registrationid;"
     sql = "SELECT * FROM hpd_registration_contacts hr WHERE
+           firstname IS NOT NULL AND
+           firstname != '' AND
+           lastname IS NOT NULL AND
+           lastname != '' AND
+           corporationname IS NOT NULL AND
+           corporationname != '' AND
            businesshousenumber IS NOT NULL AND
            businessstreetname IS NOT NULL AND
-            businessapartment IS NOT NULL AND
                  businesscity IS NOT NULL AND
                 businessstate IS NOT NULL AND
                   businesszip IS NOT NULL;"
     owners_result = conn.exec_query(sql).to_hash
 
+    owners_result_count = owners_result.count
 
-    owners_result.each do |owner|
-      puts "*********************owner"
+    puts "Found #{owners_result_count} owners...matching."
 
-      # short_boro = @boros.key(owner['boro'])
-      # prop = Property.find_by(borough: short_boro, block: owner['block'], lot: owner['lot'])
-      # puts prop.id
+    owners_result.each_with_index do |owner, idx|
 
-      prop2 = Property.find_by(hpd_registration_id: owner['registrationid'])
+      print "Saving #{idx}/#{owners_result_count} \r"
+      $stdout.flush
 
-      if prop2 then
+      prop = Property.find_by(hpd_registration_id: owner['registrationid'])
+
+      if prop then
 
         if Owner.find_by(hpd_registration_contact_id: owner['registrationcontactid']) then
           next
         end
 
-        owner = Owner.new do |o|
-          o.name = "#{owner['firstname']} #{owner['middleinitial']} #{owner['lastname']}".sub! '  ', ' '
-          o.corporation_name = owner['corporationname']
-          o.address_line_one = "#{owner['businesshousenumber']} #{owner['businessstreetname']}"
-          o.address_line_two = owner['businessapartment']
-          o.city = owner['businesscity']
-          o.state = owner['businessstate']
-          o.zipcode = owner['businesszip']
-          o.hpd_registration_id = owner['registrationid']
-          o.hpd_registration_contact_id = owner['registrationcontactid']
+        begin
+
+          owner = Owner.new do |o|
+            o.name = "#{owner['firstname']} #{owner['middleinitial']} #{owner['lastname']}".sub! '  ', ' '
+            o.corporation_name = owner['corporationname']
+            o.address_line_one = "#{owner['businesshousenumber']} #{owner['businessstreetname']}"
+            o.address_line_two = owner['businessapartment']
+            o.city = owner['businesscity']
+            o.state = owner['businessstate']
+            o.zipcode = owner['businesszip']
+            o.hpd_registration_id = owner['registrationid']
+            o.hpd_registration_contact_id = owner['registrationcontactid']
+          end
+
+          prop.owners << owner
+          prop.save
+
+        rescue Exception => e
+          puts e.message
         end
 
-        prop2.owners << owner
-
       end
+
+      print "Done."
 
     end
 
@@ -299,6 +326,8 @@ namespace :db_connector do
       "LBLVIO-LOW PRESSURE BOILER",
       "LL1081-LOCAL LAW 10/81 - ELEVATOR",
       "LL6291-LOCAL LAW 62/91 - BOILERS",
+      "C-CONSTRUCTION",
+      "B-BOILER",
     ]
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
@@ -338,8 +367,6 @@ namespace :db_connector do
 
     end
 
-
-
   end
 
   desc "Pull in 311 complaints"
@@ -347,73 +374,61 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    indexes = Hash[
-      "call_311" => "complaint_type",
+    indexes = [
+      ["call_311", "borough"],
+      ["call_311", "complaint_type"],
     ]
 
+    puts "adding indexes"
     add_indexes(indexes)
 
-    # There are ~240 categories. We def don't care about all of them
-    # This is just a guess as to what we *do* care about.
-    three11_categories = [
-      "Maintenance or Facility",
-      "HEATING",
-      "Building/Use",
-      "APPLIANCE",
-      "BEST/Site Safety",
-      "Indoor Air Quality",
-      "Air Quality",
-      "Weatherization",
-      "Water Quality",
-      "Indoor Sewage",
-      "Boilers",
-      "Mold",
-      "UNSANITARY CONDITION",
-      "WATER LEAK",
-      "HEAT/HOT WATER",
-      "Standing Water",
-    ]
+    Complaint311::Categories.each do |category|
 
-    in_list =  "\"" + three11_categories.join("\", \"") + "\""
+      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND incident_address != '' AND complaint_type = \"" + category + "\";"
+      three11_results = conn.exec_query(sql).to_hash
 
-    sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND complaint_type IN (" + in_list + ");"
-    three11_results = conn.exec_query(sql).to_hash
+      three11_results.each do |result|
 
-    three11_results.each do |result|
+        puts "******* #{category} *******"
 
-      puts "**************"
+        # Decently working regex to get ONLY street_number
+        street_number = result['incident_address'].scan(/^[^\s]+/).join('')
+        street = result['street_name']
+        boro_id = @boros_int.key(result['borough'])
 
-      # Decently working regex to get ONLY street_number
-      street_number = result['incident_address'].scan(/^[^\s]+/).join('')
-      street = result['street_name']
-      boro_id = @boros_int.key(@boros.key(result['borough']))
-
-      puts result['borough']
-      puts boro_id
-
-      geo_data = nyc_geocode(street_number, street, boro_id)
-
-      boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
-      block = geo_data['address']['bblTaxBlock'].to_i
-      lot = geo_data['address']['bblTaxLot'].to_i
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop and not Complaint311.find_by(unique_key: result['unique_key'])
-
-        complaint = Complaint311.new do |c|
-          c.property_id = prop.id
-          c.unique_key = result['unique_key']
-          c.created_date = result['created_date']
-          c.closed_date = result['closed_date']
-          c.agency = result['agency']
-          c.complaint_type = result['complaint_type']
-          c.status = result['status']
-          c.due_date = result['due_date']
-          c.resolution_description = result['resolution_description']
+        begin
+          geo_data = nyc_geocode(street_number, street, boro_id)
+        rescue Exception => e
+          puts "GEO API error, pausing && continuing"
+          sleep(1)
+          next
         end
 
-        complaint.save
+        boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
+        block = geo_data['address']['bblTaxBlock'].to_i
+        lot = geo_data['address']['bblTaxLot'].to_i
+
+        prop = Property.find_by(borough: boro, block: block, lot: lot)
+
+        if prop and not Complaint311.find_by(unique_key: result['unique_key'])
+
+          puts "Found property, adding complaint"
+
+          complaint = Complaint311.new do |c|
+            c.property_id = prop.id
+            c.unique_key = result['unique_key']
+            c.created_date = result['created_date']
+            c.closed_date = result['closed_date']
+            c.agency = result['agency']
+            c.complaint_type = result['complaint_type']
+            c.status = result['status']
+            c.due_date = result['due_date']
+            c.resolution_description = result['resolution_description']
+          end
+
+          complaint.save
+
+        end
 
       end
 

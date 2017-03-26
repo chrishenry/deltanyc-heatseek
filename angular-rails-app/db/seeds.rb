@@ -1,3 +1,5 @@
+require 'ffaker'
+
 50.times do
      Property.create(
         street_address: FFaker::AddressUS.street_address,
@@ -6,8 +8,8 @@
         zipcode: FFaker::AddressUS.zip_code,
         total_units: rand(5..200),
         rent_stabilized: FFaker::Boolean.random,
-      ) 
-end 
+      )
+end
 
 50.times do
      Owner.create(
@@ -17,19 +19,19 @@ end
         city: FFaker::AddressUS.city,
         state: FFaker::AddressUS.state_abbr,
         zipcode: FFaker::AddressUS.zip_code
-      ) 
-end 
+      )
+end
 
 50.times do
     OwnerProperty.create(
-      owner_id: rand(1..20),  
+      owner_id: rand(1..20),
       property_id: rand(1..20)
       )
   end
 
 
   Property.create(
-    street_address: '10 West 109th St.',
+    street_address: '10 West 109th Street',
     city: 'New York',
     state: 'NY',
     zipcode: '10025',
@@ -37,4 +39,9 @@ end
     rent_stabilized: FFaker::Boolean.random,
     )
 
-
+2.times do
+    OwnerProperty.create(
+      owner_id: rand(1..20),
+      property_id: 16055
+      )
+  end

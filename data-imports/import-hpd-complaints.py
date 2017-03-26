@@ -16,7 +16,7 @@ logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)
 log = logging.getLogger(__name__)
 
 """
-HPD Buildings import
+HPD Complaints import
 """
 
 description = "HPD Complaints"
