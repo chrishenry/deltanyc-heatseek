@@ -19,12 +19,22 @@ angular
         .state('owner', {
           url: '/owners/:id',
           templateUrl: 'owner/owner.html',
-          controller: 'OwnerController as vm'
+          controller: 'OwnerController as vm',
+          resolve: {
+            owner: function (OwnerService, $stateParams) {
+            return OwnerService.getOwner($stateParams.id);
+          }
+         }
         })
         .state('property', {
           url: '/properties/:id',
           templateUrl: 'property/property.html',
-          controller: 'PropertyController as vm'
+          controller: 'PropertyController as vm',
+          resolve: {
+            property: function (PropertyService, $stateParams) {
+            return PropertyService.getProperty($stateParams.id);
+          }
+         }
         });
 
 
