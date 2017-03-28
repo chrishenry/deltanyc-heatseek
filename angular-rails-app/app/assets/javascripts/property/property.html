@@ -348,13 +348,20 @@
                 <th>Status</th>
                 <th>Judgement</th>
               </tr>
-              <tr ng-repeat="l in vm.data.litigations">
+              <tr dir-paginate="l in vm.data.litigations | itemsPerPage:4">
                 <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
                 <td>{{ l.case_status }}</td>
                 <td>{{ l.case_judgement }}</td>
               </tr>
             </table>
+              <div class="text-center">
+                <dir-pagination-controls
+                max-size="4"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
