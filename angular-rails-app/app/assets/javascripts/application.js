@@ -20,4 +20,5 @@
 //= require angular-google-places-autocomplete
 //= require AngularSlideables/angularSlideables
 //= require angular-spinners
+//= require dirPagination
 //= require_tree .
