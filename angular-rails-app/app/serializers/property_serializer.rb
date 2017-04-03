@@ -33,23 +33,23 @@ class PropertySerializer < ActiveModel::Serializer
   end
 
   has_many :litigations do
-    @object.litigations.limit(5)
+    @object.litigations.limit(30)
   end
 
   has_many :dob_violations do
-    @object.dob_violations.limit(5)
+    @object.dob_violations.limit(30)
   end
 
   has_many :dob_permits do
-    @object.dob_permits.limit(5)
+    @object.dob_permits.limit(30)
   end
 
   has_many :complaint311s do
-    @object.complaint311s.limit(5)
+    @object.complaint311s.limit(30)
   end
 
   has_many :hpd_complaints do
-    @object.hpd_complaints.where(status: 'OPEN').limit(5)
+    @object.hpd_complaints.where(status: 'OPEN').limit(30)
   end
 
 end
