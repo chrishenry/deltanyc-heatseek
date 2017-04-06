@@ -181,7 +181,7 @@ namespace :db_connector do
         next
       end
 
-      boro = @boros_int[complaint['boroughid']]
+      boro = complaint['boroughid']
       block = complaint['block']
       lot = complaint['lot']
 
@@ -229,7 +229,7 @@ namespace :db_connector do
         next
       end
 
-      boro = @boros_int[litigation['boroid']]
+      boro = litigation['boroid']
       block = litigation['block']
       lot = litigation['lot']
 
@@ -271,12 +271,14 @@ namespace :db_connector do
     sql = "SELECT * FROM dob_permits"
     permits = conn.exec_query(sql).to_hash
 
-
     puts "Found #{permits.length} permits"
 
-    permits.each do |permit|
+    permits.each_with_index do |permit, idx|
 
-      boro = @boros.key(permit['borough'])
+      print "Saving #{idx}/#{permits.length} \r"
+      $stdout.flush
+
+      boro = permit['borough']
       block = permit['block'].to_i
       lot = permit['lot'].to_i
 
@@ -303,7 +305,6 @@ namespace :db_connector do
       end
 
       permit.save
-      puts "Saved permit"
 
     end
 
@@ -313,6 +314,12 @@ namespace :db_connector do
   task dob_violations: :environment do
 
     conn = ActiveRecord::Base.connection
+
+    puts "Adding indexes..."
+    indexes = [
+      ["dob_violations", "violation_type"]
+    ]
+    add_indexes(indexes)
 
     v_types = [
       "IMD-IMMEDIATE EMERGENCY",
@@ -332,17 +339,21 @@ namespace :db_connector do
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
+    puts "Pulling dob violations..."
     sql = "SELECT * FROM dob_violations WHERE violation_type IN (#{in_list})"
     violation_results = conn.exec_query(sql).to_hash
 
-    violation_results.each do |violation|
+    violation_results.each_with_index do |violation,idx|
+
+      print "Saving #{idx}/#{violation_results.length} \r"
+      $stdout.flush
 
       if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
         puts "Exists, skipping"
         next
       end
 
-      boro = @boros_int[violation['boro'].to_i]
+      boro = violation['boro']
       block = violation['block'].to_i
       lot = violation['lot'].to_i
 
@@ -362,7 +373,6 @@ namespace :db_connector do
         d.disposition_comments = violation['disposition_comments']
       end
 
-      puts "Saved violation"
       violation.save
 
     end
@@ -394,7 +404,7 @@ namespace :db_connector do
         # Decently working regex to get ONLY street_number
         street_number = result['incident_address'].scan(/^[^\s]+/).join('')
         street = result['street_name']
-        boro_id = @boros_int.key(result['borough'])
+        boro_id = result['borough']
 
         begin
           geo_data = nyc_geocode(street_number, street, boro_id)
