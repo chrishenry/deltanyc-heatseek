@@ -51,12 +51,43 @@ def clean_boro(table, column, replacements):
     """
     return '''
     UPDATE {table} SET {column} = preg_replace('/{mn}/i', 'MN', {column});
-    UPDATE {table} SET {column} = preg_replace('/{bk}/i', 'BK', {column});
-    UPDATE {table} SET {column} = preg_replace('/{si}/i', 'SI', {column});
-    UPDATE {table} SET {column} = preg_replace('/{qn}/i', 'QN', {column});
     UPDATE {table} SET {column} = preg_replace('/{bx}/i', 'BX', {column});
+    UPDATE {table} SET {column} = preg_replace('/{bk}/i', 'BK', {column});
+    UPDATE {table} SET {column} = preg_replace('/{qn}/i', 'QN', {column});
+    UPDATE {table} SET {column} = preg_replace('/{si}/i', 'SI', {column});
     '''.format(table=table, column=column, mn=replacements["mn"], bk=replacements["bk"],
             si=replacements["si"], qn=replacements["qn"], bx=replacements["bx"])
+
+def add_boroid(table, column):
+    """ Returns a SQL statement that adds a column for boro IDs (used in BBL) and
+        populates via conversion from a cleaned boro column.
+    """
+    columnid = column + 'id'
+    sql = ''
+    lookup_table = 'boroid_lookup'
+    if not table_exists(lookup_table):
+        sql = sql + """
+        CREATE TABLE {table} (
+            boro_code varchar(2),
+            boro_id int,
+            PRIMARY KEY(boro_code)
+        );
+        INSERT INTO {table} VALUES ('MN', 1);
+        INSERT INTO {table} VALUES ('BX', 2);
+        INSERT INTO {table} VALUES ('BK', 3);
+        INSERT INTO {table} VALUES ('QN', 4);
+        INSERT INTO {table} VALUES ('SI', 5);
+        """.format(table=lookup_table)
+    if not column_exists(table, 'bbl'):
+        sql = sql + """
+        ALTER TABLE {table} ADD COLUMN {columnid} bigint(13) NULL DEFAULT NULL;
+        """.format(table=table, columnid=columnid)
+
+    return sql + '''
+    UPDATE {table}
+        INNER JOIN {lookup_table} ON {table}.{column} = {lookup_table}.boro_code
+        SET {table}.{columnid} = {lookup_table}.boro_id;
+    '''.format(table=table, column=column, columnid=columnid, lookup_table=lookup_table)
 
 def make_primary(table, column, data_type="INT"):
     """ Returns an SQL statement that makes a given column the primary key.
@@ -68,8 +99,23 @@ def make_index(table, column):
     """
     return "ALTER TABLE {} ADD INDEX {};".format(table, column)
 
-def column_exists(table, column, schema='deltanyc'):
+def table_exists(table, schema='deltanyc'):
+    """ Checks if a given table exists in the database
+    """
+    sql = """
+        SELECT * FROM information_schema.tables WHERE
+            table_schema = '{schema}'
+            AND table_name = '{table}'
+            LIMIT 1;
+        """.format(schema=schema, table=table)
 
+    result = connect().execute(sql)
+
+    return (result.rowcount == 1)
+
+def column_exists(table, column, schema='deltanyc'):
+    """ Checks if a given column exists in the table.
+    """
     sql = """
         SELECT column_name FROM information_schema.columns WHERE
             table_schema = '{schema}'
@@ -82,7 +128,15 @@ def column_exists(table, column, schema='deltanyc'):
     return (result.rowcount == 1)
 
 def clean_bbl(table, boro, block, lot):
-    sql = '''
+    """ Combines together boro, block and lot codes in separate columns into a
+        single BBL column.
+    """
+    sql = ''
+    if not column_exists(table, 'bbl'):
+        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;".format(
+                table=table, boro=boro, block=block, lot=lot)
+
+    return sql + '''
     UPDATE {table} SET {block} = REPLACE({block}, ' ', 0);
     UPDATE {table} SET {block} = REPLACE({block}, '`', '');
     UPDATE {table} SET {lot} = REPLACE({lot}, ' ', 0);
@@ -91,11 +145,6 @@ def clean_bbl(table, boro, block, lot):
             WHERE {boro} REGEXP '^[0-9]+$' AND {block} REGEXP '^[0-9]+$' AND {lot} REGEXP '^[0-9]+$';
     ALTER TABLE {table} ADD INDEX (bbl);
     '''.format(table=table, boro=boro, block=block, lot=lot)
-
-    if not column_exists(table, 'bbl'):
-        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;".format(table=table, boro=boro, block=block, lot=lot) + sql
-
-    return sql
 
 def run_sql(sql, test_mode, debug=True):
     """ Runs SQL commands given in the provided string.
