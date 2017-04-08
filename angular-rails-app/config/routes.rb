@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   resources :litigations, only: :index do
     get 'search', on: :collection
   end
+end
 
 
 
