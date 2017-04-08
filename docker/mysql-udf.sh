@@ -18,6 +18,12 @@ done
 
 echo "MySQL is available..."
 
-$MYSQL_CMD deltanyc < $FILE
+echo "Checking if functions exist..."
+if $MYSQL_CMD -e "select LIB_MYSQLUDF_PREG_INFO();"; then
+  echo "Functions already added"
+else
+  echo "Adding functions..."
+  $MYSQL_CMD deltanyc < $FILE
+  echo "UDFs added successfully"
+fi
 
-echo "UDFs added successfully"
