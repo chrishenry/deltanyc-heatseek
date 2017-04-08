@@ -7,29 +7,18 @@ Rails.application.routes.draw do
 
   resources :owners  
 
-  resources :complaint311s, only: :index do
-    get 'search', on: :collection
-  end
+  resources :complaint311s, only: :index 
 
-  resources :dob_permits, only: :index do
-    get 'search', on: :collection
-  end
+  resources :dob_permits, only: :index 
 
-  resources :dob_violations, only: :index do
-    get 'search', on: :collection
-  end
+  resources :dob_violations, only: :index 
 
-  resources :hpd_complaints, only: :index do
-    get 'search', on: :collection
-  end
+  resources :hpd_complaints, only: :index 
 
-  resources :hpd_violations, only: :index do
-    get 'search', on: :collection
-  end
+  resources :hpd_violations, only: :index 
 
-  resources :litigations, only: :index do
-    get 'search', on: :collection
-  end
+  resources :litigations, only: :index 
+  
 end
 
 
