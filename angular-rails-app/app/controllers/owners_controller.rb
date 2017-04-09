@@ -6,9 +6,10 @@ class OwnersController < ApplicationController
     if params[:name]       
       @owners = Owner.where('name LIKE :input OR corporation_name LIKE :input ', input: "%#{params[:name]}%").limit(6)
     else
-      @owners = Owner.all
+      @owners = Owner.paginate(:page => params[:page])
     end
-    render json: @owners, status: 200
+    render json: @owners, adapter: :json, 
+    meta: meta_attributes(@owners),status: 200
   end
 
 
