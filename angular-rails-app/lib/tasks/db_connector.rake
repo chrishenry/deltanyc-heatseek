@@ -52,7 +52,7 @@ namespace :db_connector do
     # Load addresses from HPD.
     print "Copying from hpd_buildings..."
     sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(streetname), boro, 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+    SELECT CONCAT(TRIM(housenumber), ' ', TRIM(streetname)), boro, 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
     conn.execute(sql)
     puts "done"
 
@@ -66,7 +66,7 @@ namespace :db_connector do
     print "Expanding city from 2 letter boro code..."
     @boros.each do |key, value|
       sql = "UPDATE r_properties SET city = '#{value.titleize}' WHERE city = '#{key}';"
-      print sql
+      puts sql
       conn.execute(sql)
     end
     puts "done."
