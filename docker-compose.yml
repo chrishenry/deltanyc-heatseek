@@ -50,3 +50,22 @@ services:
       - db
     links:
       - db:db
+  luigi:
+    build:
+      context: .
+      dockerfile: Dockerfile.luigi
+    env_file: .env
+    # 2G Limit
+    mem_limit: 2147483648
+    environment:
+      MYSQL_HOST: db
+    volumes:
+      - ./data-imports/:/root/data-imports/
+      - ./data/:/root/heatseek/
+      - ./luigi/:/root/luigi/
+    ports:
+      - "8082:8082"  # default luigid port
+    depends_on:
+      - db
+    links:
+      - db:db

@@ -1,0 +1,20 @@
+FROM python:2.7
+
+MAINTAINER Chris Henry <henry.christopher@gmail.com>
+
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y --force-yes libmysqlclient-dev
+
+RUN pip install --upgrade pip
+
+COPY data-imports/requirements.txt /root/requirements.txt
+RUN pip --no-cache-dir install -r /root/requirements.txt
+
+ENV TINI_VERSION v0.14.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
+COPY luigi/start.sh /usr/local/bin
+CMD ["start.sh"]

@@ -19,7 +19,8 @@ Before using any of our Docker images, you'll need to create a .env file. The re
 
 * db: The MySQL database storing NYC city data both in semi-raw form and joined into a model for the Rails website. The database can be examined with `docker exec deltanycheatseek_db_1 mysql -u <user from .env> -p <password from .env>`. Local clients can connect at 127.0.0.1:3306 ([localhost will not work](http://stackoverflow.com/a/32361238/103315)).
 * db-udf: Installs [user-defined functions for making regular expression queries](https://github.com/mysqludf/lib_mysqludf_preg) required for data-cleaning into MySQL. Only needs to be run once.
-* nb: Installs Python and starts a Jupyter notebook at [localhost:8888](http://localhost:8888). Can also be used to run the data-import scripts: run `docker exec -it deltanycheatseek_nb_1 /bin/bash`, then execute the scripts
+* luigi: Runs all import scripts using [Luigi](http://luigi.readthedocs.io). Will skip imports already run by the container. Imports can be run in parallel by adjusting the LUIGI_WORKERS parameter in your .env file.
+* nb: Installs Python and starts a Jupyter notebook at [localhost:8888](http://localhost:8888).
 * web: Installs Ruby on Rails and starts a server at [localhost:3000](http://localhost:3000). Like the data-import scripts, you can conect to a running instance with `docker exec -it deltanycheattseek_web_1 /bin/bash` to run rake tasks. To view a demo of the tool, connect to the instance, then run `rake db:setup`. In the demo, fake data will be provided for "10 West 109th Street".
 
 Once all the images are built and run once, only the nb or web images need to be explicitly lanched via docker-compose (eg. `docker-compose up web`) depending on the type of work you plan to do. Launching either will also launch the db container.
