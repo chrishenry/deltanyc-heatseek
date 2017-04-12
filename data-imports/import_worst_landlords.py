@@ -31,12 +31,12 @@ def main():
     args = get_common_arguments('Import worst landlords list.')
 
     if not args.SKIP_IMPORT:
-        import_data(args)
+        import_csv(args)
 
     sql_cleanup(args)
 
 
-def import_data(args):
+def import_csv(args):
     if not os.path.isfile(data_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing worst landlords list")
         r = requests.get("http://landlordwatchlist.com/search.js")

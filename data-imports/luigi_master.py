@@ -40,7 +40,7 @@ class HeatseekDB(luigi.contrib.mysqldb.MySqlTarget):
         super(HeatseekDB, self).__init__(
                 os.environ['MYSQL_HOST'], os.environ['MYSQL_DATABASE'],
                 os.environ['MYSQL_USER'], os.environ['MYSQL_PASSWORD'],
-                'imports', update_id)
+                table, update_id)
 
 class RunImportScript(luigi.Task):
     module = ModuleParameter()
