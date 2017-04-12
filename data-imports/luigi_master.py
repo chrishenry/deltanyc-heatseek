@@ -52,7 +52,7 @@ class RunImportScript(luigi.Task):
     def run(self):
         self.module.import_csv(standard_args)
         if not self.skip_sql_cleanup:
-            module.sql_cleanup(standard_args)
+            self.module.sql_cleanup(standard_args)
         self.output().create_marker_table()
         self.output().touch()
 

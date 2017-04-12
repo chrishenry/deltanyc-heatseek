@@ -61,6 +61,11 @@ services:
       - "8082:8082"  # default luigid port
     volumes:
       - ./luigi:/root/
+    # Link to db for task history
+    depends_on:
+      - db
+    links:
+      - db
   luigi-import-worker:
     build:
       context: .
