@@ -3,7 +3,6 @@ FROM mysql:latest
 RUN apt-get update && apt-get install -y wget ca-certificates && \
     apt-get clean && apt-get purge
 
-
 COPY docker/mysql-udf.sh /root/
 
 CMD /root/mysql-udf.sh
