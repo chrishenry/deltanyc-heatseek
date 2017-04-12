@@ -49,8 +49,19 @@ services:
     depends_on:
       - db
     links:
-      - db:db
-  luigi:
+      - db
+  luigid:
+    build:
+      context: .
+      dockerfile: Dockerfile.luigid
+    env_file: .env
+    # 2G Limit
+    mem_limit: 2147483648
+    ports:
+      - "8082:8082"  # default luigid port
+    volumes:
+      - ./luigi:/root/
+  luigi-import-worker:
     build:
       context: .
       dockerfile: Dockerfile.luigi
@@ -62,10 +73,9 @@ services:
     volumes:
       - ./data-imports/:/root/data-imports/
       - ./data/:/root/heatseek/
-      - ./luigi/:/root/luigi/
-    ports:
-      - "8082:8082"  # default luigid port
     depends_on:
       - db
+      - luigid
     links:
-      - db:db
+      - db
+      - luigid
