@@ -93,6 +93,7 @@ ENV/
 *csv
 *pdf
 *zip
+data/*
 mysql-data/*
 !mysql-data/.gitkeep
 
