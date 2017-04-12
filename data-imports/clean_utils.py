@@ -138,13 +138,12 @@ def clean_bbl(table, boro, block, lot):
 
     return sql + '''
     UPDATE {table} SET {block} = REPLACE({block}, ' ', 0);
-    UPDATE {table} SET {block} = REPLACE({block}, '`', '');
     UPDATE {table} SET {block} = preg_replace('/[^0-9]/', '', {block});
     UPDATE {table} SET {lot} = REPLACE({lot}, ' ', 0);
     UPDATE {table} SET {lot} = preg_replace('/[^0-9]/', '', {lot});
+    UPDATE {table} SET {boro} = preg_replace('/[^0-9]/', '', {boro});
     UPDATE {table} SET bbl =
-            concat(trim({boro}), trim(LPAD({block}, 5, '0')), trim(LPAD({lot}, 4, '0')))
-            WHERE {boro} REGEXP '^[0-9]+$' AND {block} REGEXP '^[0-9]+$' AND {lot} REGEXP '^[0-9]+$';
+            concat(trim({boro}), trim(LPAD({block}, 5, '0')), trim(LPAD({lot}, 4, '0')));
     ALTER TABLE {table} ADD INDEX (bbl);
     '''.format(table=table, boro=boro, block=block, lot=lot)
 
