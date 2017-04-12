@@ -1,5 +1,6 @@
 from collections import namedtuple
 import copy
+import importlib
 import import_311
 import import_aep
 import import_dob_permits
@@ -24,6 +25,11 @@ standard_args = CmdArgsClass(TEST_MODE=False, BUST_DISK_CACHE=False,
         dataset='filtered')
 
 class ModuleParameter(luigi.Parameter):
+    """ Luigi parameter of type Python module.
+    """
+    def parse(self, x):
+        return importlib.import_module(x)
+
     def serialize(self, x):
         return x.__name__
 
