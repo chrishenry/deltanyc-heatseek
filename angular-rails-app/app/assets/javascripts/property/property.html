@@ -380,7 +380,10 @@
                 <th>Status</th>
                 <th>Judgement</th>
               </tr>
-              <tr dir-paginate="l in vm.data.litigations | itemsPerPage:10" pagination-id="litigations">
+              <tr dir-paginate="l in vm.litigations | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalLitigations"
+              current-page="vm.litigationPage"
+              pagination-id="litigations">
                 <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
                 <td>{{ l.case_status }}</td>
@@ -390,7 +393,8 @@
               <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="litigations"
-                max-size="4"
+                on-page-change="vm.litigationsPageChanged(newPageNumber)"
+                max-size="20"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
