@@ -120,7 +120,10 @@
                 <th>Status Date</th>
                 <th>Certified Date</th>
               </tr>
-              <tr dir-paginate="v in vm.data.hpd_violations | itemsPerPage:10" pagination-id="hpd_violations">
+              <tr dir-paginate="v in vm.hpdViolations | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalHpdViolations"
+              current-page="vm.hpdViolationsPage"
+              pagination-id="hpd_violations">
                 <td>{{ v.inspection_date }}</td>
                 <td>{{ v.violation_class }}</td>
                 <td>{{ v.order_number }}</td>
@@ -134,7 +137,8 @@
             <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="hpd_violations"
-                max-size="4"
+                on-page-change="vm.hpdViolationsPageChanged(newPageNumber)"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
@@ -183,7 +187,10 @@
                 <th>Status ID</th>
                 <th>Status Date</th>
               </tr>
-              <tr dir-paginate="c in vm.data.hpd_complaints | itemsPerPage:10" pagination-id="hpd_complaints">
+              <tr dir-paginate="c in vm.hpdComplaints | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalHpdComplaints"
+              current-page="vm.hpdComplaintsPage"
+              pagination-id="hpd_complaints">
                 <td>{{ c.received_date }}</td>
                 <td>{{ c.code_id }}</td>
                 <td>{{ c.apartment }}</td>
@@ -198,7 +205,8 @@
             <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="hpd_complaints"
-                max-size="4"
+                on-page-change="vm.hpdComplaintsPageChanged(newPageNumber)"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
@@ -257,7 +265,10 @@
                 <th>Building<br>Type</th>
                 <th>Work<br>Type</th>
               </tr>
-              <tr dir-paginate="d in vm.data.dob_permits | itemsPerPage:10" pagination-id="dob_permits">
+              <tr dir-paginate="d in vm.dobPermits | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalDobPermits"
+              current-page="vm.dobPermitsPage"
+              pagination-id="dob_permits">
                 <td>{{ d.job_num }}</td>
                 <td>{{ d.job_type }}</td>
                 <td>{{ d.job_start_date }}</td>
@@ -273,7 +284,8 @@
             <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="dob_permits"
-                max-size="4"
+                on-page-change="vm.dobPermitsPageChanged(newPageNumber)"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
@@ -314,7 +326,10 @@
                 <th>Disposition Date</th>
                 <th>Disposition Comments</th>
               </tr>
-              <tr dir-paginate="v in vm.data.dob_violations | itemsPerPage:10" pagination-id="dob_violations">
+              <tr dir-paginate="v in vm.dobViolations | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalDobViolations"
+              current-page="vm.dobViolationsPage"
+              pagination-id="dob_violations">
                 <td>{{ v.issue_date }}</td>
                 <td>{{ v.violation_type }}</td>
                 <td>{{ v.violation_category }}</td>
@@ -325,7 +340,8 @@
             <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="dob_violations"
-                max-size="4"
+                on-page-change="vm.dobViolationsPageChanged(newPageNumber)"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
@@ -382,7 +398,7 @@
               </tr>
               <tr dir-paginate="l in vm.litigations | itemsPerPage:vm.itemsPerPage" 
               total-items="vm.totalLitigations"
-              current-page="vm.litigationPage"
+              current-page="vm.litigationsPage"
               pagination-id="litigations">
                 <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
@@ -394,7 +410,7 @@
                 <dir-pagination-controls
                 pagination-id="litigations"
                 on-page-change="vm.litigationsPageChanged(newPageNumber)"
-                max-size="20"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
@@ -431,13 +447,13 @@
       </div>
       <div class="row" ng-if="vm.data.complaint311s_count">
         <div class="col-sm-10 chart">
-        <h4 class="show-hide" slide-toggle="#complaints311"
-        data-ng-init="complaints311=false"
-          data-ng-click="complaints311=!complaints311">
-          Details <i class="fa fa-caret-down" aria-hidden="true" data-ng-class="{'fa fa-caret-up': complaints311, 'fa fa-caret-down' : !complaints311}"></i>
+        <h4 class="show-hide" slide-toggle="#complaint311s"
+        data-ng-init="complaint311s=false"
+          data-ng-click="complaint311s=!complaint311s">
+          Details <i class="fa fa-caret-down" aria-hidden="true" data-ng-class="{'fa fa-caret-up': complaint311s, 'fa fa-caret-down' : !complaint311s}"></i>
         </h4>
 
-        <div class="table-responsive slideable" id="complaints311">
+        <div class="table-responsive slideable" id="complaint311s">
         <h4 class="table-title">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
@@ -449,7 +465,10 @@
                 <th>Closed Date</th>
                 <th>Resoutions Description</th>
               </tr>
-              <tr dir-paginate="c in vm.data.complaint311s | itemsPerPage:10" pagination-id="complaints311">
+              <tr dir-paginate="c in vm.complaint311s | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.totalComplaint311s"
+              current-page="vm.complaint311sPage"
+              pagination-id="complaint311s">
                 <td>{{ c.created_date }}</td>
                 <td>{{ c.complaint_type }}</td>
                 <td>{{ c.status }}</td>
@@ -462,7 +481,8 @@
             <div class="text-center">
                 <dir-pagination-controls
                 pagination-id="complaints311"
-                max-size="4"
+                on-page-change="vm.complaint311sPageChanged(newPageNumber)"
+                max-size="10"
                 direction-links="true"
                 boundary-links="true" >
               </dir-pagination-controls>
