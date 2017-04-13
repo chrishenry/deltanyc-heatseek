@@ -9,8 +9,6 @@ sed -i 's/USE mysql;//g' $FILE
 
 MYSQL_CMD="mysql -h $MYSQL_HOST -u root -p$MYSQL_ROOT_PASSWORD"
 
-echo $MYSQL_CMD
-
 until $MYSQL_CMD -e ";"; do
   >&2 echo "MySQL is unavailable - sleeping"
   sleep 1
@@ -18,6 +16,15 @@ done
 
 echo "MySQL is available..."
 
-$MYSQL_CMD deltanyc < $FILE
+echo "Checking if functions exist..."
+exists=`$MYSQL_CMD -N -e "select LIB_MYSQLUDF_PREG_INFO();" 2>/dev/null` || true
 
-echo "UDFs added successfully"
+# if exists command came back empty
+if [[ -z $exists ]]; then
+  echo "Adding functions..."
+  $MYSQL_CMD deltanyc < $FILE
+  echo "UDFs added successfully"
+else
+  echo "Functions already added"
+fi
+
