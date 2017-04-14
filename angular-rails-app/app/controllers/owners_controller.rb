@@ -4,7 +4,8 @@ class OwnersController < ApplicationController
 
   def index
     if params[:name]       
-      @owners = Owner.where('name LIKE :input OR corporation_name LIKE :input ', input: "%#{params[:name]}%").limit(6)
+      @owners = Owner.where('name LIKE :input OR corporation_name LIKE :input ', 
+        input: "%#{params[:name]}%").paginate(:page => params[:page])
     else
       @owners = Owner.paginate(:page => params[:page])
     end

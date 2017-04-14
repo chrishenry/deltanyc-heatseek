@@ -81,12 +81,12 @@ function HomeController($scope, HomeService, $state, spinnerService) {
  vm.selectedOwner = ''
 
   vm.getOwners = function(input) {
-    var limit = 6;
+    var limit = 10;
     return HomeService.getOwners(input).then(function(res){
         var owners = [];
-        var lim = Math.min(limit,res.data.length);
+        var lim = Math.min(limit,res.data.owners.length);
         for (var i = 0; i < lim; i++) {
-          owners.push(res.data[i]);
+          owners.push(res.data.owners[i]);
         }
         return owners;
     });
