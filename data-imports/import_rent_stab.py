@@ -103,12 +103,12 @@ def main():
     args = get_common_arguments('Import joined Rent Stabilization data.')
 
     if not args.SKIP_IMPORT:
-        csv_import(args)
+        import_csv(args)
 
     sql_cleanup(args)
 
 
-def csv_import(args):
+def import_csv(args):
     csv_dir = os.path.join(BASE_DIR, table_name)
     mkdir_p(csv_dir)
 
