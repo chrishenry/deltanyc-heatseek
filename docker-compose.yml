@@ -69,7 +69,7 @@ services:
   luigi-import-worker:
     build:
       context: .
-      dockerfile: Dockerfile.luigi
+      dockerfile: Dockerfile.luigi-import-worker
     env_file: .env
     # 2G Limit
     mem_limit: 2147483648
