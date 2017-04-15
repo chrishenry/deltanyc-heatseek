@@ -7,7 +7,7 @@ PropertyController.$inject = ['PropertyService','property'];
 
 function PropertyController(PropertyService, property) {
   var vm = this;  
-  vm.data = property.data;
+  vm.property = property.data;
   vm.itemsPerPage = 10;
 
   vm.tables = {
@@ -27,7 +27,7 @@ function PropertyController(PropertyService, property) {
   }
 
   vm.getTableInfo = function(pageNumber, tableName) {
-    return PropertyService.getTableInfo(vm.data.id, pageNumber, vm.tables[tableName]['urlResource'])    
+    return PropertyService.getTableInfo(vm.property.id, pageNumber, vm.tables[tableName]['urlResource'])    
     .then(function(result) {
       var underscoreName = vm.tables[tableName]['urlResource']; //need for Rails endpoints
       vm.tables[tableName]['data'] = result.data[underscoreName]; 

@@ -10,7 +10,7 @@
     <div class="container">
       <h2 class="page-title">BUILDING</h2>
         <hr class="featurette-divider">
-        <h2>{{vm.data.street_address | titleCase}}</h2>
+        <h2>{{vm.property.street_address | titleCase}}</h2>
         <br>
     </div>
 </section>
@@ -27,20 +27,20 @@
             <table class="table">
               <tr>
                 <td class="R">Address</td>
-                <td class="L">{{vm.data.street_address | titleCase}}, {{vm.data.zipcode}}</td>
+                <td class="L">{{vm.property.street_address | titleCase}}, {{vm.property.zipcode}}</td>
                 <td class="R">BBL</td>
-                <td class="L">{{vm.data.expand_borough | titleCase}}, {{vm.data.block}}, {{vm.data.lot}}</td>
+                <td class="L">{{vm.property.expand_borough | titleCase}}, {{vm.property.block}}, {{vm.property.lot}}</td>
 
               </tr>
               <tr>
                 <td class="R">Rent Stabilized</td>
-                <td class="L">{{vm.data.rent_stabilized || 'Unknown'}}</td>
+                <td class="L">{{vm.property.rent_stabilized || 'Unknown'}}</td>
                 <td class="R">BIN</td>
-                <td class="L">{{vm.data.bin}}</td>
+                <td class="L">{{vm.property.bin}}</td>
               </tr>
               <tr>
                 <td class="R">Total Units in Building</td>
-                <td class="L">{{vm.data.total_units}}</td>
+                <td class="L">{{vm.property.total_units}}</td>
                 <td class="R"></td>
                 <td class="L"></td>
               </tr>
@@ -64,7 +64,7 @@
             <h4 class="pull-right owners-heading">Owners</h4>
         </div>
         <div class="col-xs-4 list-items">
-          <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
+          <div ng-repeat="owner in vm.property.owners | orderBy: 'name'">
             <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
           <br><br><br>
@@ -87,7 +87,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">{{ vm.data.hpd_violations_count }}</td>
+                <td class="L">{{ vm.property.hpd_violations_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
@@ -98,7 +98,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.hpd_violations_count">
+      <div class="row" ng-if="vm.property.hpd_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_violations"
           data-ng-init="hpd_violations=false"
@@ -154,11 +154,11 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">{{ vm.data.hpd_open_complaints_count }}</td>
+                <td class="L">{{ vm.property.hpd_open_complaints_count }}</td>
               </tr>
               <tr>
                 <td class="R">Total Complaints</td>
-                <td class="L">{{ vm.data.hpd_complaints_count }}</td>
+                <td class="L">{{ vm.property.hpd_complaints_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Complaints</td>
@@ -169,7 +169,7 @@
         </div>
       </div>
 
-      <div class="row" ng-if="vm.data.hpd_complaints_count">
+      <div class="row" ng-if="vm.property.hpd_complaints_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_complaints"
           data-ng-init="hpd_complaints=false"
@@ -234,7 +234,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Permits</td>
-                <td class="L">{{ vm.data.dob_permits_count }}</td>
+                <td class="L">{{ vm.property.dob_permits_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -245,7 +245,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.dob_permits_count">
+      <div class="row" ng-if="vm.property.dob_permits_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_permits"
           data-ng-init="dob_permits=false"
@@ -305,14 +305,14 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Violations</td>
-                <td class="L">{{ vm.data.dob_violations_count }}</td>
+                <td class="L">{{ vm.property.dob_violations_count }}</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
 
-      <div class="row" ng-if="vm.data.dob_violations_count">
+      <div class="row" ng-if="vm.property.dob_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_violations"
           data-ng-init="dob_violations=false"
@@ -371,7 +371,7 @@
             <table class="table">
               <tr>
                 <td class="R">Cases</td>
-                <td class="L">{{ vm.data.litigations_count}}</td>
+                <td class="L">{{ vm.property.litigations_count}}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -382,7 +382,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.litigations_count">
+      <div class="row" ng-if="vm.property.litigations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#litigations"
           data-ng-init="litigations=false"
@@ -438,7 +438,7 @@
             <table class="table">
               <tr>
                 <td class="R">Complaints</td>
-                <td class="L">{{ vm.data.complaint311s_count }}</td>
+                <td class="L">{{ vm.property.complaint311s_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -449,7 +449,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.complaint311s_count">
+      <div class="row" ng-if="vm.property.complaint311s_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#complaint311s"
         data-ng-init="complaint311s=false"
