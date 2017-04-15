@@ -11,44 +11,20 @@ function PropertyController(PropertyService, property) {
   vm.itemsPerPage = 10;
 
   vm.tables = {
-    'complaint311s': {
-      'data': [],
-      'urlResource': 'complaint311s',
-      'total': undefined,
-      'page': 1
-    },
-    'dobPermits': {
-      'data': [],
-      'urlResource': 'dob_permits',
-      'total': undefined,
-      'page': 1
-    },
-    'dobViolations': {
-      'data': [],
-      'urlResource': 'dob_violations',
-      'total': undefined,
-      'page': 1
-    },
-    'hpdComplaints': {
-      'data': [],
-      'urlResource': 'hpd_complaints',
-      'total': undefined,
-      'page': 1
-    },
-    'hpdViolations': {
-      'data': [],
-      'urlResource': 'hpd_violations',
-      'total': undefined,
-      'page': 1
-    },
-    'litigations': {
-      'data': [],
-      'urlResource': 'litigations',
-      'total': undefined,
-      'page': 1
-    }    
-  }; 
+    'complaint311s' : new Table("complaint311s"),
+    'dobPermits' : new Table("dob_permits"),
+    'dobViolations' : new Table("dob_violations"),
+    'hpdComplaints' : new Table("hpd_complaints"),
+    'hpdViolations' : new Table("hpd_violations"),
+    'litigations' : new Table("litigations")
+  }
 
+  function Table(urlResource) {
+    this.data = [];
+    this.urlResource = urlResource;
+    this.total = undefined;
+    this.page = 1;
+  }
 
   function getTableInfo(pageNumber, resource) {
     return PropertyService.getTableInfo(vm.data.id, pageNumber, tables[resource]['urlResource'])    
@@ -66,5 +42,7 @@ function PropertyController(PropertyService, property) {
     getTableInfo(1, "hpdComplaints")
     getTableInfo(1, "hpdViolations")
     getTableInfo(1, "litigations")
+
+  
 }
 
