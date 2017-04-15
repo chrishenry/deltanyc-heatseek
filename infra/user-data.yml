@@ -1,0 +1,29 @@
+#cloud-config
+
+package_upgrade: true
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+
+runcmd:
+  # Install docker-ce
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update && apt-get install -y docker-ce
+  - sudo curl -o /usr/local/bin/docker-compose -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)"
+  - sudo chmod +x /usr/local/bin/docker-compose
+
+  # Install the DO monitoring agent
+  - curl -sSL https://agent.digitalocean.com/install.sh | sh
+
+
+  # Get the app up and running
+  - [mkdir, -p, /opt/apps/deltanyc-heatseek]
+  - git clone https://github.com/chrishenry/deltanyc-heatseek /opt/apps/deltanyc-heatseek
+  - cp /opt/apps/deltanyc-heatseek/.env.example /opt/apps/deltanyc-heatseek/.env
+  - cd /opt/apps/deltanyc-heatseek && git checkout infra
+  - cd /opt/apps/deltanyc-heatseek && docker-compose up -d
+  - cd /opt/apps/deltanyc-heatseek && docker-compose exec nb "for f in `ls | grep import | grep .py | grep -v pyc`; do python $f; done"
+
