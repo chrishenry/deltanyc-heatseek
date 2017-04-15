@@ -7,6 +7,6 @@ class HpdComplaintsController < ApplicationController
     end
     @hpd_complaints ||= HpdComplaint.paginate(:page => params[:page])
     render json: @hpd_complaints, adapter: :json, 
-    meta: meta_attributes(@hpd_complaints), status: 200   
+      meta: meta_attributes(@hpd_complaints), status: 200   
   end
 end

@@ -10,7 +10,7 @@ class OwnersController < ApplicationController
       @owners = Owner.paginate(:page => params[:page])
     end
     render json: @owners, adapter: :json, 
-    meta: meta_attributes(@owners),status: 200
+      meta: meta_attributes(@owners),status: 200
   end
 
 

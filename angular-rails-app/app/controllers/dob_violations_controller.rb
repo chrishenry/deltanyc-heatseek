@@ -7,6 +7,6 @@ class DobViolationsController < ApplicationController
     end
     @dob_violations ||= DobViolation.paginate(:page => params[:page])
     render json: @dob_violations, adapter: :json, 
-    meta: meta_attributes(@dob_violations), status: 200   
+      meta: meta_attributes(@dob_violations), status: 200   
   end
 end

@@ -5,7 +5,7 @@ class PropertiesController < ApplicationController
   def index
     @properties = Property.paginate(:page => params[:page])
     render json: @properties, adapter: :json, 
-    meta: meta_attributes(@properties),status: 200
+      meta: meta_attributes(@properties),status: 200
   end
 
   def query

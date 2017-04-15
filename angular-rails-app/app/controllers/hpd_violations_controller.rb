@@ -7,6 +7,6 @@ class HpdViolationsController < ApplicationController
     end
     @hpd_violations ||= HpdViolation.paginate(:page => params[:page])
     render json: @hpd_violations, adapter: :json, 
-    meta: meta_attributes(@hpd_violations), status: 200   
+      meta: meta_attributes(@hpd_violations), status: 200   
   end
 end

@@ -7,6 +7,6 @@ class DobPermitsController < ApplicationController
     end
     @dob_permits ||= DobPermit.paginate(:page => params[:page])
     render json: @dob_permits, adapter: :json, 
-    meta: meta_attributes(@dob_permits), status: 200   
+      meta: meta_attributes(@dob_permits), status: 200   
   end
 end

@@ -7,6 +7,6 @@ class Complaint311sController < ApplicationController
     end
     @complaint311s ||= Complaint311.paginate(:page => params[:page])
     render json: @complaint311s, adapter: :json, 
-    meta: meta_attributes(@complaint311s), status: 200   
+      meta: meta_attributes(@complaint311s), status: 200   
   end
 end
