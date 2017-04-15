@@ -26,23 +26,22 @@ function PropertyController(PropertyService, property) {
     this.page = 1;
   }
 
-  function getTableInfo(pageNumber, resource) {
-    return PropertyService.getTableInfo(vm.data.id, pageNumber, tables[resource]['urlResource'])    
+  vm.getTableInfo = function(pageNumber, tableName) {
+    return PropertyService.getTableInfo(vm.data.id, pageNumber, vm.tables[tableName]['urlResource'])    
     .then(function(result) {
-      vm.tables[resource]['data'] = result.data.(vm.tables[resource]['urlResource']); //need underscore rather than camelCase
-      vm.tables[resource]['total'] = result.data.meta.total_count
-      vm.tables[resource]['page'] = result.data.meta.current_page
+      var underscoreName = vm.tables[tableName]['urlResource']; //need for Rails endpoints
+      vm.tables[tableName]['data'] = result.data[underscoreName]; 
+      vm.tables[tableName]['total'] = result.data.meta.total_count
+      vm.tables[tableName]['page'] = result.data.meta.current_page
     });
   }
 
-   
-    getTableInfo(1, "complaint311s")
-    getTableInfo(1, "dobPermits")
-    getTableInfo(1, "dobViolations")
-    getTableInfo(1, "hpdComplaints")
-    getTableInfo(1, "hpdViolations")
-    getTableInfo(1, "litigations")
+  function initializeTables(){
+    Object.keys(vm.tables).forEach(function (tableName) {
+      vm.getTableInfo(1, tableName)
+    });
+  }
 
-  
+  initializeTables()  
 }
 
