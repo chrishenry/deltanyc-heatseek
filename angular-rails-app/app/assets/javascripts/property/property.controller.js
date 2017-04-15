@@ -10,96 +10,61 @@ function PropertyController(PropertyService, property) {
   vm.data = property.data;
   vm.itemsPerPage = 10;
 
-  vm.hpdViolations =[];
-  vm.hpdComplaints =[];
-  vm.dobPermits =[];
-  vm.dobViolations =[];
-  vm.litigations =[];
-  vm.complaint311s =[];
+  vm.tables = {
+    'complaint311s': {
+      'data': [],
+      'urlResource': 'complaint311s',
+      'total': undefined,
+      'page': 1
+    },
+    'dobPermits': {
+      'data': [],
+      'urlResource': 'dob_permits',
+      'total': undefined,
+      'page': 1
+    },
+    'dobViolations': {
+      'data': [],
+      'urlResource': 'dob_violations',
+      'total': undefined,
+      'page': 1
+    },
+    'hpdComplaints': {
+      'data': [],
+      'urlResource': 'hpd_complaints',
+      'total': undefined,
+      'page': 1
+    },
+    'hpdViolations': {
+      'data': [],
+      'urlResource': 'hpd_violations',
+      'total': undefined,
+      'page': 1
+    },
+    'litigations': {
+      'data': [],
+      'urlResource': 'litigations',
+      'total': undefined,
+      'page': 1
+    }    
+  }; 
 
-  vm.hpdViolationsPageChanged = function(newPage) {
-    getHpdViolations(newPage);
-  };
 
-  vm.hpdComplaintsPageChanged = function(newPage) {
-    getHpdComplaints(newPage);
-  };
-
-  vm.dobPermitsPageChanged = function(newPage) {
-    getDobPermits(newPage);
-  };
-
-  vm.dobViolationsPageChanged = function(newPage) {
-    getDobViolations(newPage);
-  };
-
-  vm.litigationsPageChanged = function(newPage) {
-    getLitigations(newPage);
-  };
-
-  vm.complaint311sPageChanged = function(newPage) {
-    getComplaint311s(newPage);
-  };
-
-  function getHpdViolations(pageNumber) {
-    return PropertyService.getHpdViolations(vm.data.id, pageNumber)    
+  function getTableInfo(pageNumber, resource) {
+    return PropertyService.getTableInfo(vm.data.id, pageNumber, tables[resource]['urlResource'])    
     .then(function(result) {
-      vm.hpdViolations = result.data.hpd_violations;
-      vm.totalHpdViolations = result.data.meta.total_count
-      vm.hpdViolationsPage = result.data.meta.current_page
-      });
-    }
+      vm.tables[resource]['data'] = result.data.(vm.tables[resource]['urlResource']); //need underscore rather than camelCase
+      vm.tables[resource]['total'] = result.data.meta.total_count
+      vm.tables[resource]['page'] = result.data.meta.current_page
+    });
+  }
 
-   function getHpdComplaints(pageNumber) {
-    return PropertyService.getHpdComplaints(vm.data.id, pageNumber)    
-    .then(function(result) {
-      vm.hpdComplaints = result.data.hpd_complaints;
-      vm.totalHpdComplaints = result.data.meta.total_count
-      vm.hpdComplaintsPage = result.data.meta.current_page
-      });
-    }
-    
-    function getDobPermits(pageNumber) {
-    return PropertyService.getDobPermits(vm.data.id, pageNumber)    
-    .then(function(result) {
-      vm.dobPermits = result.data.dob_permits;
-      vm.totalDobPermits = result.data.meta.total_count
-      vm.dobPermitsPage = result.data.meta.current_page
-      });
-    }
-
-    function getDobViolations(pageNumber) {
-    return PropertyService.getDobViolations(vm.data.id, pageNumber)    
-    .then(function(result) {
-      vm.dobViolations = result.data.dob_violations;
-      vm.totalDobViolations = result.data.meta.total_count
-      vm.dobViolationsPage = result.data.meta.current_page
-      });
-    }
-
-    function getLitigations(pageNumber) {
-    return PropertyService.getLitigations(vm.data.id, pageNumber)    
-    .then(function(result) {
-      vm.litigations = result.data.litigations;
-      vm.totalLitigations = result.data.meta.total_count
-      vm.litigationsPage = result.data.meta.current_page
-      });
-    }
-
-    function getComplaint311s(pageNumber) {
-    return PropertyService.getComplaint311s(vm.data.id, pageNumber)    
-    .then(function(result) {
-      vm.complaint311s = result.data.complaint311s;
-      vm.totalComplaint311s = result.data.meta.total_count
-      vm.complaint311sPage = result.data.meta.current_page
-      });
-    } 
-
-    getComplaint311s(1)
-    getDobPermits(1)
-    getDobViolations(1)
-    getHpdComplaints(1)
-    getHpdViolations(1)
-    getLitigations(1)
+   
+    getTableInfo(1, "complaint311s")
+    getTableInfo(1, "dobPermits")
+    getTableInfo(1, "dobViolations")
+    getTableInfo(1, "hpdComplaints")
+    getTableInfo(1, "hpdViolations")
+    getTableInfo(1, "litigations")
 }
 
