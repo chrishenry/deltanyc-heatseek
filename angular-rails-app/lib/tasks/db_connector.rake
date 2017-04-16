@@ -291,14 +291,14 @@ namespace :db_connector do
       permit = DobPermit.new do |d|
         d.property_id = prop.id
         d.permit_status = permit['permit_status']
-        d.filing_date = permit['filling_date']
+        d.filing_date = permit['filing_date']
         d.expiration_date = permit['expiration_date']
         d.work_type = permit['work_type']
         d.job_start_date = permit['job_start_date']
         d.job_type = permit['job_type']
         d.job_num = permit['job_num']
         d.job_type = permit['job_type']
-        d.filling_status = permit['filling_status']
+        d.filing_status = permit['filing_status']
         d.permit_status = permit['permit_status']
         d.permit_type = permit['permit_type']
         d.bldg_type = permit['bldg_type']
