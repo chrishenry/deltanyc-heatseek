@@ -21,6 +21,13 @@ ssh -i ~/.ssh/id_rsa_delta root@{public_id}
 The key to the machine is maintained by Chris Henry
 
 
+# Configuration
+
+### Google Maps API Key.
+
+The key in use was generated from Chris Henry's Google API Console, but any key
+with Google Maps permissions can be used.
+
 # Setup steps
 
 We should be using luigid, but I can't quite figure out what it's supposed to be
