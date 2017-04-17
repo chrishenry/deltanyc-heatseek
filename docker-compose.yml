@@ -7,8 +7,6 @@ services:
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
-    ports:
-      - "3306:3306"
   db-udf:
     build:
       dockerfile: Dockerfile.mysql-udf

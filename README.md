@@ -17,7 +17,7 @@ Before using any of our Docker images, you'll need to create a .env file. The re
 
 `docker-compose up` will build and install our images, and launch them in containers.  These images are:
 
-* db: The MySQL database storing NYC city data both in semi-raw form and joined into a model for the Rails website. The database can be examined with `docker exec deltanycheatseek_db_1 mysql -u <user from .env> -p <password from .env>`. Local clients can connect at 127.0.0.1:3306 ([localhost will not work](http://stackoverflow.com/a/32361238/103315)).
+* db: The MySQL database storing NYC city data both in semi-raw form and joined into a model for the Rails website. The database can be examined with `docker exec deltanycheatseek_db_1 mysql -u <user from .env> -p <password from .env>`.
 * db-udf: Installs [user-defined functions for making regular expression queries](https://github.com/mysqludf/lib_mysqludf_preg) required for data-cleaning into MySQL. Only needs to be run once.
 * luigid: Runs a [Luigi](http://luigi.readthedocs.io) central scheduler. Tasks are usually started by other containers. You can connect to a web view at localhost:8082.
 * luigi-import-worker: Runs all import scripts. Will skip imports already run using this image. Imports can be run in parallel using standard docker methods like `docker-compose scale` (eg. `docker-compose scale luigi-import-worker=4`).
