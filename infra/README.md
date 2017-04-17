@@ -37,4 +37,12 @@ Setup the rails app
 
 ```bash
 $ docker-compose exec web /bin/bash
+$ rake db:setup
+$ rake db_connector:properties
+$ rake db_connector:owners
+$ rake db_connector:dob_permits
+$ rake db_connector:dob_violations
+$ rake db_connector:hpd_complaints
+$ rake db_connector:hpd_litigations
+$ rake db_connector:three11
 ```
