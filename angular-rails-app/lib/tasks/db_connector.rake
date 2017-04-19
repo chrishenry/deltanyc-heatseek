@@ -147,6 +147,7 @@ namespace :db_connector do
             o.zipcode = owner['businesszip']
             o.hpd_registration_id = owner['registrationid']
             o.hpd_registration_contact_id = owner['registrationcontactid']
+            o.hpd_type = owner['type']
           end
 
           prop.owners << owner
