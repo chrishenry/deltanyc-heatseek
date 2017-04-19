@@ -100,3 +100,6 @@ mysql-data/*
 # Rails ignores
 angular-rails-app/log/
 angular-rails-app/vendor/assets/bower_components/
+
+# Luigi
+luigi/state
