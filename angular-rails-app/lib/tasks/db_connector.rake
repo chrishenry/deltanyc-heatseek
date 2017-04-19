@@ -174,20 +174,22 @@ namespace :db_connector do
 
     puts "Found #{complaints.length} complaints"
 
-    complaints.each do |complaint|
+    complaints.each_with_index do |complaint, idx|
+      print "Saving #{idx}/#{complaints.length} \r"
 
       if not HpdComplaint.find_by(complaint_id: complaint['complaintid']).nil?
         puts "Exists, skipping"
         next
       end
 
-      boro = complaint['boroughid']
+      boro = complaint['borough']
       block = complaint['block']
       lot = complaint['lot']
 
       prop = Property.find_by(borough: boro, block: block, lot: lot)
 
       if prop.nil?
+        puts "No property found!?"
         next
       end
 
@@ -206,7 +208,6 @@ namespace :db_connector do
       end
 
       hpd_complaint.save
-      puts "Saved complaint"
 
     end
 
@@ -222,20 +223,22 @@ namespace :db_connector do
 
     puts "Found #{litigations.length} cases"
 
-    litigations.each do |litigation|
+    litigations.each_with_index do |litigation, idx|
+      print "Saving #{idx}/#{litigations.length} \r"
 
       if not Litigation.find_by(litigation_id: litigation['litigationid']).nil?
         puts "Exists, skipping"
         next
       end
 
-      boro = litigation['boroid']
+      boro = litigation['boro']
       block = litigation['block']
       lot = litigation['lot']
 
       prop = Property.find_by(borough: boro, block: block, lot: lot)
 
       if prop.nil?
+        print "No property?!"
         next
       end
 
@@ -249,7 +252,6 @@ namespace :db_connector do
       end
 
       lit.save
-      puts "Saved case"
 
     end
 
@@ -291,14 +293,14 @@ namespace :db_connector do
       permit = DobPermit.new do |d|
         d.property_id = prop.id
         d.permit_status = permit['permit_status']
-        d.filing_date = permit['filling_date']
+        d.filing_date = permit['filing_date']
         d.expiration_date = permit['expiration_date']
         d.work_type = permit['work_type']
         d.job_start_date = permit['job_start_date']
         d.job_type = permit['job_type']
         d.job_num = permit['job_num']
         d.job_type = permit['job_type']
-        d.filling_status = permit['filling_status']
+        d.filing_status = permit['filing_status']
         d.permit_status = permit['permit_status']
         d.permit_type = permit['permit_type']
         d.bldg_type = permit['bldg_type']
@@ -317,30 +319,30 @@ namespace :db_connector do
 
     puts "Adding indexes..."
     indexes = [
-      ["dob_violations", "violation_type"]
+      ["dob_violations", "violation_type_code"]
     ]
     add_indexes(indexes)
 
     v_types = [
-      "IMD-IMMEDIATE EMERGENCY",
-      "COMPBLD-STRUCTURALLY COMPROMISED BUILDING",
-      "HBLVIO-HIGH PRESSURE BOILER",
-      "LL1080-LOCAL LAW 10/80 - FACADE",
-      "P-PLUMBING",
-      "EGNCY-EMERGENCY",
-      "UB-UNSAFE BUILDINGS",
-      "IMEGNCY-IMMEDIATE EMERGENCY",
-      "LBLVIO-LOW PRESSURE BOILER",
-      "LL1081-LOCAL LAW 10/81 - ELEVATOR",
-      "LL6291-LOCAL LAW 62/91 - BOILERS",
-      "C-CONSTRUCTION",
-      "B-BOILER",
+      "IMD", # -IMMEDIATE EMERGENCY",
+      "COMPBLD", # -STRUCTURALLY COMPROMISED BUILDING",
+      "HBLVIO", # -HIGH PRESSURE BOILER",
+      "LL1080", # -LOCAL LAW 10/80 - FACADE",
+      "P", # -PLUMBING",
+      "EGNCY", # -EMERGENCY",
+      "UB", # -UNSAFE BUILDINGS",
+      "IMEGNCY", # -IMMEDIATE EMERGENCY",
+      "LBLVIO", # -LOW PRESSURE BOILER",
+      "LL1081", # -LOCAL LAW 10/81 - ELEVATOR",
+      "LL6291", # -LOCAL LAW 62/91 - BOILERS",
+      "C", # -CONSTRUCTION",
+      "B", # -BOILER",
     ]
 
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
     puts "Pulling dob violations..."
-    sql = "SELECT * FROM dob_violations WHERE violation_type IN (#{in_list})"
+    sql = "SELECT * FROM dob_violations WHERE violation_type_code IN (#{in_list})"
     violation_results = conn.exec_query(sql).to_hash
 
     violation_results.each_with_index do |violation,idx|
@@ -414,7 +416,7 @@ namespace :db_connector do
           next
         end
 
-        boro = @boros_int[geo_data['address']['bblBoroughCode'].to_i]
+        boro = result['borough']
         block = geo_data['address']['bblTaxBlock'].to_i
         lot = geo_data['address']['bblTaxLot'].to_i
 

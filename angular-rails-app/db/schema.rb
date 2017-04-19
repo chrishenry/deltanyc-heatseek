@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 20170225185334) do
     t.datetime "job_start_date"
     t.string   "job_type",        limit: 255
     t.string   "job_num",         limit: 255
-    t.string   "filling_status",  limit: 255
+    t.string   "filing_status",  limit: 255
     t.string   "permit_type",     limit: 255
     t.string   "bldg_type",       limit: 255
   end
