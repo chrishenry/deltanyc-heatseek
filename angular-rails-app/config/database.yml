@@ -27,7 +27,11 @@ docker-dev:
 
 development:
   <<: *default
-  database: heatseek_development
+  database: <%= ENV['MYSQL_DATABASE'] %>
+  username: <%= ENV['MYSQL_USER'] %>
+  password: <%= ENV['MYSQL_PASSWORD'] %>
+  host: <%= ENV['MYSQL_HOST'] %>
+  port: <%= ENV['MYSQL_PORT'] %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
