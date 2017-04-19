@@ -319,7 +319,7 @@ namespace :db_connector do
 
     puts "Adding indexes..."
     indexes = [
-      ["dob_violations", "violation_type"]
+      ["dob_violations", "violation_type_code"]
     ]
     add_indexes(indexes)
 
