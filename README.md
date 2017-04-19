@@ -22,7 +22,7 @@ Before using any of our Docker images, you'll need to create a .env file. The re
 * luigid: Runs a [Luigi](http://luigi.readthedocs.io) central scheduler. Tasks are usually started by other containers. You can connect to a web view at localhost:8082.
 * luigi-import-worker: Runs all import scripts. Will skip imports already run using this image. Imports can be run in parallel using standard docker methods like `docker-compose scale` (eg. `docker-compose scale luigi-import-worker=4`).
 * nb: Installs Python and starts a Jupyter notebook at [localhost:8888](http://localhost:8888).
-* web: Installs Ruby on Rails and starts a server at [localhost](http://localhost). Like the data-import scripts, you can conect to a running instance with `docker exec -it deltanycheattseek_web_1 /bin/bash` to run rake tasks. To view a demo of the tool, connect to the instance, then run `rake db:setup`. In the demo, fake data will be provided for "10 West 109th Street".
+* web: Installs Ruby on Rails and starts a server at [localhost](http://localhost). Like the data-import scripts, you can conect to a running instance with `docker-compose exec web /bin/bash` to run rake tasks. To view a demo of the tool, connect to the instance, then run `rake db:setup`. In the demo, fake data will be provided for "10 West 109th Street".
 
 Once all the images are built and run once, only the nb or web images need to be explicitly lanched via docker-compose (eg. `docker-compose up web`) depending on the type of work you plan to do. Launching either will also launch the db container.
 
