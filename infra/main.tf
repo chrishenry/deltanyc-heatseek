@@ -5,6 +5,7 @@ provider "digitalocean" {
 }
 
 resource "digitalocean_droplet" "delta_droplet" {
+  # ID of the `delta-team` SSH key
   ssh_keys           = [8187378]
   image              = "ubuntu-16-10-x64"
   region             = "nyc1"
