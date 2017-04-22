@@ -24,6 +24,7 @@ class InitSchema < ActiveRecord::Migration
       t.datetime "expiration_date"
       t.datetime "created_at",                  null: false
       t.datetime "updated_at",                  null: false
+      t.string   "work_type",       limit: 255
       t.datetime "job_start_date"
       t.string   "job_type",        limit: 255
       t.string   "job_num",         limit: 255
