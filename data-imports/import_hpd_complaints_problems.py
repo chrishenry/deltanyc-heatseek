@@ -87,7 +87,7 @@ def import_csv(args):
     csv_file = os.path.join(csv_dir, "hpd_complaints.csv")
 
     if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
-        log.info("DL-ing HPD Complaints")
+        log.info("DL-ing " + description)
         download_file('https://data.cityofnewyork.us/api/views/a2nx-4u46/rows.csv?accessType=DOWNLOAD', csv_file)
     else:
         log.info("HPD Complaints exists, moving on...")

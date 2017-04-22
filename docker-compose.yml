@@ -7,8 +7,6 @@ services:
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
-    ports:
-      - "3306:3306"
   db-udf:
     build:
       dockerfile: Dockerfile.mysql-udf
@@ -28,7 +26,7 @@ services:
     volumes:
       - ./angular-rails-app/:/angular-rails-app/
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - db
   nb:
@@ -49,4 +47,38 @@ services:
     depends_on:
       - db
     links:
-      - db:db
+      - db
+  luigid:
+    build:
+      context: .
+      dockerfile: Dockerfile.luigid
+    env_file: .env
+    # 2G Limit
+    mem_limit: 2147483648
+    ports:
+      - "8082:8082"  # default luigid port
+    volumes:
+      - ./luigi:/root/
+    # Link to db for task history
+    depends_on:
+      - db
+    links:
+      - db
+  luigi-import-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.luigi-import-worker
+    env_file: .env
+    # 2G Limit
+    mem_limit: 2147483648
+    environment:
+      MYSQL_HOST: db
+    volumes:
+      - ./data-imports/:/root/data-imports/
+      - ./data/:/root/heatseek/
+    depends_on:
+      - db
+      - luigid
+    links:
+      - db
+      - luigid
