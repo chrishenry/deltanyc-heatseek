@@ -10,5 +10,8 @@ angular
     return $http.get(API_URL + '/properties/' + id)
   };
 
-
+  this.getTableInfo = function (id, pageNumber, resource){
+    return $http.get(API_URL + '/' + resource + '?' + 'property_id=' + id + '&page=' + pageNumber)
+  } 
 };
+

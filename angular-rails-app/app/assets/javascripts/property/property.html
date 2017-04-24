@@ -10,7 +10,7 @@
     <div class="container">
       <h2 class="page-title">BUILDING</h2>
         <hr class="featurette-divider">
-        <h2>{{vm.data.street_address | titleCase}}</h2>
+        <h2>{{vm.property.street_address | titleCase}}</h2>
         <br>
     </div>
 </section>
@@ -27,20 +27,20 @@
             <table class="table">
               <tr>
                 <td class="R">Address</td>
-                <td class="L">{{vm.data.street_address | titleCase}}, {{vm.data.zipcode}}</td>
+                <td class="L">{{vm.property.street_address | titleCase}}, {{vm.property.zipcode}}</td>
                 <td class="R">BBL</td>
-                <td class="L">{{vm.data.expand_borough | titleCase}}, {{vm.data.block}}, {{vm.data.lot}}</td>
+                <td class="L">{{vm.property.expand_borough | titleCase}}, {{vm.property.block}}, {{vm.property.lot}}</td>
 
               </tr>
               <tr>
                 <td class="R">Rent Stabilized</td>
-                <td class="L">{{vm.data.rent_stabilized || 'Unknown'}}</td>
+                <td class="L">{{vm.property.rent_stabilized || 'Unknown'}}</td>
                 <td class="R">BIN</td>
-                <td class="L">{{vm.data.bin}}</td>
+                <td class="L">{{vm.property.bin}}</td>
               </tr>
               <tr>
                 <td class="R">Total Units in Building</td>
-                <td class="L">{{vm.data.total_units}}</td>
+                <td class="L">{{vm.property.total_units}}</td>
                 <td class="R"></td>
                 <td class="L"></td>
               </tr>
@@ -64,7 +64,7 @@
             <h4 class="pull-right owners-heading">Owners</h4>
         </div>
         <div class="col-xs-4 list-items">
-          <div ng-repeat="owner in vm.data.owners | orderBy: 'name'">
+          <div ng-repeat="owner in vm.property.owners | orderBy: 'name'">
             <a class="owner" ui-sref="owner({ id: owner.id })">{{owner.name}}</a>
           </div>
           <br><br><br>
@@ -87,7 +87,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">{{ vm.data.hpd_violations_count }}</td>
+                <td class="L">{{ vm.property.hpd_violations_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Violations</td>
@@ -98,7 +98,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.hpd_violations_count">
+      <div class="row" ng-if="vm.property.hpd_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_violations"
           data-ng-init="hpd_violations=false"
@@ -120,7 +120,10 @@
                 <th>Status Date</th>
                 <th>Certified Date</th>
               </tr>
-              <tr ng-repeat="v in vm.data.hpd_violations">
+              <tr dir-paginate="v in vm.tables.hpdViolations.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.hpdViolations.total"
+              current-page="vm.tables.hpdViolations.page"
+              pagination-id="hpd_violations">
                 <td>{{ v.inspection_date }}</td>
                 <td>{{ v.violation_class }}</td>
                 <td>{{ v.order_number }}</td>
@@ -131,6 +134,15 @@
                 <td>{{ v.certified_date }}</td>
               </tr>
             </table>
+            <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="hpd_violations"
+                on-page-change="vm.getTableInfo(newPageNumber, 'hpdViolations')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
@@ -142,7 +154,11 @@
             <table class="table">
               <tr>
                 <td class="R">Total Open</td>
-                <td class="L">{{ vm.data.hpd_open_complaints_count }}</td>
+                <td class="L">{{ vm.property.hpd_open_complaints_count }}</td>
+              </tr>
+              <tr>
+                <td class="R">Total Complaints</td>
+                <td class="L">{{ vm.property.hpd_complaints_count }}</td>
               </tr>
               <tr>
                 <td class="R">HPD Complaints</td>
@@ -153,7 +169,7 @@
         </div>
       </div>
 
-      <div class="row" ng-if="vm.data.hpd_open_complaints_count">
+      <div class="row" ng-if="vm.property.hpd_complaints_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#hpd_complaints"
           data-ng-init="hpd_complaints=false"
@@ -175,7 +191,10 @@
                 <th>Status ID</th>
                 <th>Status Date</th>
               </tr>
-              <tr ng-repeat="c in vm.data.hpd_complaints">
+              <tr dir-paginate="c in vm.tables.hpdComplaints.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.hpdComplaints.total"
+              current-page="vm.tables.hpdComplaints.page"
+              pagination-id="hpd_complaints">
                 <td>{{ c.received_date }}</td>
                 <td>{{ c.code_id }}</td>
                 <td>{{ c.apartment }}</td>
@@ -187,6 +206,15 @@
                 <td>{{ c.status_date }}</td>
               </tr>
             </table>
+            <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="hpd_complaints"
+                on-page-change="vm.getTableInfo(newPageNumber, 'hpdComplaints')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
         </div>
       </div>
@@ -206,7 +234,7 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Permits</td>
-                <td class="L">{{ vm.data.dob_permits_count }}</td>
+                <td class="L">{{ vm.property.dob_permits_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -217,7 +245,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.dob_permits_count">
+      <div class="row" ng-if="vm.property.dob_permits_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_permits"
           data-ng-init="dob_permits=false"
@@ -241,7 +269,10 @@
                 <th>Building<br>Type</th>
                 <th>Work<br>Type</th>
               </tr>
-              <tr ng-repeat="d in vm.data.dob_permits">
+              <tr dir-paginate="d in vm.tables.dobPermits.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.dobPermits.total"
+              current-page="vm.tables.dobPermits.page"
+              pagination-id="dob_permits">
                 <td>{{ d.job_num }}</td>
                 <td>{{ d.job_type }}</td>
                 <td>{{ d.job_start_date }}</td>
@@ -254,6 +285,15 @@
                 <td>{{ d.work_type }}</td>
               </tr>
             </table>
+            <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="dob_permits"
+                on-page-change="vm.getTableInfo(newPageNumber, 'dobPermits')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
@@ -265,14 +305,14 @@
             <table class="table">
               <tr>
                 <td class="R">Total DOB Violations</td>
-                <td class="L">{{ vm.data.dob_violations_count }}</td>
+                <td class="L">{{ vm.property.dob_violations_count }}</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
 
-      <div class="row" ng-if="vm.data.dob_violations_count">
+      <div class="row" ng-if="vm.property.dob_violations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#dob_violations"
           data-ng-init="dob_violations=false"
@@ -290,7 +330,10 @@
                 <th>Disposition Date</th>
                 <th>Disposition Comments</th>
               </tr>
-              <tr ng-repeat="v in vm.data.dob_violations">
+              <tr dir-paginate="v in vm.tables.dobViolations.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.dobViolations.total"
+              current-page="vm.tables.dobViolations.page"
+              pagination-id="dob_violations">
                 <td>{{ v.issue_date }}</td>
                 <td>{{ v.violation_type }}</td>
                 <td>{{ v.violation_category }}</td>
@@ -298,6 +341,15 @@
                 <td>{{ v.disposition_comments }}</td>
               </tr>
             </table>
+            <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="dob_violations"
+                on-page-change="vm.getTableInfo(newPageNumber, 'dobViolations')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
@@ -319,7 +371,7 @@
             <table class="table">
               <tr>
                 <td class="R">Cases</td>
-                <td class="L">{{ vm.data.litigations_count}}</td>
+                <td class="L">{{ vm.property.litigations_count}}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -330,7 +382,7 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.litigations_count">
+      <div class="row" ng-if="vm.property.litigations_count">
         <div class="col-sm-10 chart">
         <h4 class="show-hide" slide-toggle="#litigations"
           data-ng-init="litigations=false"
@@ -348,13 +400,25 @@
                 <th>Status</th>
                 <th>Judgement</th>
               </tr>
-              <tr ng-repeat="l in vm.data.litigations">
+              <tr dir-paginate="l in vm.tables.litigations.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.litigations.total"
+              current-page="vm.tables.litigations.page"
+              pagination-id="litigations">
                 <td>{{ l.case_open_date }}</td>
                 <td>{{ l.case_type }}</td>
                 <td>{{ l.case_status }}</td>
                 <td>{{ l.case_judgement }}</td>
               </tr>
             </table>
+              <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="litigations"
+                on-page-change="vm.getTableInfo(newPageNumber, 'litigations')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
@@ -374,7 +438,7 @@
             <table class="table">
               <tr>
                 <td class="R">Complaints</td>
-                <td class="L">{{ vm.data.complaint311s_count }}</td>
+                <td class="L">{{ vm.property.complaint311s_count }}</td>
               </tr>
               <tr>
                 <td class="R"></td>
@@ -385,15 +449,15 @@
 
         </div>
       </div>
-      <div class="row" ng-if="vm.data.complaint311s_count">
+      <div class="row" ng-if="vm.property.complaint311s_count">
         <div class="col-sm-10 chart">
-        <h4 class="show-hide" slide-toggle="#complaints311"
-        data-ng-init="complaints311=false"
-          data-ng-click="complaints311=!complaints311">
-          Details <i class="fa fa-caret-down" aria-hidden="true" data-ng-class="{'fa fa-caret-up': complaints311, 'fa fa-caret-down' : !complaints311}"></i>
+        <h4 class="show-hide" slide-toggle="#complaint311s"
+        data-ng-init="complaint311s=false"
+          data-ng-click="complaint311s=!complaint311s">
+          Details <i class="fa fa-caret-down" aria-hidden="true" data-ng-class="{'fa fa-caret-up': complaint311s, 'fa fa-caret-down' : !complaint311s}"></i>
         </h4>
 
-        <div class="table-responsive slideable" id="complaints311">
+        <div class="table-responsive slideable" id="complaint311s">
         <h4 class="table-title">311 Complaints</h4>
             <table class="table table-striped">
               <tr id="blue">
@@ -405,7 +469,10 @@
                 <th>Closed Date</th>
                 <th>Resoutions Description</th>
               </tr>
-              <tr ng-repeat="c in vm.data.complaint311s">
+              <tr dir-paginate="c in vm.tables.complaint311s.data | itemsPerPage:vm.itemsPerPage" 
+              total-items="vm.tables.complaint311s.total"
+              current-page="vm.tables.complaint311s.page"
+              pagination-id="complaint311s">
                 <td>{{ c.created_date }}</td>
                 <td>{{ c.complaint_type }}</td>
                 <td>{{ c.status }}</td>
@@ -415,6 +482,15 @@
                 <td>{{ c.resolution_description }}</td>
               </tr>
             </table>
+            <div class="text-center">
+                <dir-pagination-controls
+                pagination-id="complaint311s"
+                on-page-change="vm.getTableInfo(newPageNumber, 'complaint311s')"
+                max-size="10"
+                direction-links="true"
+                boundary-links="true" >
+              </dir-pagination-controls>
+            </div>
           </div>
 
         </div>
