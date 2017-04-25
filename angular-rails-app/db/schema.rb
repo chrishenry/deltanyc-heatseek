@@ -135,7 +135,7 @@ ActiveRecord::Schema.define(version: 20170225185334) do
     t.string   "zipcode",             limit: 255
     t.integer  "total_units",         limit: 4
     t.string   "bin",                 limit: 255
-    t.boolean  "rent_stabilized"
+    t.integer  "rent_stabilized"
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.string   "borough",             limit: 255

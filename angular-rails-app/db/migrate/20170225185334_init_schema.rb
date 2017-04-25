@@ -123,13 +123,13 @@ class InitSchema < ActiveRecord::Migration
       t.string   "zipcode",             limit: 255
       t.integer  "total_units",         limit: 4
       t.string   "bin",                 limit: 255
-      t.boolean  "rent_stabilized"
+      t.integer  "rent_stabilized",     limit: 4
       t.datetime "created_at",                      null: false
       t.datetime "updated_at",                      null: false
       t.string   "borough",             limit: 255
       t.integer  "block",               limit: 4
       t.integer  "lot",                 limit: 4
-      t.integer  "bbl",                  limit: 8
+      t.integer  "bbl",                 limit: 8
       t.integer  "hpd_registration_id", limit: 4
     end
 
