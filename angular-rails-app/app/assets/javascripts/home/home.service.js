@@ -1,10 +1,8 @@
-var API_URL =''
-
 angular
   .module('app')
   .service('HomeService', HomeService);
 
-  function HomeService($http) {
+  function HomeService($http, API_URL) {
 
   this.getProperty = function (details) {
     return $http.get(API_URL + '/query?' + $.param({

@@ -1,10 +1,8 @@
-var API_URL =''
-
 angular
   .module('app')
   .service('PropertyService', PropertyService);
 
-  function PropertyService($http) {
+  function PropertyService($http, API_URL) {
 
   this.getProperty = function (id) {
     return $http.get(API_URL + '/properties/' + id)

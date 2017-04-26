@@ -1,6 +1,7 @@
 angular
     .module('app', ['ui.router', 'templates', 'google.places', 'angularSlideables', 
       'ui.bootstrap', 'angularSpinners', 'angularUtils.directives.dirPagination'])
+    .constant('API_URL', '')
     .config(function ($stateProvider, $urlRouterProvider) {
 
       $stateProvider
