@@ -146,7 +146,7 @@ ActiveRecord::Schema.define(version: 20170225185334) do
   end
 
   add_index "properties", ["borough", "block", "lot"], name: "index_r_properties_on_borough_and_block_and_lot", unique: true, using: :btree
-  add_index "properties", ["bbl"], name: "index_r_properties_on_bbl", using: :btree
+  add_index "properties", ["bbl"], name: "index_r_properties_on_bbl", unique: true, using: :btree
   add_index "properties", ["street_address", "zipcode"], name: "index_r_properties_on_street_address_and_zipcode", using: :btree
 
 end
