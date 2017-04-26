@@ -96,6 +96,7 @@ ENV/
 data/*
 mysql-data/*
 !mysql-data/.gitkeep
+*.sqlite3
 
 # Rails ignores
 angular-rails-app/log/

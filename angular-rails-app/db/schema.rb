@@ -11,7 +11,6 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
 ActiveRecord::Schema.define(version: 20170225185334) do
 
   create_table "complaint311s", force: :cascade do |t|
@@ -28,12 +27,10 @@ ActiveRecord::Schema.define(version: 20170225185334) do
     t.integer  "unique_key",             limit: 4
   end
 
+  add_index "complaint311s", ["unique_key"], name: "index_r_complaint311s_on_unique_key", unique: true, using: :btree
+
   create_table "dob_permits", force: :cascade do |t|
     t.integer  "property_id",     limit: 4
-    t.string   "borough",         limit: 255
-    t.float    "bin",             limit: 24
-    t.float    "block",           limit: 24
-    t.string   "lot",             limit: 255
     t.string   "permit_status",   limit: 255
     t.datetime "filing_date"
     t.datetime "expiration_date"
@@ -43,7 +40,7 @@ ActiveRecord::Schema.define(version: 20170225185334) do
     t.datetime "job_start_date"
     t.string   "job_type",        limit: 255
     t.string   "job_num",         limit: 255
-    t.string   "filing_status",  limit: 255
+    t.string   "filing_status",   limit: 255
     t.string   "permit_type",     limit: 255
     t.string   "bldg_type",       limit: 255
   end
