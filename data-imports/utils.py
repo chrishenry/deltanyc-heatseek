@@ -286,14 +286,14 @@ def unzip(filename, directory_to_extract_to):
     zip_ref.close()
 
 
-def pandas_concat_csv(directory, dest_file):
+def pandas_concat_csv(directory, dest_file, dtype_dict):
     # in path provided, look for anything with a '.csv' extension
     # and save it to this variable
     allFiles = glob.glob(directory + "/*.csv")
     pluto_data = pd.DataFrame()
     pluto_list_ = []
     for file_ in allFiles: #iterate through all csv files and create a pandas df
-        pluto_df = pd.read_csv(file_,index_col=None, header=0)
+        pluto_df = pd.read_csv(file_,index_col=None, header=0, dtype=dtype_dict)
         pluto_list_.append(pluto_df) #append every df to a big list
     pluto_data = pd.concat(pluto_list_) #combine the big list into one big pandas df
     pluto_data = pluto_data.reset_index(drop=True)
