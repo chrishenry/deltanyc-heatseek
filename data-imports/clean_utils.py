@@ -140,6 +140,7 @@ def clean_bbl(table, boro, block, lot):
     UPDATE {table} SET {block} = REPLACE({block}, ' ', 0);
     UPDATE {table} SET {block} = preg_replace('/[^0-9]/', '', {block});
     UPDATE {table} SET {lot} = REPLACE({lot}, ' ', 0);
+    UPDATE {table} SET {lot} = 0 WHERE {lot} IS NULL;
     UPDATE {table} SET {lot} = preg_replace('/[^0-9]/', '', {lot});
     UPDATE {table} SET {boro} = preg_replace('/[^0-9]/', '', {boro});
     UPDATE {table} SET bbl =
