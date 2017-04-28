@@ -51,16 +51,26 @@ namespace :db_connector do
 
     # Load addresses from HPD.
     print "Copying from hpd_buildings..."
-    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,created_at,updated_at)
-    SELECT CONCAT(TRIM(housenumber), ' ', TRIM(streetname)), boro, 'New York', zip, registrationid, boro, block, lot, NOW(), NOW() FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+    sql = "INSERT IGNORE INTO r_properties "\
+        "(street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,bbl,created_at,updated_at) "\
+        "SELECT CONCAT(TRIM(housenumber), ' ', TRIM(streetname)), boro, 'New York', zip, registrationid, boro, block, lot, bbl, NOW(),NOW() "\
+        "FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+    conn.execute(sql)
+
+    # Add unit counts to HPD data.
+    sql = "UPDATE r_properties "\
+        "INNER JOIN pluto_nyc ON r_properties.bbl = pluto_nyc.bbl AND r_properties.total_units IS NULL "\
+        "SET r_properties.total_units = pluto_nyc.unitstotal;"
     conn.execute(sql)
     puts "done"
 
     # Load addresses from Pluto. This will add address that aren't in HPD.
     print "Copying from pluto_nyc..."
-    sql = "INSERT IGNORE INTO r_properties (street_address,city,state,zipcode,total_units,borough,block,lot,created_at,updated_at)
-    SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, NOW(), NOW() FROM pluto_nyc WHERE address != '';"
-    records_array = conn.execute(sql)
+    sql = "INSERT IGNORE INTO r_properties "\
+        "(street_address,city,state,zipcode,total_units,borough,block,lot,bbl,created_at,updated_at) "\
+        "SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, bbl, NOW(), NOW() "\
+        "FROM pluto_nyc WHERE address != '';"
+    conn.execute(sql)
     puts "done."
 
     print "Expanding city from 2 letter boro code..."
@@ -71,22 +81,38 @@ namespace :db_connector do
     end
     puts "done."
 
-    # Find hpd_buildings that are hpd_reg_id, and match the reg_id from hpd
-    sql = "SELECT boro, block, lot, registrationid FROM hpd_buildings WHERE registrationid != 0 AND registrationid NOT IN (SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL)"
+    # Find buildings imported from pluto_nyc that have hpd registration ids and add ids.
+    sql = "SELECT bbl, registrationid FROM hpd_buildings "\
+        "WHERE registrationid != 0 AND registrationid NOT IN "\
+        "(SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL);"
     reg_ids = conn.execute(sql)
     reg_ids_count = reg_ids.count
 
     puts "Found #{reg_ids_count} addresses without registrationid...fixing."
 
     reg_ids.each_with_index do |reg_id, idx|
-      prop = Property.find_by(borough: reg_id[0], block: reg_id[1], lot: reg_id[2])
+      prop = Property.find_by(bbl: reg_id[0])
 
-      prop.hpd_registration_id = reg_id[3]
+      if prop.nil?
+        next
+      end
+
+      prop.hpd_registration_id = reg_id[1]
       prop.save
 
-      print "Saved #{idx}/#{reg_ids_count} \r"
-      $stdout.flush
+      if idx % 100 == 0
+        print "Saved #{idx}/#{reg_ids_count} \r"
+        $stdout.flush
+      end
     end
+
+    # Pull in rent stabilized counts from rent_stab.
+    print "Pulling in rent stabilized counts..."
+    sql = "UPDATE r_properties "\
+        "INNER JOIN rent_stabilization ON r_properties.bbl = rent_stabilization.ucbbl "\
+        "SET r_properties.rent_stabilized = rent_stabilization.2015uc;"
+    conn.execute(sql)
+    puts "done."
 
     puts "Finished importing properties"
 
@@ -124,8 +150,10 @@ namespace :db_connector do
 
     owners_result.each_with_index do |owner, idx|
 
-      print "Saving #{idx}/#{owners_result_count} \r"
-      $stdout.flush
+      if idx % 100 == 0
+        print "Saving #{idx}/#{owners_result_count} \r"
+        $stdout.flush
+      end
 
       prop = Property.find_by(hpd_registration_id: owner['registrationid'])
 
@@ -278,8 +306,10 @@ namespace :db_connector do
 
     permits.each_with_index do |permit, idx|
 
-      print "Saving #{idx}/#{permits.length} \r"
-      $stdout.flush
+      if idx % 100 == 0
+        print "Saving #{idx}/#{permits.length} \r"
+        $stdout.flush
+      end
 
       boro = permit['borough']
       block = permit['block'].to_i
@@ -348,8 +378,10 @@ namespace :db_connector do
 
     violation_results.each_with_index do |violation,idx|
 
-      print "Saving #{idx}/#{violation_results.length} \r"
-      $stdout.flush
+      if idx % 100 == 0
+        print "Saving #{idx}/#{violation_results.length} \r"
+        $stdout.flush
+      end
 
       if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
         puts "Exists, skipping"
