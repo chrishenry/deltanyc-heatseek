@@ -229,7 +229,7 @@ def import_csv(args):
 
         sys.stdout.write("\rConcatenating Pluto boro csvs....")
         pluto_csv_files_dir = os.path.join(csv_dir, "BORO_zip_files_csv")
-        pandas_concat_csv(pluto_csv_files_dir, csv_file)
+        pandas_concat_csv(pluto_csv_files_dir, csv_file, dtype_dict)
         sys.stdout.flush()
         sys.stdout.write("\rConcatenating Pluto boro csvs....done.\n")
     else:
