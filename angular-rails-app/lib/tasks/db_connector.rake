@@ -254,47 +254,18 @@ namespace :db_connector do
     sql = "TRUNCATE #{DobPermit.table_name}"
     conn.execute(sql)
 
-    sql = "SELECT * FROM dob_permits;"
-    permits = conn.exec_query(sql).to_hash
+    puts "Inserting into #{DobPermit.table_name}"
 
-    puts "Found #{permits.length} permits"
+    insert_sql = "INSERT IGNORE INTO r_dob_permits
+        (property_id, permit_status, filing_date, expiration_date, work_type, job_start_date,
+            job_type, job_num, filing_status, permit_type, bldg_type, created_at, updated_at)
+        SELECT p.id, d.permit_status, d.filing_date, d.expiration_date, d.work_type,
+            d.job_start_date, d.job_type, d.job_num, d.filing_status, d.permit_type,
+            d.bldg_type, NOW(), NOW()
+        FROM r_properties AS p INNER JOIN dob_permits AS d ON p.bbl = d.bbl;"
+    conn.execute(insert_sql)
 
-    permits.each_with_index do |permit, idx|
-
-      if idx % 100 == 0
-        print "Saving #{idx}/#{permits.length} \r"
-        $stdout.flush
-      end
-
-      boro = permit['borough']
-      block = permit['block'].to_i
-      lot = permit['lot'].to_i
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        next
-      end
-
-      permit = DobPermit.new do |d|
-        d.property_id = prop.id
-        d.permit_status = permit['permit_status']
-        d.filing_date = permit['filing_date']
-        d.expiration_date = permit['expiration_date']
-        d.work_type = permit['work_type']
-        d.job_start_date = permit['job_start_date']
-        d.job_type = permit['job_type']
-        d.job_num = permit['job_num']
-        d.job_type = permit['job_type']
-        d.filing_status = permit['filing_status']
-        d.permit_status = permit['permit_status']
-        d.permit_type = permit['permit_type']
-        d.bldg_type = permit['bldg_type']
-      end
-
-      permit.save
-
-    end
+    puts "Done"
 
   end
 
