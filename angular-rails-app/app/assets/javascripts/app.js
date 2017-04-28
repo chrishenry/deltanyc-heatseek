@@ -1,6 +1,13 @@
+var env = {}
+
+if(window && window.ENV){
+    Object.assign(env, window.ENV);
+}
+
 angular
     .module('app', ['ui.router', 'templates', 'google.places', 'angularSlideables', 
       'ui.bootstrap', 'angularSpinners', 'angularUtils.directives.dirPagination'])
+    .constant('ENV', env)
     .config(function ($stateProvider, $urlRouterProvider) {
 
       $stateProvider
