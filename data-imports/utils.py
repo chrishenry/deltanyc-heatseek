@@ -65,7 +65,7 @@ def mkdir_p(my_path):
 def connect(test_mode=False):
     """ Returns a SQLAlchemy.Engine with a connection pool for the configured database.
     """
-    user = "root"
+    user = os.environ['MYSQL_USER']
     host = os.environ['MYSQL_HOST']
     password = os.environ['MYSQL_PASSWORD']
     database = os.environ['MYSQL_DATABASE_DATA'] if not test_mode else 'heatseek_test'
