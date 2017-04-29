@@ -34,15 +34,15 @@ ENV LANGUAGE en_US.UTF-8
 # Upgrade pip
 RUN pip install --upgrade pip
 
+COPY requirements.txt /root/requirements.txt
+RUN pip --no-cache-dir install -r /root/requirements.txt
+
 # Add local files as late as possible to avoid cache busting
 COPY docker/start.sh /usr/local/bin/
 COPY docker/start-notebook.sh /usr/local/bin/
 COPY docker/start-singleuser.sh /usr/local/bin/
 COPY docker/jupyter_notebook_config.py /root/.jupyter/
 COPY docker/.bashrc /root/.bashrc
-COPY requirements.txt /root/requirements.txt
-
-RUN pip --no-cache-dir install -r /root/requirements.txt
 
 EXPOSE 8888
 RUN mkdir /root/JPF && mkdir /root/data-imports && mkdir /root/heatseek

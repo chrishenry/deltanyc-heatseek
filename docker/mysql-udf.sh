@@ -22,7 +22,7 @@ exists=`$MYSQL_CMD -N -e "select LIB_MYSQLUDF_PREG_INFO();" 2>/dev/null` || true
 # if exists command came back empty
 if [[ -z $exists ]]; then
   echo "Adding functions..."
-  $MYSQL_CMD deltanyc < $FILE
+  $MYSQL_CMD $MYSQL_DATABASE_DATA < $FILE
   echo "UDFs added successfully"
 else
   echo "Functions already added"
