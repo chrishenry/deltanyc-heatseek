@@ -19,7 +19,7 @@ default: &default
 
 docker-dev:
   <<: *default
-  database: <%= ENV['MYSQL_DATABASE'] %>
+  database: <%= ENV['MYSQL_DATABASE_RAILS'] %>
   username: <%= ENV['MYSQL_USER'] %>
   password: <%= ENV['MYSQL_PASSWORD'] %>
   host: <%= ENV['MYSQL_HOST'] %>
@@ -27,7 +27,7 @@ docker-dev:
 
 development:
   <<: *default
-  database: <%= ENV['MYSQL_DATABASE'] %>
+  database: <%= ENV['MYSQL_DATABASE_RAILS'] %>
   username: <%= ENV['MYSQL_USER'] %>
   password: <%= ENV['MYSQL_PASSWORD'] %>
   host: <%= ENV['MYSQL_HOST'] %>
