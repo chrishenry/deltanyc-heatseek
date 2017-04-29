@@ -54,12 +54,12 @@ namespace :db_connector do
     sql = "INSERT IGNORE INTO r_properties "\
         "(street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,bbl,created_at,updated_at) "\
         "SELECT CONCAT(TRIM(housenumber), ' ', TRIM(streetname)), boro, 'New York', zip, registrationid, boro, block, lot, bbl, NOW(),NOW() "\
-        "FROM hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
+        "FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
     conn.execute(sql)
 
     # Add unit counts to HPD data.
     sql = "UPDATE r_properties "\
-        "INNER JOIN pluto_nyc ON r_properties.bbl = pluto_nyc.bbl AND r_properties.total_units IS NULL "\
+        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc ON r_properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc.bbl AND r_properties.total_units IS NULL "\
         "SET r_properties.total_units = pluto_nyc.unitstotal;"
     conn.execute(sql)
     puts "done"
@@ -69,7 +69,7 @@ namespace :db_connector do
     sql = "INSERT IGNORE INTO r_properties "\
         "(street_address,city,state,zipcode,total_units,borough,block,lot,bbl,created_at,updated_at) "\
         "SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, bbl, NOW(), NOW() "\
-        "FROM pluto_nyc WHERE address != '';"
+        "FROM #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc WHERE address != '';"
     conn.execute(sql)
     puts "done."
 
@@ -82,7 +82,7 @@ namespace :db_connector do
     puts "done."
 
     # Find buildings imported from pluto_nyc that have hpd registration ids and add ids.
-    sql = "SELECT bbl, registrationid FROM hpd_buildings "\
+    sql = "SELECT bbl, registrationid FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_buildings "\
         "WHERE registrationid != 0 AND registrationid NOT IN "\
         "(SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL);"
     reg_ids = conn.execute(sql)
@@ -109,8 +109,8 @@ namespace :db_connector do
     # Pull in rent stabilized counts from rent_stab.
     print "Pulling in rent stabilized counts..."
     sql = "UPDATE r_properties "\
-        "INNER JOIN rent_stabilization ON r_properties.bbl = rent_stabilization.ucbbl "\
-        "SET r_properties.rent_stabilized = rent_stabilization.2015uc;"
+        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization ON r_properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.ucbbl "\
+        "SET r_properties.rent_stabilized = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.2015uc;"
     conn.execute(sql)
     puts "done."
 
