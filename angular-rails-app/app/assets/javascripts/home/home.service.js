@@ -1,11 +1,13 @@
+var API_URL =''
+
 angular
   .module('app')
   .service('HomeService', HomeService);
 
-  function HomeService($http, ENV) {
+  function HomeService($http) {
 
   this.getProperty = function (details) {
-    return $http.get(ENV.API_URL + '/query?' + $.param({
+    return $http.get(API_URL + '/query?' + $.param({
             street_address: details.number + ' ' + details.street,
             city: details.city,
             state: details.state,
@@ -15,7 +17,7 @@ angular
 
 
   this.getOwners = function (input){
-    return $http.get(ENV.API_URL + '/owners?' + $.param({
+    return $http.get(API_URL + '/owners?' + $.param({
             name: input
         }));
   }
