@@ -139,13 +139,13 @@ namespace :db_connector do
             businesscity IS NOT NULL AND
             businessstate IS NOT NULL AND
             businesszip IS NOT NULL;"
-    sql_owneproperties = "INSERT IGNORE INTO owner_properties
+    sql_owner_properties = "INSERT IGNORE INTO owner_properties
           (property_id, owner_id, created_at, updated_at)
           SELECT properties.id, owners.id, NOW(), NOW()
           FROM owners INNER JOIN properties ON owners.hpd_registration_id = properties.hpd_registration_id;"
 
     conn.execute(sql_owners)
-    conn.execute(sql_owneproperties)
+    conn.execute(sql_owner_properties)
   end
 
   desc "Pull in hpd complaints"
