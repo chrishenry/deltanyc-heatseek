@@ -150,58 +150,18 @@ namespace :db_connector do
 
   desc "Pull in hpd complaints"
   task hpd_complaints: :environment do
-
     conn = ActiveRecord::Base.connection
-
-    sql = "SELECT * FROM hpd_complaints;"
-    complaints = conn.exec_query(sql).to_hash
-
-    puts "Found #{complaints.length} complaints"
-
-    complaints.each_with_index do |complaint, idx|
-      print "Saving #{idx}/#{complaints.length} \r"
-
-      if not HpdComplaint.find_by(complaint_id: complaint['complaintid']).nil?
-        puts "Exists, skipping"
-        next
-      end
-
-      boro = complaint['borough']
-      block = complaint['block']
-      lot = complaint['lot']
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        puts "No property found!?"
-        next
-      end
-
-      hpd_complaint = HpdComplaint.new do |hc|
-        #   hc.complaint_type =
-        #   hc.major_category_id =
-        #   hc.minor_category_id =
-        #   hc.code_id =
-        hc.property_id = prop.id
-        hc.received_date = complaint['receiveddate']
-        hc.complaint_id = complaint['complaintid']
-        hc.apartment = complaint['apartment']
-        hc.status = complaint['status']
-        hc.status_date = complaint['statusdate']
-        hc.status_id = complaint['statusid']
-      end
-
-      hpd_complaint.save
-
-    end
-
+    sql = "INSERT IGNORE INTO r_hpd_complaints
+        (property_id, received_date, complaint_id, apartment, status, status_date, status_id)
+        SELECT p.id, c.receiveddate, c.complaintid, c.apartment, c.status,
+        c.statusdate, c.statusid
+        FROM r_properties AS p INNER JOIN hpd_complaints AS c ON p.bbl = c.bbl;"
+    conn.execute(sql)
   end
 
   desc "Pull in hpd litigations"
   task hpd_litigations: :environment do
-
     conn = ActiveRecord::Base.connection
-
     sql = "INSERT IGNORE INTO r_litigations
         (property_id, case_type, case_judgement, litigation_id, case_open_date,
         case_status)
