@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20170225185334) do
   create_table "dob_violations", force: :cascade do |t|
     t.integer  "property_id",          limit: 4
     t.string   "violation_type",       limit: 255
+    t.string   "violation_type_code",  limit: 255
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
     t.string   "isn_dob_bis_viol",     limit: 255
