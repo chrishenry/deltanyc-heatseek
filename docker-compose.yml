@@ -7,9 +7,9 @@ services:
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
-  db-udf:
+  db-provision:
     build:
-      dockerfile: Dockerfile.mysql-udf
+      dockerfile: Dockerfile.mysql-provision
       context: .
     environment:
       MYSQL_HOST: db

@@ -16,6 +16,11 @@ done
 
 echo "MySQL is available..."
 
+echo "Adding MySQL User..."
+$MYSQL_CMD -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE_DATA;"
+$MYSQL_CMD -e "GRANT ALL PRIVILEGES ON *.* TO $MYSQL_USER;"
+$MYSQL_CMD -e "FLUSH PRIVILEGES;"
+
 echo "Checking if functions exist..."
 exists=`$MYSQL_CMD -N -e "select LIB_MYSQLUDF_PREG_INFO();" 2>/dev/null` || true
 
