@@ -202,43 +202,13 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_litigations;"
-    litigations = conn.exec_query(sql).to_hash
-
-    puts "Found #{litigations.length} cases"
-
-    litigations.each_with_index do |litigation, idx|
-      print "Saving #{idx}/#{litigations.length} \r"
-
-      if not Litigation.find_by(litigation_id: litigation['litigationid']).nil?
-        puts "Exists, skipping"
-        next
-      end
-
-      boro = litigation['boro']
-      block = litigation['block']
-      lot = litigation['lot']
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        print "No property?!"
-        next
-      end
-
-      lit = Litigation.new do |l|
-        l.property_id = prop.id
-        l.case_type = litigation['casetype']
-        l.case_judgement = litigation['casejudgement']
-        l.litigation_id = litigation['litigationid']
-        l.case_open_date = litigation['caseopendate']
-        l.case_status = litigation['casestatus']
-      end
-
-      lit.save
-
-    end
-
+    sql = "INSERT IGNORE INTO r_litigations
+        (property_id, case_type, case_judgement, litigation_id, case_open_date,
+        case_status)
+        SELECT p.id, l.casetype, l.casejudgement, l.litigationid, l.caseopendate,
+        l.casestatus
+        FROM r_properties AS p INNER JOIN hpd_litigations AS l ON p.bbl = l.bbl;"
+    conn.execute(sql)
   end
 
   desc "Pull in dob permits"
@@ -299,44 +269,16 @@ namespace :db_connector do
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
     puts "Pulling dob violations..."
-    sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.dob_violations WHERE violation_type_code IN (#{in_list});"
-    violation_results = conn.exec_query(sql).to_hash
-
-    violation_results.each_with_index do |violation,idx|
-
-      if idx % 100 == 0
-        print "Saving #{idx}/#{violation_results.length} \r"
-        $stdout.flush
-      end
-
-      if not DobViolation.find_by(isn_dob_bis_viol: violation['isn_dob_bis_viol']).nil?
-        puts "Exists, skipping"
-        next
-      end
-
-      boro = violation['boro']
-      block = violation['block'].to_i
-      lot = violation['lot'].to_i
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        next
-      end
-
-      violation = DobViolation.new do |d|
-        d.property_id = prop.id
-        d.isn_dob_bis_viol = violation['isn_dob_bis_viol']
-        d.violation_type = violation['violation_type']
-        d.violation_category = violation['violation_category']
-        d.issue_date = violation['issue_date']
-        d.disposition_date = violation['disposition_date']
-        d.disposition_comments = violation['disposition_comments']
-      end
-
-      violation.save
-
-    end
+    sql = "INSERT IGNORE INTO r_dob_violations
+        (property_id, isn_dob_bis_viol, violation_type_code, violation_type,
+        violation_category, issue_date, disposition_date, disposition_comments)
+        SELECT p.id, v.isn_dob_bis_viol, v.violation_type_code, v.violation_type,
+        v.violation_category, v.issue_date, v.disposition_date,
+        v.disposition_comments
+        FROM r_properties AS p INNER JOIN dob_violations AS v ON p.bbl = v.bbl
+        WHERE v.violation_type_code IN (#{in_list});"
+    conn.execute(sql)
+    puts "done"
 
   end
 
@@ -369,7 +311,7 @@ namespace :db_connector do
 
         begin
           geo_data = nyc_geocode(street_number, street, boro_id)
-        rescue Exception => e
+        rescue Exception => _
           puts "GEO API error, pausing && continuing"
           sleep(1)
           next
