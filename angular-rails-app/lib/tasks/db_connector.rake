@@ -127,7 +127,7 @@ namespace :db_connector do
         (name, corporation_name, address_line_one, address_line_two, city, state, zipcode, hpd_registration_id, hpd_registration_contact_id, hpd_type, created_at, updated_at)
         SELECT CONCAT(TRIM(firstname), ' ', TRIM(middleinitial), ' ', TRIM(lastname)), corporationname, CONCAT(TRIM(businesshousenumber), ' ', TRIM(businessstreetname)),
             businessapartment, businesscity, businessstate, businesszip, registrationid, registrationcontactid, type, NOW(), NOW()
-        FROM hpd_registration_contacts WHERE
+        FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_registration_contacts WHERE
             firstname IS NOT NULL AND
             firstname != '' AND
             lastname IS NOT NULL AND
@@ -153,7 +153,7 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql = "SELECT * FROM hpd_complaints;"
+    sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints;"
     complaints = conn.exec_query(sql).to_hash
 
     puts "Found #{complaints.length} complaints"
@@ -202,7 +202,7 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql = "SELECT * FROM hpd_litigations;"
+    sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_litigations;"
     litigations = conn.exec_query(sql).to_hash
 
     puts "Found #{litigations.length} cases"
@@ -262,7 +262,7 @@ namespace :db_connector do
         SELECT p.id, d.permit_status, d.filing_date, d.expiration_date, d.work_type,
             d.job_start_date, d.job_type, d.job_num, d.filing_status, d.permit_type,
             d.bldg_type, NOW(), NOW()
-        FROM r_properties AS p INNER JOIN dob_permits AS d ON p.bbl = d.bbl;"
+        FROM r_properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.dob_permits AS d ON p.bbl = d.bbl;"
     conn.execute(insert_sql)
 
     puts "Done"
@@ -276,7 +276,7 @@ namespace :db_connector do
 
     puts "Adding indexes..."
     indexes = [
-      ["dob_violations", "violation_type_code"]
+      ["#{ENV['MYSQL_DATABASE_DATA']}.dob_violations", "violation_type_code"]
     ]
     add_indexes(indexes)
 
@@ -299,7 +299,7 @@ namespace :db_connector do
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
     puts "Pulling dob violations..."
-    sql = "SELECT * FROM dob_violations WHERE violation_type_code IN (#{in_list});"
+    sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.dob_violations WHERE violation_type_code IN (#{in_list});"
     violation_results = conn.exec_query(sql).to_hash
 
     violation_results.each_with_index do |violation,idx|
@@ -346,8 +346,8 @@ namespace :db_connector do
     conn = ActiveRecord::Base.connection
 
     indexes = [
-      ["call_311", "borough"],
-      ["call_311", "complaint_type"],
+      ["#{ENV['MYSQL_DATABASE_DATA']}.call_311", "borough"],
+      ["#{ENV['MYSQL_DATABASE_DATA']}.call_311", "complaint_type"],
     ]
 
     puts "adding indexes"
@@ -355,7 +355,7 @@ namespace :db_connector do
 
     Complaint311::Categories.each do |category|
 
-      sql = "SELECT * FROM call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND incident_address != '' AND complaint_type = \"" + category + "\";"
+      sql = "SELECT * FROM #{ENV['MYSQL_DATABASE_DATA']}.call_311 WHERE incident_address IS NOT NULL AND borough != 'unspecified' AND incident_address != '' AND complaint_type = \"" + category + "\";"
       three11_results = conn.exec_query(sql).to_hash
 
       three11_results.each do |result|
