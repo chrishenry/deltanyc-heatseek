@@ -20,9 +20,6 @@ module Heatseek
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Help avoid collisions with data science tables.
-    config.active_record.table_name_prefix = 'r_'
-
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
   end

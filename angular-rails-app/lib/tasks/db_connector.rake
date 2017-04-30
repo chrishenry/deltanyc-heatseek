@@ -51,22 +51,22 @@ namespace :db_connector do
 
     # Load addresses from HPD.
     print "Copying from hpd_buildings..."
-    sql = "INSERT IGNORE INTO r_properties "\
+    sql = "INSERT IGNORE INTO properties "\
         "(street_address,city,state,zipcode,hpd_registration_id,borough,block,lot,bbl,created_at,updated_at) "\
         "SELECT CONCAT(TRIM(housenumber), ' ', TRIM(streetname)), boro, 'New York', zip, registrationid, boro, block, lot, bbl, NOW(),NOW() "\
         "FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_buildings WHERE streetname != '' AND streetname IS NOT NULL AND registrationid != 0;"
     conn.execute(sql)
 
     # Add unit counts to HPD data.
-    sql = "UPDATE r_properties "\
-        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc ON r_properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc.bbl AND r_properties.total_units IS NULL "\
-        "SET r_properties.total_units = pluto_nyc.unitstotal;"
+    sql = "UPDATE properties "\
+        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc ON properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc.bbl AND properties.total_units IS NULL "\
+        "SET properties.total_units = #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc.unitstotal;"
     conn.execute(sql)
     puts "done"
 
     # Load addresses from Pluto. This will add address that aren't in HPD.
     print "Copying from pluto_nyc..."
-    sql = "INSERT IGNORE INTO r_properties "\
+    sql = "INSERT IGNORE INTO properties "\
         "(street_address,city,state,zipcode,total_units,borough,block,lot,bbl,created_at,updated_at) "\
         "SELECT TRIM(address), borough, 'New York', zipcode, unitstotal, borough, block, lot, bbl, NOW(), NOW() "\
         "FROM #{ENV['MYSQL_DATABASE_DATA']}.pluto_nyc WHERE address != '';"
@@ -75,7 +75,7 @@ namespace :db_connector do
 
     print "Expanding city from 2 letter boro code..."
     @boros.each do |key, value|
-      sql = "UPDATE r_properties SET city = '#{value.titleize}' WHERE city = '#{key}';"
+      sql = "UPDATE properties SET city = '#{value.titleize}' WHERE city = '#{key}';"
       puts sql
       conn.execute(sql)
     end
@@ -84,7 +84,7 @@ namespace :db_connector do
     # Find buildings imported from pluto_nyc that have hpd registration ids and add ids.
     sql = "SELECT bbl, registrationid FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_buildings "\
         "WHERE registrationid != 0 AND registrationid NOT IN "\
-        "(SELECT hpd_registration_id FROM r_properties WHERE hpd_registration_id IS NOT NULL);"
+        "(SELECT hpd_registration_id FROM properties WHERE hpd_registration_id IS NOT NULL);"
     reg_ids = conn.execute(sql)
     reg_ids_count = reg_ids.count
 
@@ -108,9 +108,9 @@ namespace :db_connector do
 
     # Pull in rent stabilized counts from rent_stab.
     print "Pulling in rent stabilized counts..."
-    sql = "UPDATE r_properties "\
-        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization ON r_properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.ucbbl "\
-        "SET r_properties.rent_stabilized = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.2015uc;"
+    sql = "UPDATE properties "\
+        "INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization ON properties.bbl = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.ucbbl "\
+        "SET properties.rent_stabilized = #{ENV['MYSQL_DATABASE_DATA']}.rent_stabilization.2015uc;"
     conn.execute(sql)
     puts "done."
 
@@ -123,7 +123,7 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql_owners = "INSERT IGNORE INTO r_owners
+    sql_owners = "INSERT IGNORE INTO owners
         (name, corporation_name, address_line_one, address_line_two, city, state, zipcode, hpd_registration_id, hpd_registration_contact_id, hpd_type, created_at, updated_at)
         SELECT CONCAT(TRIM(firstname), ' ', TRIM(middleinitial), ' ', TRIM(lastname)), corporationname, CONCAT(TRIM(businesshousenumber), ' ', TRIM(businessstreetname)),
             businessapartment, businesscity, businessstate, businesszip, registrationid, registrationcontactid, type, NOW(), NOW()
@@ -139,13 +139,13 @@ namespace :db_connector do
             businesscity IS NOT NULL AND
             businessstate IS NOT NULL AND
             businesszip IS NOT NULL;"
-    sql_owner_properties = "INSERT IGNORE INTO r_owner_properties
+    sql_owneproperties = "INSERT IGNORE INTO owner_properties
           (property_id, owner_id, created_at, updated_at)
-          SELECT r_properties.id, r_owners.id, NOW(), NOW()
-          FROM r_owners INNER JOIN r_properties ON r_owners.hpd_registration_id = r_properties.hpd_registration_id;"
+          SELECT properties.id, owners.id, NOW(), NOW()
+          FROM owners INNER JOIN properties ON owners.hpd_registration_id = properties.hpd_registration_id;"
 
     conn.execute(sql_owners)
-    conn.execute(sql_owner_properties)
+    conn.execute(sql_owneproperties)
   end
 
   desc "Pull in hpd complaints"
@@ -256,13 +256,13 @@ namespace :db_connector do
 
     puts "Inserting into #{DobPermit.table_name}"
 
-    insert_sql = "INSERT IGNORE INTO r_dob_permits
+    insert_sql = "INSERT IGNORE INTO dob_permits
         (property_id, permit_status, filing_date, expiration_date, work_type, job_start_date,
             job_type, job_num, filing_status, permit_type, bldg_type, created_at, updated_at)
         SELECT p.id, d.permit_status, d.filing_date, d.expiration_date, d.work_type,
             d.job_start_date, d.job_type, d.job_num, d.filing_status, d.permit_type,
             d.bldg_type, NOW(), NOW()
-        FROM r_properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.dob_permits AS d ON p.bbl = d.bbl;"
+        FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.dob_permits AS d ON p.bbl = d.bbl;"
     conn.execute(insert_sql)
 
     puts "Done"
