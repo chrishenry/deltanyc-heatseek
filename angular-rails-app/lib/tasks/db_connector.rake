@@ -123,74 +123,29 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    indexes = [
-      ["hpd_registrations", "registrationid"],
-      ["hpd_registration_contacts", "registrationid"]
-    ]
+    sql_owners = "INSERT IGNORE INTO r_owners
+        (name, corporation_name, address_line_one, address_line_two, city, state, zipcode, hpd_registration_id, hpd_registration_contact_id, hpd_type, created_at, updated_at)
+        SELECT CONCAT(TRIM(firstname), ' ', TRIM(middleinitial), ' ', TRIM(lastname)), corporationname, CONCAT(TRIM(businesshousenumber), ' ', TRIM(businessstreetname)),
+            businessapartment, businesscity, businessstate, businesszip, registrationid, registrationcontactid, type, NOW(), NOW()
+        FROM hpd_registration_contacts WHERE
+            firstname IS NOT NULL AND
+            firstname != '' AND
+            lastname IS NOT NULL AND
+            lastname != '' AND
+            corporationname IS NOT NULL AND
+            corporationname != '' AND
+            businesshousenumber IS NOT NULL AND
+            businessstreetname IS NOT NULL AND
+            businesscity IS NOT NULL AND
+            businessstate IS NOT NULL AND
+            businesszip IS NOT NULL;"
+    sql_owner_properties = "INSERT IGNORE INTO r_owner_properties
+          (property_id, owner_id, created_at, updated_at)
+          SELECT r_properties.id, r_owners.id, NOW(), NOW()
+          FROM r_owners INNER JOIN r_properties ON r_owners.hpd_registration_id = r_properties.hpd_registration_id;"
 
-    add_indexes(indexes)
-
-    sql = "SELECT * FROM hpd_registration_contacts hr WHERE
-           firstname IS NOT NULL AND
-           firstname != '' AND
-           lastname IS NOT NULL AND
-           lastname != '' AND
-           corporationname IS NOT NULL AND
-           corporationname != '' AND
-           businesshousenumber IS NOT NULL AND
-           businessstreetname IS NOT NULL AND
-                 businesscity IS NOT NULL AND
-                businessstate IS NOT NULL AND
-                  businesszip IS NOT NULL;"
-    owners_result = conn.exec_query(sql).to_hash
-
-    owners_result_count = owners_result.count
-
-    puts "Found #{owners_result_count} owners...matching."
-
-    owners_result.each_with_index do |owner, idx|
-
-      if idx % 100 == 0
-        print "Saving #{idx}/#{owners_result_count} \r"
-        $stdout.flush
-      end
-
-      prop = Property.find_by(hpd_registration_id: owner['registrationid'])
-
-      if prop then
-
-        if Owner.find_by(hpd_registration_contact_id: owner['registrationcontactid']) then
-          next
-        end
-
-        begin
-
-          owner = Owner.new do |o|
-            o.name = "#{owner['firstname']} #{owner['middleinitial']} #{owner['lastname']}".sub! '  ', ' '
-            o.corporation_name = owner['corporationname']
-            o.address_line_one = "#{owner['businesshousenumber']} #{owner['businessstreetname']}"
-            o.address_line_two = owner['businessapartment']
-            o.city = owner['businesscity']
-            o.state = owner['businessstate']
-            o.zipcode = owner['businesszip']
-            o.hpd_registration_id = owner['registrationid']
-            o.hpd_registration_contact_id = owner['registrationcontactid']
-            o.hpd_type = owner['type']
-          end
-
-          prop.owners << owner
-          prop.save
-
-        rescue Exception => e
-          puts e.message
-        end
-
-      end
-
-      print "Done."
-
-    end
-
+    conn.execute(sql_owners)
+    conn.execute(sql_owner_properties)
   end
 
   desc "Pull in hpd complaints"
@@ -198,7 +153,7 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql = "SELECT * FROM hpd_complaints"
+    sql = "SELECT * FROM hpd_complaints;"
     complaints = conn.exec_query(sql).to_hash
 
     puts "Found #{complaints.length} complaints"
@@ -247,7 +202,7 @@ namespace :db_connector do
 
     conn = ActiveRecord::Base.connection
 
-    sql = "SELECT * FROM hpd_litigations"
+    sql = "SELECT * FROM hpd_litigations;"
     litigations = conn.exec_query(sql).to_hash
 
     puts "Found #{litigations.length} cases"
@@ -299,47 +254,18 @@ namespace :db_connector do
     sql = "TRUNCATE #{DobPermit.table_name}"
     conn.execute(sql)
 
-    sql = "SELECT * FROM dob_permits"
-    permits = conn.exec_query(sql).to_hash
+    puts "Inserting into #{DobPermit.table_name}"
 
-    puts "Found #{permits.length} permits"
+    insert_sql = "INSERT IGNORE INTO r_dob_permits
+        (property_id, permit_status, filing_date, expiration_date, work_type, job_start_date,
+            job_type, job_num, filing_status, permit_type, bldg_type, created_at, updated_at)
+        SELECT p.id, d.permit_status, d.filing_date, d.expiration_date, d.work_type,
+            d.job_start_date, d.job_type, d.job_num, d.filing_status, d.permit_type,
+            d.bldg_type, NOW(), NOW()
+        FROM r_properties AS p INNER JOIN dob_permits AS d ON p.bbl = d.bbl;"
+    conn.execute(insert_sql)
 
-    permits.each_with_index do |permit, idx|
-
-      if idx % 100 == 0
-        print "Saving #{idx}/#{permits.length} \r"
-        $stdout.flush
-      end
-
-      boro = permit['borough']
-      block = permit['block'].to_i
-      lot = permit['lot'].to_i
-
-      prop = Property.find_by(borough: boro, block: block, lot: lot)
-
-      if prop.nil?
-        next
-      end
-
-      permit = DobPermit.new do |d|
-        d.property_id = prop.id
-        d.permit_status = permit['permit_status']
-        d.filing_date = permit['filing_date']
-        d.expiration_date = permit['expiration_date']
-        d.work_type = permit['work_type']
-        d.job_start_date = permit['job_start_date']
-        d.job_type = permit['job_type']
-        d.job_num = permit['job_num']
-        d.job_type = permit['job_type']
-        d.filing_status = permit['filing_status']
-        d.permit_status = permit['permit_status']
-        d.permit_type = permit['permit_type']
-        d.bldg_type = permit['bldg_type']
-      end
-
-      permit.save
-
-    end
+    puts "Done"
 
   end
 
@@ -373,7 +299,7 @@ namespace :db_connector do
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
     puts "Pulling dob violations..."
-    sql = "SELECT * FROM dob_violations WHERE violation_type_code IN (#{in_list})"
+    sql = "SELECT * FROM dob_violations WHERE violation_type_code IN (#{in_list});"
     violation_results = conn.exec_query(sql).to_hash
 
     violation_results.each_with_index do |violation,idx|

@@ -115,6 +115,7 @@ class InitSchema < ActiveRecord::Migration
     end
 
     add_index "owners", ["hpd_registration_contact_id"], name: "index_r_owners_on_hpd_registration_contact_id", unique: true, using: :btree
+    add_index "owners", ["hpd_registration_id"], name: "index_r_owners_on_hpd_registration_id", using: :btree
 
     create_table "properties", force: :cascade do |t|
       t.string   "street_address",      limit: 255
@@ -136,6 +137,7 @@ class InitSchema < ActiveRecord::Migration
     add_index "properties", ["borough", "block", "lot"], name: "index_r_properties_on_borough_and_block_and_lot", unique: true, using: :btree
     add_index "properties", ["bbl"], name: "index_r_properties_on_bbl", using: :btree
     add_index "properties", ["street_address", "zipcode"], name: "index_r_properties_on_street_address_and_zipcode", using: :btree
+    add_index "properties", ["hpd_registration_id"], name: "index_r_properties_on_hpd_registration_id", using: :btree
 
   end
 

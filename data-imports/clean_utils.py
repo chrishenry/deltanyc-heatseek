@@ -80,7 +80,7 @@ def add_boroid(table, column):
         """.format(table=lookup_table)
     if not column_exists(table, 'bbl'):
         sql = sql + """
-        ALTER TABLE {table} ADD COLUMN {columnid} bigint(13) NULL DEFAULT NULL;
+        ALTER TABLE {table} ADD COLUMN {columnid} bigint(13) NOT NULL DEFAULT 0;
         """.format(table=table, columnid=columnid)
 
     return sql + '''
