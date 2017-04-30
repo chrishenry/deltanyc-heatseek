@@ -150,6 +150,7 @@ namespace :db_connector do
 
   desc "Pull in hpd complaints"
   task hpd_complaints: :environment do
+    # TODO: missing columns: complaint_type, major_category_id, minor_category_id, code_id
     conn = ActiveRecord::Base.connection
     sql = "INSERT IGNORE INTO r_hpd_complaints
         (property_id, received_date, complaint_id, apartment, status, status_date, status_id)
