@@ -68,7 +68,7 @@ def connect(test_mode=False):
     user = os.environ['MYSQL_USER']
     host = os.environ['MYSQL_HOST']
     password = os.environ['MYSQL_PASSWORD']
-    database = os.environ['MYSQL_DATABASE'] if not test_mode else 'heatseek_test'
+    database = os.environ['MYSQL_DATABASE_DATA'] if not test_mode else 'heatseek_test'
 
     conn_str = "mysql+mysqlconnector://{0}:{1}@{2}/{3}".format(user, password, host, database)
     return create_engine(conn_str, echo=False)

@@ -16,13 +16,18 @@ done
 
 echo "MySQL is available..."
 
+echo "Adding MySQL User..."
+$MYSQL_CMD -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE_DATA;"
+$MYSQL_CMD -e "GRANT ALL PRIVILEGES ON *.* TO $MYSQL_USER;"
+$MYSQL_CMD -e "FLUSH PRIVILEGES;"
+
 echo "Checking if functions exist..."
 exists=`$MYSQL_CMD -N -e "select LIB_MYSQLUDF_PREG_INFO();" 2>/dev/null` || true
 
 # if exists command came back empty
 if [[ -z $exists ]]; then
   echo "Adding functions..."
-  $MYSQL_CMD deltanyc < $FILE
+  $MYSQL_CMD $MYSQL_DATABASE_DATA < $FILE
   echo "UDFs added successfully"
 else
   echo "Functions already added"
