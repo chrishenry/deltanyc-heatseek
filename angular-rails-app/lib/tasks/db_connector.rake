@@ -152,23 +152,25 @@ namespace :db_connector do
   task hpd_complaints: :environment do
     # TODO: missing columns: complaint_type, major_category_id, minor_category_id, code_id
     conn = ActiveRecord::Base.connection
-    sql = "INSERT IGNORE INTO r_hpd_complaints
+    sql = "INSERT IGNORE INTO hpd_complaints
         (property_id, received_date, complaint_id, apartment, status, status_date, status_id)
         SELECT p.id, c.receiveddate, c.complaintid, c.apartment, c.status,
         c.statusdate, c.statusid
-        FROM r_properties AS p INNER JOIN hpd_complaints AS c ON p.bbl = c.bbl;"
+        FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints AS c
+            ON p.bbl = c.bbl;"
     conn.execute(sql)
   end
 
   desc "Pull in hpd litigations"
   task hpd_litigations: :environment do
     conn = ActiveRecord::Base.connection
-    sql = "INSERT IGNORE INTO r_litigations
+    sql = "INSERT IGNORE INTO litigations
         (property_id, case_type, case_judgement, litigation_id, case_open_date,
         case_status)
         SELECT p.id, l.casetype, l.casejudgement, l.litigationid, l.caseopendate,
         l.casestatus
-        FROM r_properties AS p INNER JOIN hpd_litigations AS l ON p.bbl = l.bbl;"
+        FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_litigations AS l
+            ON p.bbl = l.bbl;"
     conn.execute(sql)
   end
 
@@ -230,13 +232,14 @@ namespace :db_connector do
     in_list =  "\"" + v_types.join("\", \"") + "\""
 
     puts "Pulling dob violations..."
-    sql = "INSERT IGNORE INTO r_dob_violations
+    sql = "INSERT IGNORE INTO dob_violations
         (property_id, isn_dob_bis_viol, violation_type_code, violation_type,
         violation_category, issue_date, disposition_date, disposition_comments)
         SELECT p.id, v.isn_dob_bis_viol, v.violation_type_code, v.violation_type,
         v.violation_category, v.issue_date, v.disposition_date,
         v.disposition_comments
-        FROM r_properties AS p INNER JOIN dob_violations AS v ON p.bbl = v.bbl
+        FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.dob_violations AS v
+            ON p.bbl = v.bbl
         WHERE v.violation_type_code IN (#{in_list});"
     conn.execute(sql)
 
