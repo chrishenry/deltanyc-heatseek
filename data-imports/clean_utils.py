@@ -1,3 +1,4 @@
+import os
 from utils import connect
 
 def clean_addresses(table, column):
@@ -99,9 +100,13 @@ def make_index(table, column):
     """
     return "ALTER TABLE {} ADD INDEX {};".format(table, column)
 
-def table_exists(table, schema='deltanyc'):
+def table_exists(table, schema=None):
     """ Checks if a given table exists in the database
     """
+
+    if not schema:
+        schema = os.environ['MYSQL_DATABASE_DATA']
+
     sql = """
         SELECT * FROM information_schema.tables WHERE
             table_schema = '{schema}'
@@ -113,9 +118,13 @@ def table_exists(table, schema='deltanyc'):
 
     return (result.rowcount == 1)
 
-def column_exists(table, column, schema='deltanyc'):
+def column_exists(table, column, schema=None):
     """ Checks if a given column exists in the table.
     """
+
+    if not schema:
+        schema = os.environ['MYSQL_DATABASE_DATA']
+
     sql = """
         SELECT column_name FROM information_schema.columns WHERE
             table_schema = '{schema}'
