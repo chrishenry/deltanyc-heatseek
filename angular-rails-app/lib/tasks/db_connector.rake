@@ -44,6 +44,19 @@ namespace :db_connector do
 
   end
 
+  desc 'Run All'
+  task :all do
+
+    Rake::Task['db_connector:dob_permits']
+    Rake::Task['db_connector:dob_violations']
+    Rake::Task['db_connector:hpd_complaints']
+    Rake::Task['db_connector:hpd_litigations']
+    Rake::Task['db_connector:owners']
+    Rake::Task['db_connector:properties']
+    Rake::Task['db_connector:three11']
+
+  end
+
   desc "Pull in properties from pluto and hpd_buildings"
   task properties: :environment do
 
