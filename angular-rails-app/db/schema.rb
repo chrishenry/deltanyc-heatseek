@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170225185334) do
+ActiveRecord::Schema.define(version: 20170503173859) do
 
   create_table "complaint311s", force: :cascade do |t|
     t.integer  "property_id",            limit: 4
@@ -74,6 +74,10 @@ ActiveRecord::Schema.define(version: 20170225185334) do
     t.datetime "received_date"
     t.integer  "complaint_id",      limit: 4
     t.string   "apartment",         limit: 255
+    t.string   "major_category",    limit: 255
+    t.string   "minor_category",    limit: 255
+    t.string   "description",       limit: 255
+    t.string   "code",              limit: 255
   end
 
   add_index "hpd_complaints", ["complaint_id"], name: "index_r_hpd_complaints_on_complaint_id", unique: true, using: :btree
