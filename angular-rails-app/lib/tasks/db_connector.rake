@@ -159,6 +159,7 @@ namespace :db_connector do
     add_indexes(indexes)
     conn = ActiveRecord::Base.connection
     conn.execute 'TRUNCATE hpd_complaints;'
+    # ATTENTION: For demo purposes, we are only pulling limited addresses based on the hpd reg id. See the WHERE condition
     sql = "INSERT IGNORE INTO hpd_complaints
         (property_id, received_date, complaint_id, apartment, status, status_date, status_id,
         complaint_type, major_category_id, major_category, minor_category_id, minor_category,
@@ -169,7 +170,8 @@ namespace :db_connector do
         FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints AS c
             ON p.bbl = c.bbl
         INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints_problems AS prob
-            ON c.complaintid = prob.complaintid;"
+            ON c.complaintid = prob.complaintid
+        WHERE p.hpd_registration_id IN(300980, 349726, 912547, 911741);"
     conn.execute(sql)
   end
 
