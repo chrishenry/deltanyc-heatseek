@@ -150,14 +150,22 @@ namespace :db_connector do
 
   desc "Pull in hpd complaints"
   task hpd_complaints: :environment do
-    # TODO: missing columns: complaint_type, major_category_id, minor_category_id, code_id
+    indexes = [
+      ["#{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints", "complaintid"],
+      ["#{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints_problems", "complaintid"],
+    ]
+    add_indexes(indexes)
     conn = ActiveRecord::Base.connection
     sql = "INSERT IGNORE INTO hpd_complaints
-        (property_id, received_date, complaint_id, apartment, status, status_date, status_id)
+        (property_id, received_date, complaint_id, apartment, status, status_date, status_id,
+        complaint_type, major_category_id, minor_category_id, code_id)
         SELECT p.id, c.receiveddate, c.complaintid, c.apartment, c.status,
-        c.statusdate, c.statusid
+        c.statusdate, c.statusid, prob.type, prob.majorcategoryid, prob.minorcategoryid,
+        prob.codeid
         FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints AS c
-            ON p.bbl = c.bbl;"
+            ON p.bbl = c.bbl
+        INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints_problems AS prob
+            ON c.complaintid = prob.complaintid;"
     conn.execute(sql)
   end
 
