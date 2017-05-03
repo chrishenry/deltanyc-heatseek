@@ -24,49 +24,48 @@ description = 'HPD Complaints problems'
 table_name = 'hpd_complaints_problems'
 
 dtype_dict = {
-'ProblemID':             'int64',
-'ComplaintID':           'int64',
-'UnitTypeID':            'int64',
-'UnitType':             'object',
-'SpaceTypeID':           'int64',
-'SpaceType':            'object',
-'TypeID':                'int64',
-'Type':                 'object',
-'MajorCategoryID':       'int64',
-'MajorCategory':        'object',
-'MinorCategoryID':       'int64',
-'MinorCategory':        'object',
-'CodeID':                'int64',
-'Code':                 'object',
-'StatusID':              'int64',
-'Status':               'object',
-'StatusDate':           'object',
-'StatusDescription':    'object',
+    'ProblemID':             'int64',
+    'ComplaintID':           'int64',
+    'UnitTypeID':            'int64',
+    'UnitType':             'object',
+    'SpaceTypeID':           'int64',
+    'SpaceType':            'object',
+    'TypeID':                'int64',
+    'Type':                 'object',
+    'MajorCategoryID':       'int64',
+    'MajorCategory':        'object',
+    'MinorCategoryID':       'int64',
+    'MinorCategory':        'object',
+    'CodeID':                'int64',
+    'Code':                 'object',
+    'StatusID':              'int64',
+    'Status':               'object',
+    'StatusDate':           'object',
+    'StatusDescription':    'object',
 }
 
 date_time_columns = ['statusdate']
 
 truncate_columns = [
         'statusdescription',
-        'majorcategoryid',
         ]
 
 keep_cols = [
-    'ProblemId',
-    'ComplaintId',
-    'UnitTypeId',
+    'ProblemID',
+    'ComplaintID',
+    'UnitTypeID',
     'UnitType',
-    'SpaceTypeId',
+    'SpaceTypeID',
     'SpaceType',
-    'TypeId',
+    'TypeID',
     'Type',
-    'MajorCategoryId',
+    'MajorCategoryID',
     'MajorCategory',
-    'MinorCategoryId',
+    'MinorCategoryID',
     'MinorCategory',
-    'CodeId',
+    'CodeID',
     'Code',
-    'StatusId',
+    'StatusID',
     'Status',
     'StatusDate',
     'StatusDescription'
@@ -84,7 +83,7 @@ def main():
 def import_csv(args):
     csv_dir = os.path.join(BASE_DIR, table_name)
     mkdir_p(csv_dir)
-    csv_file = os.path.join(csv_dir, "hpd_complaints.csv")
+    csv_file = os.path.join(csv_dir, "hpd_complaints_problems.csv")
 
     if not os.path.isfile(csv_file) or args.BUST_DISK_CACHE:
         log.info("DL-ing " + description)
