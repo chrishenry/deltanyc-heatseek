@@ -47,12 +47,12 @@ namespace :db_connector do
   desc 'Run All'
   task :all do
 
+    Rake::Task['db_connector:properties'].invoke()
+    Rake::Task['db_connector:owners'].invoke()
     Rake::Task['db_connector:dob_permits'].invoke()
     Rake::Task['db_connector:dob_violations'].invoke()
     Rake::Task['db_connector:hpd_complaints'].invoke()
     Rake::Task['db_connector:hpd_litigations'].invoke()
-    Rake::Task['db_connector:owners'].invoke()
-    Rake::Task['db_connector:properties'].invoke()
     Rake::Task['db_connector:three11'].invoke()
 
   end
