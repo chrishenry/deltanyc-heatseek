@@ -3,4 +3,9 @@ class OwnerSerializer < ActiveModel::Serializer
   :city, :state, :zipcode, :full_identity
 
   has_many :properties, serializer: OwnerPropertiesSerializer
+
+  def name
+    object.name.blank? ? object.corporation_name : object.name
+  end
+
 end

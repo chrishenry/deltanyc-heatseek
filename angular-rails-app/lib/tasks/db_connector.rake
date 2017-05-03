@@ -125,20 +125,9 @@ namespace :db_connector do
 
     sql_owners = "INSERT IGNORE INTO owners
         (name, corporation_name, address_line_one, address_line_two, city, state, zipcode, hpd_registration_id, hpd_registration_contact_id, hpd_type, created_at, updated_at)
-        SELECT CONCAT(TRIM(firstname), ' ', TRIM(middleinitial), ' ', TRIM(lastname)), corporationname, CONCAT(TRIM(businesshousenumber), ' ', TRIM(businessstreetname)),
+        SELECT CONCAT_WS(' ', TRIM(firstname), TRIM(middleinitial), TRIM(lastname)), corporationname, CONCAT(TRIM(businesshousenumber), ' ', TRIM(businessstreetname)),
             businessapartment, businesscity, businessstate, businesszip, registrationid, registrationcontactid, type, NOW(), NOW()
-        FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_registration_contacts WHERE
-            firstname IS NOT NULL AND
-            firstname != '' AND
-            lastname IS NOT NULL AND
-            lastname != '' AND
-            corporationname IS NOT NULL AND
-            corporationname != '' AND
-            businesshousenumber IS NOT NULL AND
-            businessstreetname IS NOT NULL AND
-            businesscity IS NOT NULL AND
-            businessstate IS NOT NULL AND
-            businesszip IS NOT NULL;"
+        FROM #{ENV['MYSQL_DATABASE_DATA']}.hpd_registration_contacts;"
     sql_owner_properties = "INSERT IGNORE INTO owner_properties
           (property_id, owner_id, created_at, updated_at)
           SELECT properties.id, owners.id, NOW(), NOW()
@@ -156,12 +145,14 @@ namespace :db_connector do
     ]
     add_indexes(indexes)
     conn = ActiveRecord::Base.connection
+    conn.execute 'TRUNCATE hpd_complaints;'
     sql = "INSERT IGNORE INTO hpd_complaints
         (property_id, received_date, complaint_id, apartment, status, status_date, status_id,
-        complaint_type, major_category_id, minor_category_id, code_id)
+        complaint_type, major_category_id, major_category, minor_category_id, minor_category,
+        code_id, code, description)
         SELECT p.id, c.receiveddate, c.complaintid, c.apartment, c.status,
-        c.statusdate, c.statusid, prob.type, prob.majorcategoryid, prob.minorcategoryid,
-        prob.codeid
+        c.statusdate, c.statusid, prob.typeid, prob.majorcategory, prob.majorcategoryid, prob.minorcategory,
+        prob.minorcategoryid, prob.code, prob.codeid, prob.statusdescription
         FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints AS c
             ON p.bbl = c.bbl
         INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints_problems AS prob
