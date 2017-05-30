@@ -11,6 +11,7 @@ import import_hpd_complaints_problems
 import import_hpd_litigations
 import import_hpd_registrations
 import import_hpd_registration_contact
+import import_hpd_violations_luigi
 import import_pluto
 import import_rent_stab
 import import_worst_landlords
@@ -59,3 +60,4 @@ class ImportAll(luigi.WrapperTask):
         yield RunImportScript(module=import_pluto)
         yield RunImportScript(module=import_rent_stab)
         yield RunImportScript(module=import_worst_landlords)
+        yield import_hpd_violations_luigi.GetUpdatesHPDViolations()
