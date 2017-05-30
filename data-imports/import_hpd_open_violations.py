@@ -22,7 +22,7 @@ HPD Violations import
 
 description = "HPD Violations"
 
-table_name = 'hpd_violations'
+table_name = 'open_hpd_violations'
 
 sep_char = '|'
 
