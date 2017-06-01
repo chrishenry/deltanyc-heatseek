@@ -170,8 +170,7 @@ namespace :db_connector do
         FROM properties AS p INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints AS c
             ON p.bbl = c.bbl
         INNER JOIN #{ENV['MYSQL_DATABASE_DATA']}.hpd_complaints_problems AS prob
-            ON c.complaintid = prob.complaintid
-        WHERE p.hpd_registration_id IN(300980, 349726, 912547, 911741);"
+            ON c.complaintid = prob.complaintid;"
     conn.execute(sql)
   end
 
