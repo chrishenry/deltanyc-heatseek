@@ -148,7 +148,7 @@ def clean_bbl(table, boro, block, lot):
     """
     sql = ''
     if not column_exists(table, 'bbl'):
-        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;".format(
+        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(10) NULL DEFAULT NULL;".format(
                 table=table, boro=boro, block=block, lot=lot)
 
     return sql + '''
