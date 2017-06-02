@@ -7,6 +7,13 @@ packages:
   - ca-certificates
   - curl
 
+users:
+  - name: nik
+    groups:
+      - sudo
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6HOsVwFPnMT9Lqn2D9vMoWRmcNBta+ohBBA+VG5EMj7oXZMMG0NaWDFhyvwS6BYtrQZX663MHtgrop3+d9JgfyHaAbeRHyfEgz6V9f77KG51IqqkO3ljsVAycWAVFTCYJZm/hx79ra3MHGz3sW3bKVpKfsw01z3kthQ2FbFBkv9rPEuErfTriVXa1Sz9xXN+wo976TQ5CWoWeqhA0LGm07Y+fxc1A8VqOImHIgGA+ZeuY5EdQWs1Jv9vXs82sAtlaea3mr0jvKem1q3VMXQl1SRw3ygnGeZzGFRme0/JhFqi5Q2g8FDhS4r6tWvGAqvWTco7uZrKPdjdnc0SpI8KL niko@Nikolays-MacBook-Pro.local
+
 runcmd:
   # Install docker-ce
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -

@@ -44,6 +44,19 @@ namespace :db_connector do
 
   end
 
+  desc 'Run All'
+  task :all do
+
+    Rake::Task['db_connector:properties'].invoke()
+    Rake::Task['db_connector:owners'].invoke()
+    Rake::Task['db_connector:dob_permits'].invoke()
+    Rake::Task['db_connector:dob_violations'].invoke()
+    Rake::Task['db_connector:hpd_complaints'].invoke()
+    Rake::Task['db_connector:hpd_litigations'].invoke()
+    Rake::Task['db_connector:three11'].invoke()
+
+  end
+
   desc "Pull in properties from pluto and hpd_buildings"
   task properties: :environment do
 
@@ -146,6 +159,7 @@ namespace :db_connector do
     add_indexes(indexes)
     conn = ActiveRecord::Base.connection
     conn.execute 'TRUNCATE hpd_complaints;'
+    # ATTENTION: For demo purposes, we are only pulling limited addresses based on the hpd reg id. See the WHERE condition
     sql = "INSERT IGNORE INTO hpd_complaints
         (property_id, received_date, complaint_id, apartment, status, status_date, status_id,
         complaint_type, major_category_id, major_category, minor_category_id, minor_category,
