@@ -75,8 +75,8 @@ def add_boroid(table, column):
     if not table_exists(lookup_table):
         sql = sql + """
         CREATE TABLE {table} (
-            boro_code varchar(2),
-            boro_id int,
+            boro_code char(2),
+            boro_id tinyint,
             PRIMARY KEY(boro_code)
         );
         INSERT INTO {table} VALUES ('MN', 1);
