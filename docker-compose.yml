@@ -1,5 +1,6 @@
 version: '2'
 services:
+
   db:
     build:
       dockerfile: Dockerfile.mysql
@@ -7,6 +8,7 @@ services:
     env_file: .env
     volumes:
       - ./mysql-data/:/var/lib/mysql/
+
   db-provision:
     build:
       dockerfile: Dockerfile.mysql-provision
@@ -16,6 +18,40 @@ services:
     env_file: .env
     depends_on:
       - db
+
+  postgres:
+    image: postgres:9.6
+    volumes:
+      - ./nyc-db:/root/
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file: .env
+
+  postgrest:
+    image: begriffs/postgrest
+    volumes:
+      - ./log/api:/var/log:rw
+    env_file: .env
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - ./postgrest.conf:/etc/postgrest.conf
+    environment:
+      POSTGREST_ANONYMOUS:      'anonymous'
+      PGRST_MAX_ROWS:           '200'
+      PG_ENV_POSTGRES_USER:     'deltanyc'
+      PG_ENV_POSTGRES_DB:       'deltanyc_rails'
+      PG_ENV_POSTGRES_PASSWORD: 'password'
+      PG_PORT_5432_TCP_ADDR:    'postgres'
+      PG_PORT_5432_TCP_PORT:    '5432'
+      POSTGREST_MAX_ROWS:       '1000000'
+      POSTGREST_POOL:           '200'
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    command: "postgrest postgres://deltanyc:password@postgres:5432/deltanyc_rails --port 3000 --schema public -a anonymous -m 200"
   web:
     build:
       context: ./angular-rails-app/
@@ -23,12 +59,15 @@ services:
     env_file: .env
     environment:
       MYSQL_HOST: db
+      POSTGRES_HOST: postgres
     volumes:
       - ./angular-rails-app/:/angular-rails-app/
     ports:
       - "80:80"
     depends_on:
       - db
+      - postgres
+
   nb:
     build:
       context: .
@@ -48,6 +87,7 @@ services:
       - db
     links:
       - db
+
   luigid:
     build:
       context: .
@@ -64,6 +104,7 @@ services:
       - db
     links:
       - db
+
   luigi-import-worker:
     build:
       context: .
