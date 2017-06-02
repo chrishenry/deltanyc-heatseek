@@ -29,14 +29,14 @@ services:
     env_file: .env
 
   postgrest:
-    image: begriffs/postgrest
+    image: begriffs/postgrest:v0.4.1.0
     volumes:
       - ./log/api:/var/log:rw
     env_file: .env
     ports:
       - "3000:3000"
-    # volumes:
-    #   - ./postgrest.conf:/etc/postgrest.conf
+    volumes:
+      - ./postgrest.conf:/etc/postgrest.conf
     environment:
       POSTGREST_ANONYMOUS:      'anonymous'
       PGRST_MAX_ROWS:           '200'
@@ -51,7 +51,7 @@ services:
       - postgres
     depends_on:
       - postgres
-    command: "postgrest postgres://deltanyc:password@postgres:5432/deltanyc_rails --port 3000 --schema public -a anonymous -m 200"
+
   web:
     build:
       context: ./angular-rails-app/
