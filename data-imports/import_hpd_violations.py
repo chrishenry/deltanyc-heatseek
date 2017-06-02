@@ -7,25 +7,47 @@ import os
 import tempfile
 import utils
 
-class DownloadHPDViolations():
+class DownloadHPDViolations(object):
+    """ Static class producing DownloadUnzipTasks for obtaining
+        violation updates.
+    """
     base_url = 'http://www1.nyc.gov/assets/hpd/downloads/misc/'
-    base_out = '/root/heatseek/hpd_violations/'
+
     zip_filename_format = 'Violations{date:%Y%m%d}'
     txt_filename_format = 'Violation{date:%Y%m%d}'
-    bad_zip_filename_date = datetime.date(2015, 3, 1)
+
     v2_start_date = datetime.date(2013, 5, 1)
+
+    base_out = '/root/heatseek/hpd_violations/'
+
+    # One month has a zip file named "Violation", no "s".
+    bad_zip_filename_date = datetime.date(2015, 3, 1)
 
     @classmethod
     def is_v2(cls, date):
+        """ Returns whether the update for `date` is available in txt/csv.
+
+        Args:
+            date: A datetime.date, expected to be the first day of a month.
+        """
+        assert date.day == 1
         return date > cls.v2_start_date
 
     @classmethod
     def getHPDViolationDownloadTask(cls, date):
+        """ Returns a DownloadUnzipTask for the update for `date`.
+
+        Args:
+            date: A datetime.date, expected to be the first day of a month.
+        """
+        assert date.day == 1
+
         if date != cls.bad_zip_filename_date:
             zip_filename = cls.zip_filename_format.format(date=date) + '.zip'
         else:
             zip_filename = cls.txt_filename_format.format(date=date) + '.zip'
 
+        # txt files
         txt_date = date - datetime.timedelta(days=1)
         txt_filename = cls.txt_filename_format.format(date=txt_date) + '.txt'
 
@@ -39,6 +61,8 @@ class DownloadHPDViolations():
 
 
 class ImportHPDViolationUpdate(luigi.Task):
+    """ A Task that imports HPD Violations into an existing table.
+    """
     date = luigi.MonthParameter()
 
     table_name = 'hpd_violations'
@@ -125,6 +149,9 @@ class ImportHPDViolationUpdate(luigi.Task):
     pickle_file = os.path.join(DownloadHPDViolations.base_out,
             'df_violations.pkl')
 
+    # Only differs from luigi_utils.standard_args in DB_ACTION.
+    # Each month's updates are meant to be applied against those of the
+    # previous months.
     args = luigi_utils.CmdArgsClass(DB_ACTION='append', TEST_MODE=False,
             BUST_DISK_CACHE=False, LOAD_PICKLE=False, SAVE_PICKLE=False,
             dataset='filtered')
@@ -153,6 +180,7 @@ class ImportHPDViolationUpdate(luigi.Task):
         return luigi_utils.HeatseekDB(self.table_name, str(self.date))
 
     def run(self):
+        # Only unusual arg is sep_char.
         utils.hpd_csv2sql(
                 'Import HPD Violation update from ' + str(self.date),
                 self.args,
@@ -171,6 +199,10 @@ class ImportHPDViolationUpdate(luigi.Task):
 
 
 class CleanHPDViolations(luigi.Task):
+    """ A task that applies cleaning to the HPD Violations database.
+        Cleaning does not need to be applied for all updates, and can be applied
+        repeatedly after new updates.
+    """
     date = luigi.MonthParameter()
 
     def requires(self):
@@ -182,7 +214,7 @@ class CleanHPDViolations(luigi.Task):
 
     def run(self):
         table_name = ImportHPDViolationUpdate.table_name
-        sql = clean_utils.clean_addresses(table_name, 'streetname') + \
+        sql =  clean_utils.clean_addresses(table_name, 'streetname') + \
                 clean_utils.clean_boro(table_name, 'boro',
                         clean_utils.full_name_boro_replacements()) + \
                 clean_utils.add_boroid(table_name, 'boro') + \
@@ -192,6 +224,10 @@ class CleanHPDViolations(luigi.Task):
 
 
 class GetUpdatesHPDViolations(luigi.WrapperTask):
+    """ Top level task for users to run.
+        Gets updates for the current month, plus unobtained previous months,
+        then cleans the resulting database.
+    """
     def requires(self):
         now_date = datetime.date.today()
         yield CleanHPDViolations(datetime.date(now_date.year, now_date.month,

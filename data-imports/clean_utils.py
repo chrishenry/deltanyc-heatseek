@@ -85,9 +85,9 @@ def add_boroid(table, column):
         INSERT INTO {table} VALUES ('QN', 4);
         INSERT INTO {table} VALUES ('SI', 5);
         """.format(table=lookup_table)
-    if not column_exists(table, 'bbl'):
+    if not column_exists(table, columnid):
         sql = sql + """
-        ALTER TABLE {table} ADD COLUMN {columnid} bigint(13) NOT NULL DEFAULT 0;
+        ALTER TABLE {table} ADD COLUMN {columnid} tinyint(1) NOT NULL DEFAULT 0;
         """.format(table=table, columnid=columnid)
 
     return sql + '''
