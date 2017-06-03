@@ -46,7 +46,9 @@ def bbl_code_boro_replacements():
 
 def clean_boro(table, column, replacements):
     """ Retuns an SQL statement that cleans up borough columns.
-        |replacements| is a dict mapping the cleaned borough codes (mn, bk, si, qn, bx)
+
+    Args:
+        replacements - dict mapping the cleaned borough codes (mn, bk, si, qn, bx)
         to the unclean borough codes. The case of the unclean codes does not matter.
         Cleaned codes match those used in PLUTO.
     """
@@ -62,6 +64,10 @@ def clean_boro(table, column, replacements):
 def add_boroid(table, column):
     """ Returns a SQL statement that adds a column for boro IDs (used in BBL) and
         populates via conversion from a cleaned boro column.
+
+    Args:
+        table
+        column - Name of the column containing cleaned two-letter boro code.
     """
     columnid = column + 'id'
     sql = ''
@@ -69,8 +75,8 @@ def add_boroid(table, column):
     if not table_exists(lookup_table):
         sql = sql + """
         CREATE TABLE {table} (
-            boro_code varchar(2),
-            boro_id int,
+            boro_code char(2),
+            boro_id tinyint,
             PRIMARY KEY(boro_code)
         );
         INSERT INTO {table} VALUES ('MN', 1);
@@ -79,9 +85,9 @@ def add_boroid(table, column):
         INSERT INTO {table} VALUES ('QN', 4);
         INSERT INTO {table} VALUES ('SI', 5);
         """.format(table=lookup_table)
-    if not column_exists(table, 'bbl'):
+    if not column_exists(table, columnid):
         sql = sql + """
-        ALTER TABLE {table} ADD COLUMN {columnid} bigint(13) NOT NULL DEFAULT 0;
+        ALTER TABLE {table} ADD COLUMN {columnid} tinyint(1) NOT NULL DEFAULT 0;
         """.format(table=table, columnid=columnid)
 
     return sql + '''
@@ -142,7 +148,7 @@ def clean_bbl(table, boro, block, lot):
     """
     sql = ''
     if not column_exists(table, 'bbl'):
-        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(13) NULL DEFAULT NULL;".format(
+        sql = "ALTER TABLE {table} ADD COLUMN bbl bigint(10) NULL DEFAULT NULL;".format(
                 table=table, boro=boro, block=block, lot=lot)
 
     return sql + '''

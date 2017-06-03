@@ -11,18 +11,13 @@ import import_hpd_complaints_problems
 import import_hpd_litigations
 import import_hpd_registrations
 import import_hpd_registration_contact
+import import_hpd_violations
 import import_pluto
 import import_rent_stab
 import import_worst_landlords
 import luigi
-import luigi.contrib.mysqldb
+from luigi_utils import HeatseekDB, standard_args
 import os
-
-CmdArgsClass = namedtuple('CmdArgsClass', ['TEST_MODE', 'BUST_DISK_CACHE',
-    'LOAD_PICKLE', 'SAVE_PICKLE', 'DB_ACTION', 'dataset'])
-standard_args = CmdArgsClass(TEST_MODE=False, BUST_DISK_CACHE=False,
-        LOAD_PICKLE=False, SAVE_PICKLE=False, DB_ACTION='replace',
-        dataset='filtered')
 
 class ModuleParameter(luigi.Parameter):
     """ Luigi parameter of type Python module.
@@ -33,14 +28,6 @@ class ModuleParameter(luigi.Parameter):
     def serialize(self, x):
         return x.__name__
 
-class HeatseekDB(luigi.contrib.mysqldb.MySqlTarget):
-    """ Wrapper MySqlTarget that obtains connection info from env.
-    """
-    def __init__(self, table, update_id):
-        super(HeatseekDB, self).__init__(
-                os.environ['MYSQL_HOST'], os.environ['MYSQL_DATABASE_DATA'],
-                os.environ['MYSQL_USER'], os.environ['MYSQL_PASSWORD'],
-                table, update_id)
 
 class RunImportScript(luigi.Task):
     module = ModuleParameter()
@@ -55,6 +42,7 @@ class RunImportScript(luigi.Task):
             self.module.sql_cleanup(standard_args)
         self.output().create_marker_table()
         self.output().touch()
+
 
 class ImportAll(luigi.WrapperTask):
     def requires(self):
@@ -72,3 +60,4 @@ class ImportAll(luigi.WrapperTask):
         yield RunImportScript(module=import_pluto)
         yield RunImportScript(module=import_rent_stab)
         yield RunImportScript(module=import_worst_landlords)
+        yield import_hpd_violations.GetUpdatesHPDViolations()

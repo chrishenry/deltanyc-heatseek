@@ -99,24 +99,25 @@ def guess_sqlcol(dfparam, max_col_len):
 
 
 def hpd_csv2sql(description, args, input_csv_url, table_name, dtype_dict,
-        truncate_columns, date_time_columns, keep_cols, pickle_file, sql_chunk_size=2500,
+        truncate_columns, date_time_columns, keep_cols, pickle_file, sql_chunk_size=5000,
         max_col_len=255, date_format=None, csv_chunk_size=None, sep_char=","):
     """ Clean up housing data and import into a sql database.
 
-        description - tag used for logging
-        args - CLI args obtained from get_common_arguments()
-        input_csv_url - URL or filepath to CSV file
-        table_name - name of the SQL table to create / modify
-        dtype_dict - dict from column name to its datatype
-        truncate_columns - list of string-type columns to truncate
-        date_time_columns - list of date-type columns
-        keep_cols - list of columns to keep in the database
-        pickle_file - filename of pickle to save/load.
-            should be a format in a unique folder if csv_chunk_size is specified.
-        sql_chunk_size - num of rows to send to sql in each operation
-        max_col_len - length to truncate cells in truncate_columns to
-        date_format - expected format of dates in the table
-        csv_chunk_size - if defined, the number of rows to process from the CSV at a time.
+    Args:
+        description: tag used for logging
+        args: CLI args obtained from get_common_arguments()
+        input_csv_url: URL or filepath to CSV file
+        table_name: name of the SQL table to create / modify
+        dtype_dict: dict from column name to its datatype
+        truncate_columns: list of string-type columns to truncate
+        date_time_columns: list of date-type columns
+        keep_cols: list of columns to keep in the database
+        pickle_file: filename of pickle to save/load.
+            Should be a format in a unique folder if csv_chunk_size is specified.
+        sql_chunk_size: num of rows to send to sql in each operation
+        max_col_len: length to truncate cells in truncate_columns to
+        date_format: expected format of dates in the table
+        csv_chunk_size: if defined, the number of rows to process from the CSV at a time.
     """
     logging.basicConfig(format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
         datefmt='%H:%M:%S',
