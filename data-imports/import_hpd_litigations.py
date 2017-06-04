@@ -30,7 +30,7 @@ dtype_dict = {
     'Boro':              'object',
     'HouseNumber':       'object',
     'StreetName':        'object',
-    'Zip':              'float64',
+    'Zip':              'object',
     'Block':              'int64',
     'Lot':                'int64',
     'CaseType':          'object',

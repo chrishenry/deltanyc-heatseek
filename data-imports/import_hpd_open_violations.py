@@ -39,7 +39,7 @@ dtype_dict = {
     'HighHouseNumber':           'object',
     'StreetName':                'object',
     'StreetCode':                 'int64',
-    'Zip':                      'float64',
+    'Zip':                      'object',
     'Apartment':                 'object',
     'Story':                     'object',
     'Block':                      'int64',
